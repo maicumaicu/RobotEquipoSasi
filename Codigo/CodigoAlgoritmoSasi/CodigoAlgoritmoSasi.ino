@@ -1,10 +1,14 @@
-#define LARGO 10
-#define ANCHO 10
+#define ALTO 5
+#define ANCHO 5
 
 #define ADELANTE 0
 #define IZQUIERDA 1
-#define DERECHA 2
-#define ATRAS 3
+#define ATRAS 2
+#define DERECHA 3
+
+
+#define PARED 1
+#define LIBRE 0
 
 struct Node {
   public:
@@ -12,55 +16,71 @@ struct Node {
     int visitado;
 };
 
-int direcciones[4];
+struct Position {
+  public:
+    int x;
+    int y;
+};
 
-Node Map[LARGO][ANCHO];
+int c;
+int direcciones[4];
+const int alto = ALTO * 2;
+const int ancho = ANCHO * 2;
+int finalX = 4;
+int finalY = 9;
+Position actual;
+Node Map[alto][ancho];
 
 
 void setup() {
+  actual.x = ALTO;
+  actual.y = ANCHO;
+  for (int i = 0; i < 4; i++) {
+    direcciones[i] = i;
+  }
   Serial.begin(115200);
   PrintMap();
-  ChooseNextNode(Map[0][0]);
-  for(int i = 0;i<4;i++){
-    direcciones[i]=i;
-  }
+  Serial.println();
+  createVisualMap();
+  //ChooseNextNode(actual.x, actual.y);
+  Serial.println(Map[actual.x][actual.y - 1].visitado);
+  Serial.println(actual.y);
+  //PrintMap();
+  /* ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    ChooseNextNode(actual.x, actual.y);
+    Serial.println(actual.x);
+    Serial.println(actual.y);
+    PrintMap();*/
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
-}
-
-int ChooseNextNode(Node node){
-  if(node.Lados[direcciones[ADELANTE]] == 0){
-    return ADELANTE;
-  }else if(node.Lados[direcciones[IZQUIERDA]] == 0){
-    return IZQUIERDA;
-  }else if(node.Lados[direcciones[DERECHA]] == 0){
-    return DERECHA;
-  }else{
-    return ATRAS;
-  }
-}
-
-void CreateNode(Node node){
-  node.visitado = 1;
-  node.Lados[direcciones[ADELANTE]] = lecturaSensor(direcciones[ADELANTE]);
-  node.Lados[direcciones[IZQUIERDA]] = lecturaSensor(direcciones[IZQUIERDA]);
-  node.Lados[direcciones[DERECHA]] = lecturaSensor(direcciones[DERECHA]);
-  node.Lados[direcciones[ATRAS]] = 1;
-}
-
-int lecturaSensor(int direccion){
-  
-}
-
-
-void PrintMap(){
-  for(int i =0;i<LARGO;i++){
-    for(int j =0;j<ANCHO;j++){
-      Serial.print(Map[i][j].visitado);
-    }
+  if (actual.x != finalX || actual.y != finalY) {
+    ChooseNextNode(actual.x, actual.y);
     Serial.println();
+  } else if ( c == 0) {
+    c++;
+    PrintMap();
   }
+  // put your mai n code here, to run repeatedly:
+
 }
