@@ -14,6 +14,7 @@ struct Node {
   public:
     int Lados[4];
     int visitado;
+    bool final;
 };
 
 struct Position {
@@ -27,12 +28,16 @@ int direcciones[4];
 const int alto = ALTO * 2;
 const int ancho = ANCHO * 2;
 int finalX = 4;
-int finalY = 9;
+int finalY = 2;
 Position actual;
+Position visual;
 Node Map[alto][ancho];
+Node VisualMap[ALTO][ANCHO];
 
 
 void setup() {
+  visual.x = 4;
+  visual.y = 0;
   actual.x = ALTO;
   actual.y = ANCHO;
   for (int i = 0; i < 4; i++) {
@@ -74,10 +79,13 @@ void setup() {
 }
 
 void loop() {
-  if (actual.x != finalX || actual.y != finalY) {
+  if (VisualMap[visual.x][visual.y].final == false) {
+    Map[actual.x][actual.y].final = false
     ChooseNextNode(actual.x, actual.y);
+    PrintMap();
     Serial.println();
   } else if ( c == 0) {
+    Map[actual.x][actual.y].final = true
     c++;
     PrintMap();
   }
