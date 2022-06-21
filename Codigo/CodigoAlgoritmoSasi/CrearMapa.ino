@@ -1,39 +1,48 @@
-void createVisualNode(int x, int y,int adelante,int izquierda, int derecha,int atras){
-  Map[x][y].visitado = 0;
-  Map[x][y].Lados[ADELANTE] = adelante;
-  Map[x][y].Lados[IZQUIERDA] = izquierda;
-  Map[x][y].Lados[DERECHA] = derecha;
-  Map[x][y].Lados[ATRAS] = atras;
+void createVisualNode(int x, int y, int adelante, int izquierda, int derecha, int atras, bool final) {
+  VisualMap[x][y].visitado = 0;
+  VisualMap[x][y].Lados[ADELANTE] = adelante;
+  VisualMap[x][y].Lados[IZQUIERDA] = izquierda;
+  VisualMap[x][y].Lados[DERECHA] = derecha;
+  VisualMap[x][y].Lados[ATRAS] = atras;
+  VisualMap[x][y].final = final;
 }
 
-void createVisualMap(){
-  createVisualNode(0,0,0,1,1,0);
-  createVisualNode(0,1,0,1,1,0);
-  createVisualNode(0,2,0,1,1,0);
-  createVisualNode(0,3,1,1,0,0);
-  createVisualNode(1,3,1,0,0,1);
-  createVisualNode(2,3,1,0,0,1);
-  createVisualNode(3,3,1,0,0,1);
-  createVisualNode(4,3,0,0,0,1);
-  createVisualNode(5,3,1,0,0,1);
-  createVisualNode(6,3,1,0,0,1);
-  createVisualNode(7,3,1,0,0,0);
-  createVisualNode(8,3,1,0,0,1);
-  createVisualNode(9,3,1,0,1,1);
-  createVisualNode(4,4,0,1,1,0);
-  createVisualNode(4,5,0,1,1,0);
-  createVisualNode(4,6,0,1,1,0);
-  createVisualNode(4,7,0,1,1,0);
-  createVisualNode(4,8,0,1,1,0);
-  createVisualNode(4,9,0,1,1,0);
-  createVisualNode(7,2,0,1,1,0);
-  createVisualNode(7,1,0,1,1,1);
+void createVisualMap() {
+  createVisualNode(0, 0, 0, 1, 1, 1, 0);
+  createVisualNode(0, 1, 0, 1, 0, 0, 0);
+  createVisualNode(0, 2, 0, 1, 1, 0, 0);
+  createVisualNode(0, 3, 0, 1, 1, 0, 0);
+  createVisualNode(0, 4, 1, 1, 0, 0, 0);
+
+  createVisualNode(1, 0, 1, 1, 0, 1, 0);
+  createVisualNode(1, 1, 1, 0, 0, 1, 0);
+  createVisualNode(1, 2, 0, 1, 0, 1, 0);
+  createVisualNode(1, 3, 0, 1, 1, 0, 0);
+  createVisualNode(1, 4, 1, 0, 0, 0, 0);
+
+  createVisualNode(2, 0, 1, 0, 0, 1, 0);
+  createVisualNode(2, 1, 1, 0, 0, 1, 0);
+  createVisualNode(2, 2, 1, 0, 0, 1, 0);
+  createVisualNode(2, 3, 1, 1, 1, 1, 0);
+  createVisualNode(2, 4, 1, 0, 0, 1, 0);
+
+  createVisualNode(3, 0, 1, 0, 0, 1, 0);
+  createVisualNode(3, 1, 1, 0, 0, 1, 0);
+  createVisualNode(3, 2, 1, 0, 0, 1, 0);
+  createVisualNode(3, 3, 1, 1, 1, 1, 0);
+  createVisualNode(3, 4, 1, 0, 0, 1, 0);
+
+  createVisualNode(4, 0, 0, 0, 1, 1, 0);
+  createVisualNode(4, 1, 1, 0, 1, 0, 0);
+  createVisualNode(4, 2, 1, 0, 1, 1, 1);
+  createVisualNode(4, 3, 1, 1, 1, 1, 0);
+  createVisualNode(4, 4, 1, 0, 1, 1, 0);
 }
 
-void PrintMap() {
+void PrintVisualMap() {
   for (int i = 0; i < alto; i++) {
     for (int j = 0; j < ancho; j++) {
-      Serial.print(Map[i][j].visitado);
+      Serial.print(VisualMap[i][j].visitado);
     }
     Serial.println();
   }
