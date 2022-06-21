@@ -8,25 +8,37 @@ void ChooseNextNode(int x, int y) {
     Serial.println("Adelante");
     Map[x][y].Lados[direcciones[ADELANTE]] = 2;
     moveNode(direcciones[ADELANTE]);
-    if(Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
+    if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
+    if (Map[x][y].visitado > 1 ) {
+      EliminateNode(x,y);
+    }
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
     Serial.println("IZQUIERDA");
     Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
     moveNode(direcciones[IZQUIERDA]);
-    if(Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
+    if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
     rotateAxis(IZQUIERDA);
+    if (Map[x][y].visitado > 1 ) {
+     EliminateNode(x,y);
+    }
   } else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
     Serial.println("DERECHA");
     Map[x][y].Lados[direcciones[DERECHA]] = 2;
     moveNode(direcciones[DERECHA]);
-    if(Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
+    if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
     rotateAxis(DERECHA);
+    if (Map[x][y].visitado > 1 ) {
+      EliminateNode(x,y);
+    }
   } else {
     Serial.println("otro");
     SearchAvailableNode(x, y);
   }
-  
-  
+
+  last.x = x;
+  last.y = y;
+
+
   Serial.print(x);
   Serial.print(" ");
   Serial.print(y);
@@ -49,6 +61,12 @@ void ChooseNextNode(int x, int y) {
   Serial.print(direcciones[IZQUIERDA]);
   Serial.print(" ");
   Serial.println(direcciones[ATRAS]);
+}
+
+void EliminateNode(int x, int y) {
+  Serial.println("Borro");
+  Map[x][y].Lados[direcciones[ATRAS]] = 1;
+  Map[last.x][last.y].visitado = 0;
 }
 
 void SearchAvailableNode(int x, int y) {
