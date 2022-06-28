@@ -1,3 +1,5 @@
+#include <Preferences.h>
+
 #define ALTO 5
 #define ANCHO 5
 
@@ -29,6 +31,7 @@ const int alto = ALTO * 2;
 const int ancho = ANCHO * 2;
 int finalX = 4;
 int finalY = 4;
+String directions;
 Position actual;
 Position visual;
 Position last;
@@ -37,6 +40,8 @@ Node VisualMap[ALTO][ANCHO];
 
 
 void setup() {
+  preferences.begin("run", false);
+  preferences.clear();
   visual.x = 4;
   visual.y = 4;
   actual.x = ALTO;
@@ -48,35 +53,6 @@ void setup() {
   PrintMap();
   Serial.println();
   createVisualMap();
-  //ChooseNextNode(actual.x, actual.y);
-  Serial.println(Map[actual.x][actual.y - 1].visitado);
-  Serial.println(actual.y);
-  //PrintMap();
-  /* ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    ChooseNextNode(actual.x, actual.y);
-    Serial.println(actual.x);
-    Serial.println(actual.y);
-    PrintMap();*/
 }
 
 void loop() {
@@ -89,6 +65,13 @@ void loop() {
     Map[actual.x][actual.y].final = true;
     c++;
     PrintMap();
+    visual.x = 4;
+    visual.y = 4;
+    actual.x = ALTO;
+    actual.y = ANCHO;
+  } else if (Map[actual.x][actual.y].final == true) {
+    addDirection(actual.x, actual.y);
+    Serial.println(directions);
   }
   // put your mai n code here, to run repeatedly:
 
