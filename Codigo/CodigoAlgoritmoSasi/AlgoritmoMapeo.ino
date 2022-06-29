@@ -10,7 +10,7 @@ void ChooseNextNode(int x, int y) {
     moveNode(direcciones[ADELANTE]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
     if (Map[x][y].visitado > 1 ) {
-      EliminateNode(x,y);
+      EliminateNode(x, y);
     }
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
     Serial.println("IZQUIERDA");
@@ -19,7 +19,7 @@ void ChooseNextNode(int x, int y) {
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
     rotateAxis(IZQUIERDA);
     if (Map[x][y].visitado > 1 ) {
-     EliminateNode(x,y);
+      EliminateNode(x, y);
     }
   } else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
     Serial.println("DERECHA");
@@ -28,7 +28,7 @@ void ChooseNextNode(int x, int y) {
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
     rotateAxis(DERECHA);
     if (Map[x][y].visitado > 1 ) {
-      EliminateNode(x,y);
+      EliminateNode(x, y);
     }
   } else {
     Serial.println("otro");
@@ -154,6 +154,15 @@ int lecturaSensor(int direccion) {
   return VisualMap[visual.x][visual.y].Lados[direccion];
 }
 
+void resetAxis() {
+  for (int i = 0; i < 4; i++) {
+    direcciones[i] = i;
+  }
+}
+
+int cantVueltas(){
+  
+}
 
 void PrintMap() {
   for (int i = 0; i < alto; i++) {

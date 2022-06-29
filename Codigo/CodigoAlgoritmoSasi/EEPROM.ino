@@ -1,9 +1,13 @@
 Preferences preferences;
 
-void UploadRun(String Address, String run){
+void UploadRun(String run) {
   preferences.putString("run", run);
 }
 
-String ReadRun(String Address){
-  return preferences.getString(Address, "");
+String ReadRun() {
+  return preferences.getString("run", "");
+}
+
+void ShowRun() {
+  Serial.print(ReadRun());
 }

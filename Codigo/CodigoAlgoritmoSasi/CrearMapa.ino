@@ -1,3 +1,5 @@
+
+
 void createVisualNode(int x, int y, int adelante, int izquierda, int derecha, int atras, bool final) {
   VisualMap[x][y].visitado = 0;
   VisualMap[x][y].Lados[ADELANTE] = adelante;

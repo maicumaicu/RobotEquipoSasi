@@ -8,9 +8,15 @@
 #define ATRAS 2
 #define DERECHA 3
 
-
 #define PARED 1
 #define LIBRE 0
+
+#define SETUP 0
+#define MAPPING 1
+#define RESOLUTION 2
+#define RACING 3
+
+#define NEGRO 1
 
 struct Node {
   public:
@@ -29,36 +35,31 @@ int c;
 int direcciones[4];
 const int alto = ALTO * 2;
 const int ancho = ANCHO * 2;
-int finalX = 4;
-int finalY = 4;
+int robotState;
+int
 String directions;
 Position actual;
-Position visual;
+
 Position last;
 Node Map[alto][ancho];
+
+//visual map creation
+int finalX = 4;
+int finalY = 4;
+Position visual;
 Node VisualMap[ALTO][ANCHO];
 
-
 void setup() {
+  Serial.begin(115200);
   preferences.begin("run", false);
   preferences.clear();
-  visual.x = 4;
-  visual.y = 4;
-  actual.x = ALTO;
-  actual.y = ANCHO;
-  for (int i = 0; i < 4; i++) {
-    direcciones[i] = i;
-  }
-  Serial.begin(115200);
-  PrintMap();
-  Serial.println();
-  createVisualMap();
+  robotState = 0;
 }
 
 void loop() {
+  robotMachine();
   if (VisualMap[visual.x][visual.y].final == false) {
-    Map[actual.x][actual.y].final = false;
-    ChooseNextNode(actual.x, actual.y);
+
     PrintMap();
     Serial.println();
   } else if ( c == 0) {
@@ -73,6 +74,29 @@ void loop() {
     addDirection(actual.x, actual.y);
     Serial.println(directions);
   }
-  // put your mai n code here, to run repeatedly:
+}
 
+void robotMachine() {
+  switch (robotState) {
+    case SETUP:
+      actual.x = ALTO;
+      actual.y = ANCHO;
+      resetAxis();
+      PrintMap();
+      robotState = MAPPING;
+      break;
+    case MAPPING:
+      if (lecturaCNY70() != NEGRO) {
+        if (counter == cantVueltas()) {
+          Map[actual.x][actual.y].final = false;
+          ChooseNextNode(actual.x, actual.y);
+        }
+      } else {
+        resetAxis();
+        actual.x = ALTO;
+        actual.y = ANCHO;
+        robotState = RESOLUTION;
+      }
+      break;
+  }
 }
