@@ -83,7 +83,18 @@ void robotMachine() {
       actual.y = ANCHO;
       resetAxis();
       PrintMap();
-      robotState = MAPPING;
+      if (flagButtonMapping == 1) {
+        robotState = MAPPING;
+      }
+
+      if(flagButtonRunning1 == 1){
+        robotState = RUNNING;
+      }
+
+      if(flagButtonRunning2 == 1){
+        robotState = MAPPING;
+      }
+
       break;
     case MAPPING:
       if (lecturaCNY70() != NEGRO) {
@@ -97,6 +108,11 @@ void robotMachine() {
         actual.y = ANCHO;
         robotState = RESOLUTION;
       }
+      break;
+
+    case RESOLUTION:
+
+      addDirection(actual.x, actual.y);
       break;
   }
 }
