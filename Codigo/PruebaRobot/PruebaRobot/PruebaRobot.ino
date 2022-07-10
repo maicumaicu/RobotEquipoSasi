@@ -41,6 +41,7 @@ void initializeAnalog() {
 void setup() {
   // put your setup code here, to run once:
   //initializeAnalog();
+  Serial.begin(115200);
   initializeSharp();
   initializeMotors();
 
