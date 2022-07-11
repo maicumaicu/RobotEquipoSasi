@@ -11,53 +11,32 @@
 #define ADELANTE 0
 #define ATRAS 1
 
-#define SHARP_1 26
+#define SHARP_1 26  
 #define SHARP_2 25
 #define SHARP_3 33
 
 
-const int freq = 5000;
-const int motorAChannel = 0;
-const int motorBChannel = 1;
-const int sharp1Channel = 2;
-const int sharp2Channel = 3;
-const int sharp3Channel = 4;
-const int resolution = 8;
-
-void initializeAnalog() {
-  ledcSetup(motorAChannel, freq, resolution);
-  ledcSetup(motorBChannel, freq, resolution);
-  ledcSetup(sharp1Channel, freq, resolution);
-  ledcSetup(sharp2Channel, freq, resolution);
-  ledcSetup(sharp3Channel, freq, resolution);
-
-  ledcAttachPin(PWMA, motorAChannel);
-  ledcAttachPin(PWMB, motorBChannel);
-  ledcAttachPin(SHARP_1, sharp1Channel);
-  ledcAttachPin(SHARP_2, sharp2Channel);
-  ledcAttachPin(SHARP_3, sharp3Channel);
-}
-
 void setup() {
   // put your setup code here, to run once:
-  //initializeAnalog();
   Serial.begin(115200);
+  pinMode(2,OUTPUT);
+  pinMode(4,OUTPUT);
   initializeSharp();
-  initializeMotors();
+  //initializeMotors();
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-  int lectura1 = lecturaSensor(SHARP_1);
-  int lectura2 = lecturaSensor(SHARP_2);
-  int lectura3 = lecturaSensor(SHARP_3);
-
-  if (lectura1 > 15) {
-    runBackwards();
+  int lectura1 = lecturaSensor(20,SHARP_1);
+  int lectura2 = lecturaSensor(20,SHARP_2);
+  int lectura3 = lecturaSensor(20,SHARP_3);
+  Serial.println(lectura3);
+  if (lectura3 < 15) {
+    digitalWrite(2,HIGH);
   } else {
-    runForward();
+    digitalWrite(2,LOW);
   }
 
 }
