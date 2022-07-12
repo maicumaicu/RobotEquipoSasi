@@ -22,7 +22,7 @@ void setup() {
   pinMode(2,OUTPUT);
   pinMode(4,OUTPUT);
   initializeSharp();
-  //initializeMotors();
+  initializeMotors();
 
 }
 
@@ -32,11 +32,11 @@ void loop() {
   int lectura1 = lecturaSensor(20,SHARP_1);
   int lectura2 = lecturaSensor(20,SHARP_2);
   int lectura3 = lecturaSensor(20,SHARP_3);
-  Serial.println(lectura3);
-  if (lectura3 < 15) {
-    digitalWrite(2,HIGH);
+  Serial.println(lectura1);
+  if (lectura2 > 7) {
+     runBackwards();
   } else {
-    digitalWrite(2,LOW);
+    runForward();
   }
-
+  delay(1000);
 }

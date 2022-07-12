@@ -121,10 +121,10 @@ void moveNode(int lado) {
 }
 
 void CreateNode(int x, int y) {
-  Map[x][y].Lados[ADELANTE] = lecturaSensor(ADELANTE);
-  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(IZQUIERDA);
-  Map[x][y].Lados[DERECHA] = lecturaSensor(DERECHA);
-  Map[x][y].Lados[ATRAS] = lecturaSensor(ATRAS);
+  Map[x][y].Lados[ADELANTE] = lecturaSensor(20,DERECHA);
+  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(20,IZQUIERDA);
+  Map[x][y].Lados[DERECHA] = lecturaSensor(20,DERECHA);
+  Map[x][y].Lados[ATRAS] = 0;
 }
 
 void rotateAxis(int direccion) {
@@ -150,8 +150,21 @@ void rotateAxis(int direccion) {
 
 
 
-int lecturaSensor(int direccion) {
-  return VisualMap[visual.x][visual.y].Lados[direccion];
+int lecturaSensor(int n, int pin)
+{
+  long suma=0;
+  for(int i=0;i<n;i++)
+  {
+    suma=suma+analogRead(pin);
+  }  
+  float adc=suma/n * 0.0008056;
+  float distancia_cm = 12*pow(adc, -1);
+  if (distancia_cm < 15) {
+    return 1;
+  } else {
+    return 0;
+  }
+  
 }
 
 void resetAxis() {
@@ -160,9 +173,9 @@ void resetAxis() {
   }
 }
 
-int cantVueltas(){
+/*int cantVueltas(){
   
-}
+}*/
 
 void PrintMap() {
   for (int i = 0; i < alto; i++) {
