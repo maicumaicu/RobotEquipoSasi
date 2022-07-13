@@ -5,7 +5,9 @@ void ChooseNextNode(int x, int y) {
     CreateNode(x, y);
   }
   if (Map[x][y].Lados[direcciones[ADELANTE]] == 0) {
+    runForward();
     Serial.println("Adelante");
+    SerialBT.write('A');
     Map[x][y].Lados[direcciones[ADELANTE]] = 2;
     moveNode(direcciones[ADELANTE]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
@@ -13,7 +15,9 @@ void ChooseNextNode(int x, int y) {
       EliminateNode(x, y);
     }
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
+    runLeft();
     Serial.println("IZQUIERDA");
+     SerialBT.write('I');
     Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
     moveNode(direcciones[IZQUIERDA]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
@@ -22,7 +26,11 @@ void ChooseNextNode(int x, int y) {
       EliminateNode(x, y);
     }
   } else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
+    runRight();
     Serial.println("DERECHA");
+     SerialBT.write('D');
+    ledOff(LED_1);
+    ledOff(LED_2);
     Map[x][y].Lados[direcciones[DERECHA]] = 2;
     moveNode(direcciones[DERECHA]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
@@ -31,7 +39,10 @@ void ChooseNextNode(int x, int y) {
       EliminateNode(x, y);
     }
   } else {
+    ledOff(LED_1);
+    ledOff(LED_2);
     Serial.println("otro");
+     SerialBT.write('O');
     SearchAvailableNode(x, y);
   }
 
@@ -121,9 +132,9 @@ void moveNode(int lado) {
 }
 
 void CreateNode(int x, int y) {
-  Map[x][y].Lados[ADELANTE] = lecturaSensor(20,DERECHA);
-  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(20,IZQUIERDA);
-  Map[x][y].Lados[DERECHA] = lecturaSensor(20,DERECHA);
+  Map[x][y].Lados[ADELANTE] = lecturaSensor(20, SHARP_C);
+  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(20, SHARP_I);
+  Map[x][y].Lados[DERECHA] = lecturaSensor(20, SHARP_D);
   Map[x][y].Lados[ATRAS] = 0;
 }
 
@@ -150,22 +161,7 @@ void rotateAxis(int direccion) {
 
 
 
-int lecturaSensor(int n, int pin)
-{
-  long suma=0;
-  for(int i=0;i<n;i++)
-  {
-    suma=suma+analogRead(pin);
-  }  
-  float adc=suma/n * 0.0008056;
-  float distancia_cm = 12*pow(adc, -1);
-  if (distancia_cm < 15) {
-    return 1;
-  } else {
-    return 0;
-  }
-  
-}
+
 
 void resetAxis() {
   for (int i = 0; i < 4; i++) {
@@ -174,8 +170,8 @@ void resetAxis() {
 }
 
 /*int cantVueltas(){
-  
-}*/
+
+  }*/
 
 void PrintMap() {
   for (int i = 0; i < alto; i++) {

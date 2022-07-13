@@ -10,12 +10,15 @@
 #define PWMB 12
 #define MOTOR_A 0
 #define MOTOR_B 1
-#define ADELANTE 0
-#define ATRAS 1
 
-#define SHARP_1 26  
-#define SHARP_2 25
-#define SHARP_3 33  
+#define LED_1 2
+#define LED_2 4
+
+#define SHARP_D 26
+#define SHARP_C 25
+#define SHARP_I 33
+
+#define CNY70 13
 
 #define ALTO 5
 #define ANCHO 5
@@ -67,8 +70,19 @@ int finalY = 4;
 Position visual;
 Node VisualMap[ALTO][ANCHO];
 
+#include "BluetoothSerial.h"
+
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+BluetoothSerial SerialBT;
+
 void setup() {
   Serial.begin(115200);
+  SerialBT.begin("MISA");
+  initializeLeds();
+  initializeSharp();
   //preferences.begin("run", false);
   //preferences.clear();
   robotState = 0;
@@ -80,7 +94,7 @@ void loop() {
 
     PrintMap();
     Serial.println();
-  } else if ( c == 0) {
+    } else if ( c == 0) {
     Map[actual.x][actual.y].final = true;
     c++;
     PrintMap();
@@ -88,10 +102,10 @@ void loop() {
     visual.y = 4;
     actual.x = ALTO;
     actual.y = ANCHO;
-  } else if (Map[actual.x][actual.y].final == true) {
+    } else if (Map[actual.x][actual.y].final == true) {
     addDirection(actual.x, actual.y);
     Serial.println(directions);
-  }*/
+    }*/
 }
 
 void robotMachine() {
@@ -101,30 +115,35 @@ void robotMachine() {
       actual.y = ANCHO;
       resetAxis();
       PrintMap();
-      robotState = MAPPING;
-     /*if (flagButtonMapping == 1) {
-        robotState = MAPPING;
-      }
+      //robotState = MAPPING;
+      if (SerialBT.available()) {
+        if (SerialBT.read() == '1') {
+          robotState = MAPPING;
+          SerialBT.write('M');
+        }
 
-      if(flagButtonRunning1 == 1){
-        robotState = RUNNING;
+        if (SerialBT.read() == '2') {
+          robotState = RESOLUTION;
+          SerialBT.write('R');
+        }
       }
-
-      if(flagButtonRunning2 == 1){
-        robotState = MAPPING;
-      }*/
 
       break;
     case MAPPING:
-      if (digitalRead(15) == HIGH) {
+      {
+        int valueCNY = analogRead(CNY70);
+        //SerialBT.write(valueCNY);
+        Serial.println(valueCNY);
+        if (valueCNY > 800) {
           Map[actual.x][actual.y].final = false;
           ChooseNextNode(actual.x, actual.y);
-      } 
-      if(digitalRead(5) == HIGH){
-        resetAxis();
-        actual.x = ALTO;
-        actual.y = ANCHO;
-        robotState = RESOLUTION;
+        } else {
+          resetAxis();
+          actual.x = ALTO;
+          actual.y = ANCHO;
+          SerialBT.write('R');
+          robotState = RESOLUTION;
+        }
       }
       break;
 
