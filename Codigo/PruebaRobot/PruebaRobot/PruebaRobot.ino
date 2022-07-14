@@ -1,11 +1,11 @@
 #include <analogWrite.h>
 
-#define AIN1 19
-#define AIN2 18
-#define PWMA 14
-#define BIN2 17
-#define BIN1 32
-#define PWMB 12
+#define AIN1 13
+#define AIN2 12
+#define PWMA 5
+#define BIN2 10
+#define BIN1 11
+#define PWMB 6
 #define MOTOR_A 0
 #define MOTOR_B 1
 #define ADELANTE 0
@@ -22,11 +22,12 @@ void setup() {
   Serial.begin(115200);
   pinMode(2, OUTPUT);
   pinMode(4, OUTPUT);
-  initializeSharp();
-  initializeMotors();
+  //initializeSharp();
+ // initializeMotors();
 
 }
 
 void loop() {
-    runForward();
+    //runForward();
+   Serial.println(lecturaSensor(20,13));
 }

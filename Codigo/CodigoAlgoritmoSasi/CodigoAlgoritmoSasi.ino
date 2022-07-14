@@ -2,11 +2,11 @@
 #include <analogWrite.h>
 #include <BluetoothSerial.h>
 
-#define AIN1 18
-#define AIN2 19
+#define AIN1 19
+#define AIN2 18
 #define PWMA 14
-#define BIN2 32
-#define BIN1 17
+#define BIN2 17
+#define BIN1 32
 #define PWMB 12
 
 #define MOTOR_A 0
@@ -21,13 +21,13 @@
 
 #define CNY70 13
 
-#define encoderPinA1 27
-#define encoderPinB1 23
+#define encoderPinA1 23
+#define encoderPinB1 27
 
-#define encoderPinA2 35
-#define encoderPinB2 34
+#define encoderPinA2 34
+#define encoderPinB2 35
 
-#define DIAMETRO_RUEDA 42
+#define DIAMETRO_RUEDA 42.2
 
 
 #define ALTO 5
@@ -138,6 +138,7 @@ void robotMachine() {
       {
         /*int valueCNY = lecturaCNY70(20, CNY70);
           SerialBT.println(valueCNY);*/
+          //SerialBT.println(counterD);
         if (VisualMap[visual.x][visual.y].final == false) {
           Map[actual.x][actual.y].final = false;
           movementMachine();

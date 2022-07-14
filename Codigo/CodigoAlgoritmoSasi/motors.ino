@@ -1,12 +1,12 @@
-#define FORWARD_DISTANCE 20
-#define LEFT_DISTANCE 5
-#define RIGHT_DISTANCE 5
+#define FORWARD_DISTANCE 259
+#define LEFT_DISTANCE 250
+#define RIGHT_DISTANCE 500
 
 void movementMachine() {
   switch (movementState) {
     case OFF:
       runOff(powerA, powerB);
-      move = ChooseNextNode(actual.x, actual.y) ;
+      move = ADELANTE; //ChooseNextNode(actual.x, actual.y) ;
       SerialBT.println("OFF");
       if (move != OFF) {
         movementState = move;
@@ -15,22 +15,25 @@ void movementMachine() {
       }
       break;
     case ADELANTE:
-      SerialBT.println("ADELANTE");
-      SerialBT.println(calculoDistancia(counterD));
-      if (calculoDistancia(counterD) < FORWARD_DISTANCE && calculoDistancia(counterI) < FORWARD_DISTANCE) {
+      //SerialBT.println("ADELANTE");
+      if (counterD < FORWARD_DISTANCE  && counterI < FORWARD_DISTANCE) {
+        SerialBT.println(counterD);
         runForward(powerA, powerB);
       } else {
         movementState = OFF;
       }
       break;
     case IZQUIERDA:
-      SerialBT.println("IZQUIERDA");
-      if (calculoDistancia(counterD) > -LEFT_DISTANCE && calculoDistancia(counterI) < LEFT_DISTANCE) {
+      //SerialBT.println("IZQUIERDA");
+
+      if (counterD > -(LEFT_DISTANCE)  && counterI <= LEFT_DISTANCE) {
+        SerialBT.println(counterD);
         runLeft(powerA, powerB);
       } else {
-        movementState = ADELANTE;
-        counterD = 0;
-        counterI = 0;
+        runOff(powerA, powerB);
+        /*movementState = ADELANTE;
+          counterD = 0;
+          counterI = 0;*/
       }
       break;
     case DERECHA:

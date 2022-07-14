@@ -29,7 +29,6 @@ void isr_A1() {
       counterD  = counterD  - 1 ; //COUNTER CLOCK WISE
     }
   }
-
 }
 
 void isr_B1() {
@@ -94,6 +93,6 @@ void isr_B2() {
 
 }
 
-int calculoDistancia(int counter) {
-  return counter * DIAMETRO_RUEDA * 3.1416 / 2 / 100;
+float calculoDistancia(int counter) {
+  return (counter * 3.1416 * DIAMETRO_RUEDA / 12 / 100.35);
 }

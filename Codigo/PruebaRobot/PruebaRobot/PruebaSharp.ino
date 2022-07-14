@@ -13,7 +13,9 @@ int lecturaSensor(int n, int pin)
   {
     suma=suma+analogRead(pin);
   }  
-  float adc=suma/n * 0.0008056;
+  float adc=suma/n; 
   float distancia_cm = 12*pow(adc, -1);
-  return(distancia_cm);
+  return(adc);
 }
+
+//float adc=suma/n * 0.0008056;
