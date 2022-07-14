@@ -1,16 +1,22 @@
+#define FORWARD_DISTANCE 20
+#define LEFT_DISTANCE 5
+#define RIGHT_DISTANCE 5
 
 void movementMachine() {
   switch (movementState) {
     case OFF:
-      runOff();
+      runOff(powerA, powerB);
       move = ChooseNextNode(actual.x, actual.y) ;
+      SerialBT.println("OFF");
       if (move != OFF) {
         movementState = move;
-        counter1 = 0;
-        counter2 = 0;
+        counterD = 0;
+        counterI = 0;
       }
       break;
     case ADELANTE:
+      SerialBT.println("ADELANTE");
+      SerialBT.println(calculoDistancia(counterD));
       if (calculoDistancia(counterD) < FORWARD_DISTANCE && calculoDistancia(counterI) < FORWARD_DISTANCE) {
         runForward(powerA, powerB);
       } else {
@@ -18,30 +24,33 @@ void movementMachine() {
       }
       break;
     case IZQUIERDA:
-      if (calculoDistancia(counterD) < -LEFT_DISTANCE && calculoDistancia(counterI) < LEFT_DISTANCE) {
+      SerialBT.println("IZQUIERDA");
+      if (calculoDistancia(counterD) > -LEFT_DISTANCE && calculoDistancia(counterI) < LEFT_DISTANCE) {
         runLeft(powerA, powerB);
       } else {
         movementState = ADELANTE;
-        counter1 = 0;
-        counter2 = 0;
+        counterD = 0;
+        counterI = 0;
       }
       break;
     case DERECHA:
-      if (calculoDistancia(counter1) < RIGHT_DISTANCE && calculoDistancia(counter2) < - RIGHT_DISTANCE) {
+      SerialBT.println("DERECHA");
+      if (calculoDistancia(counterD) < RIGHT_DISTANCE && calculoDistancia(counterI) > - RIGHT_DISTANCE) {
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;
-        counter1 = 0;
-        counter2 = 0;
+        counterD = 0;
+        counterI = 0;
       }
       break;
     case ATRAS:
-      if (calculoDistancia(counter1) < RIGHT_DISTANCE * 2  && calculoDistancia(counter2) < - RIGHT_DISTANCE * 2 ) {
+      SerialBT.println("ATRAS");
+      if (calculoDistancia(counterD) < RIGHT_DISTANCE * 2  && calculoDistancia(counterI) > - RIGHT_DISTANCE * 2 ) {
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;
-        counter1 = 0;
-        counter2 = 0;
+        counterD = 0;
+        counterI = 0;
       }
       break;
   }
@@ -57,37 +66,37 @@ void initializeMotors () {
 }
 
 
-void runForward() {
-  setPowerMotor(100, MOTOR_A);
-  setPowerMotor(100, MOTOR_B);
+void runForward(int powerA, int powerB) {
+  setPowerMotor(powerA, MOTOR_A);
+  setPowerMotor(powerB, MOTOR_B);
   runMotor(ADELANTE, MOTOR_A);
   runMotor(ADELANTE, MOTOR_B);
 }
 
-void runBackwards() {
-  setPowerMotor(100, MOTOR_A);
-  setPowerMotor(100, MOTOR_B);
+void runBackwards(int powerA, int powerB) {
+  setPowerMotor(powerA, MOTOR_A);
+  setPowerMotor(powerB, MOTOR_B);
   runMotor(ATRAS, MOTOR_A);
   runMotor(ATRAS, MOTOR_B);
 }
 
-void runRight() {
-  setPowerMotor(100, MOTOR_A);
-  setPowerMotor(100, MOTOR_B);
+void runRight(int powerA, int powerB) {
+  setPowerMotor(powerA, MOTOR_A);
+  setPowerMotor(powerB, MOTOR_B);
   runMotor(ADELANTE, MOTOR_A);
   runMotor(ATRAS, MOTOR_B);
 }
 
-void runLeft() {
-  setPowerMotor(100, MOTOR_A);
-  setPowerMotor(100, MOTOR_B);
+void runLeft(int powerA, int powerB) {
+  setPowerMotor(powerA, MOTOR_A);
+  setPowerMotor(powerB, MOTOR_B);
   runMotor(ATRAS, MOTOR_A);
   runMotor(ADELANTE, MOTOR_B);
 }
 
-void runOff() {
-  setPowerMotor(100, MOTOR_A);
-  setPowerMotor(100, MOTOR_B);
+void runOff(int powerA, int powerB) {
+  setPowerMotor(powerA, MOTOR_A);
+  setPowerMotor(powerB, MOTOR_B);
   runMotor(OFF, MOTOR_A);
   runMotor(OFF, MOTOR_B);
 }

@@ -12,6 +12,3 @@ void ledOn(int pin) {
 void ledOff(int pin) {
   analogWrite(pin, 0);
 }
-int calculoDistancia(int counter) {
-  return counter * DIAMETRO_RUEDA * 3.1416 / 2 / 100;
-}

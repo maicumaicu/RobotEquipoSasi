@@ -5,7 +5,6 @@ int ChooseNextNode(int x, int y) {
     CreateNode(x, y);
   }
   if (Map[x][y].Lados[direcciones[ADELANTE]] == 0) {
-    runForward();
     Serial.println("Adelante");
     SerialBT.write('A');
     Map[x][y].Lados[direcciones[ADELANTE]] = 2;
@@ -16,7 +15,6 @@ int ChooseNextNode(int x, int y) {
     }
     return ADELANTE;
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
-    runLeft();
     Serial.println("IZQUIERDA");
 
     SerialBT.write('I');
@@ -29,7 +27,6 @@ int ChooseNextNode(int x, int y) {
     }
     return IZQUIERDA;
   } else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
-    runRight();
     Serial.println("DERECHA");
     SerialBT.write('D');
     ledOff(LED_1);
@@ -121,10 +118,10 @@ void moveNode(int lado) {
   }*/
 
 void CreateNode(int x, int y) {
-  Map[x][y].Lados[ADELANTE] = lecturaSensor(20, SHARP_C);
-  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(20, SHARP_I);
-  Map[x][y].Lados[DERECHA] = lecturaSensor(20, SHARP_D);
-  Map[x][y].Lados[ATRAS] = 0;
+  Map[x][y].Lados[ADELANTE] = lecturaSensor(ADELANTE);
+  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(IZQUIERDA);
+  Map[x][y].Lados[DERECHA] = lecturaSensor(DERECHA);
+  Map[x][y].Lados[ATRAS] = lecturaSensor(ATRAS);
 }
 
 void rotateAxis(int direccion) {

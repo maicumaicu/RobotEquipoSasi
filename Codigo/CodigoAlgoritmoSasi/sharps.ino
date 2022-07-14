@@ -27,5 +27,4 @@ void initializeSharp() {
 
 int lecturaSensor(int direccion) {
   return VisualMap[visual.x][visual.y].Lados[direccion];
->>>>>>> Stashed changes
 }

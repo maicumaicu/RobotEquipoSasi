@@ -15,7 +15,6 @@
 #define LED_1 2
 #define LED_2 4
 
-
 #define SHARP_D 26
 #define SHARP_C 25
 #define SHARP_I 33
@@ -83,10 +82,12 @@ int finalY = 4;
 Position visual;
 Node VisualMap[ALTO][ANCHO];
 
-volatile int counter1 = 0;
-volatile int counter2 = 0;
+volatile int counterD = 0;
+volatile int counterI = 0;
 volatile boolean flag;
 
+int powerA = 100;
+int powerB = 100;
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -101,8 +102,11 @@ void setup() {
   SerialBT.begin("MISA");
   initializeLeds();
   initializeSharp();
-  preferences.begin("run", false);
-  preferences.clear();
+  initializeMotors ();
+  initializeEncoders() ;
+  createVisualMap();
+  //preferences.begin("run", false);
+  //preferences.clear();
   robotState = 0;
 }
 
@@ -129,7 +133,6 @@ void robotMachine() {
           SerialBT.println('R');
         }
       }
-
       break;
     case MAPPING:
       {
@@ -142,7 +145,6 @@ void robotMachine() {
           Map[actual.x][actual.y].final = true;
           SerialBT.write('S');
           robotState = SETUP;
-
         }
       }
       break;
