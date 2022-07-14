@@ -1,3 +1,25 @@
+
+void movementMachine() {
+  switch (movementState) {
+    case IDLE:
+      runOff();
+      move = ChooseNextNode(actual.x, actual.y) 
+      break;
+    case MOVING:
+      break;
+  }
+}
+
+void initializeMotors () {
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(PWMA, OUTPUT);
+  pinMode(BIN1, OUTPUT);
+  pinMode(BIN2, OUTPUT);
+  pinMode(PWMB, OUTPUT);
+}
+
+
 void runForward() {
   setPowerMotor(100, MOTOR_A);
   setPowerMotor(100, MOTOR_B);
@@ -26,6 +48,13 @@ void runLeft() {
   runMotor(ADELANTE, MOTOR_B);
 }
 
+void runOff() {
+  setPowerMotor(100, MOTOR_A);
+  setPowerMotor(100, MOTOR_B);
+  runMotor(OFF, MOTOR_A);
+  runMotor(OFF, MOTOR_B);
+}
+
 void setPowerMotor(int power, int motor) {
   if (motor == MOTOR_A) {
     analogWrite(PWMA, power);
@@ -52,6 +81,15 @@ void runMotor (int dir, int motor) {
       } else {
         digitalWrite(BIN1, LOW);
         digitalWrite(BIN2, HIGH);
+      }
+      break;
+    case OFF:
+      if (motor == MOTOR_A) {
+        digitalWrite(AIN1, LOW);
+        digitalWrite(AIN2, LOW);
+      } else {
+        digitalWrite(BIN1, LOW);
+        digitalWrite(BIN2, LOW);
       }
       break;
   }

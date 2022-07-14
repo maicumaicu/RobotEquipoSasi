@@ -1,4 +1,12 @@
-int lecturaSensor(int n, int pin)
+
+void initializeSharp() {
+  pinMode(SHARP_D, INPUT);
+  pinMode(SHARP_C, INPUT);
+  pinMode(SHARP_I, INPUT);
+}
+
+
+/*int lecturaSensor(int n, int pin)
 {
   long suma = 0;
   for (int i = 0; i < n; i++)
@@ -15,5 +23,9 @@ int lecturaSensor(int n, int pin)
   } else {
     return 0;
   }
+}*/
 
+int lecturaSensor(int direccion) {
+  return VisualMap[visual.x][visual.y].Lados[direccion];
+>>>>>>> Stashed changes
 }

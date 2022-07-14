@@ -1,4 +1,3 @@
-Preferences preferences;
 
 void UploadRun(String run) {
   preferences.putString("run", run);

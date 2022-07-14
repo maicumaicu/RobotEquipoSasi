@@ -1,4 +1,4 @@
-void ChooseNextNode(int x, int y) {
+int ChooseNextNode(int x, int y) {
   Map[x][y].visitado++;
   if (Map[x][y].visitado == 1) {
     Serial.println("creo nodo");
@@ -14,10 +14,12 @@ void ChooseNextNode(int x, int y) {
     if (Map[x][y].visitado > 1 ) {
       EliminateNode(x, y);
     }
+    return ADELANTE;
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
     runLeft();
     Serial.println("IZQUIERDA");
-     SerialBT.write('I');
+
+    SerialBT.write('I');
     Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
     moveNode(direcciones[IZQUIERDA]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
@@ -25,10 +27,11 @@ void ChooseNextNode(int x, int y) {
     if (Map[x][y].visitado > 1 ) {
       EliminateNode(x, y);
     }
+    return IZQUIERDA;
   } else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
     runRight();
     Serial.println("DERECHA");
-     SerialBT.write('D');
+    SerialBT.write('D');
     ledOff(LED_1);
     ledOff(LED_2);
     Map[x][y].Lados[direcciones[DERECHA]] = 2;
@@ -38,40 +41,15 @@ void ChooseNextNode(int x, int y) {
     if (Map[x][y].visitado > 1 ) {
       EliminateNode(x, y);
     }
+    return DERECHA;
   } else {
     ledOff(LED_1);
     ledOff(LED_2);
     Serial.println("otro");
-     SerialBT.write('O');
-    SearchAvailableNode(x, y);
+    SerialBT.write('O');
+    return SearchAvailableNode(x, y);
+
   }
-
-  last.x = x;
-  last.y = y;
-
-
-  Serial.print(x);
-  Serial.print(" ");
-  Serial.print(y);
-  Serial.println(" ");
-  Serial.print(visual.x);
-  Serial.print(" ");
-  Serial.print(visual.y);
-  Serial.println(" ");
-  Serial.print(Map[x][y].Lados[direcciones[ADELANTE]]);
-  Serial.print(" ");
-  Serial.print(Map[x][y].Lados[direcciones[DERECHA]]);
-  Serial.print(" ");
-  Serial.print(Map[x][y].Lados[direcciones[IZQUIERDA]]);
-  Serial.print(" ");
-  Serial.println(Map[x][y].Lados[direcciones[ATRAS]]);
-  Serial.print(direcciones[ADELANTE]);
-  Serial.print(" ");
-  Serial.print(direcciones[DERECHA]);
-  Serial.print(" ");
-  Serial.print(direcciones[IZQUIERDA]);
-  Serial.print(" ");
-  Serial.println(direcciones[ATRAS]);
 }
 
 void EliminateNode(int x, int y) {
@@ -80,25 +58,29 @@ void EliminateNode(int x, int y) {
   Map[last.x][last.y].visitado = 0;
 }
 
-void SearchAvailableNode(int x, int y) {
+int SearchAvailableNode(int x, int y) {
   if (Map[x][y].Lados[direcciones[ADELANTE]] != 1) {
     Serial.println("Adelante1");
     Map[x][y].Lados[direcciones[ADELANTE]] = 2;
     moveNode(direcciones[ADELANTE]);
+    return ADELANTE;
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] != 1) {
     Serial.println("IZQUIERDA1");
     Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
     moveNode(direcciones[IZQUIERDA]);
     rotateAxis(IZQUIERDA);
+    return IZQUIERDA;
   } else if (Map[x][y].Lados[direcciones[DERECHA]] != 1) {
     Serial.println("DERECHA1");
     Map[x][y].Lados[direcciones[DERECHA]] = 2;
     moveNode(direcciones[DERECHA]);
     rotateAxis(DERECHA);
+    return DERECHA;
   } else if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
     Serial.println("atras1");
     rotateAxis(DERECHA);
     rotateAxis(DERECHA);
+    return ATRAS;
   }
 }
 void moveNode(int lado) {
@@ -131,6 +113,13 @@ void moveNode(int lado) {
   }
 }
 
+/*void CreateNode(int x, int y) {
+  Map[x][y].Lados[ADELANTE] = lecturaSensor(20, SHARP_C);
+  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(20, SHARP_I);
+  Map[x][y].Lados[DERECHA] = lecturaSensor(20, SHARP_D);
+  Map[x][y].Lados[ATRAS] = 0;
+  }*/
+
 void CreateNode(int x, int y) {
   Map[x][y].Lados[ADELANTE] = lecturaSensor(20, SHARP_C);
   Map[x][y].Lados[IZQUIERDA] = lecturaSensor(20, SHARP_I);
@@ -159,19 +148,11 @@ void rotateAxis(int direccion) {
   }
 }
 
-
-
-
-
 void resetAxis() {
   for (int i = 0; i < 4; i++) {
     direcciones[i] = i;
   }
 }
-
-/*int cantVueltas(){
-
-  }*/
 
 void PrintMap() {
   for (int i = 0; i < alto; i++) {
