@@ -50,9 +50,6 @@
 #define NEGRO 1
 
 
-#define IDLE 0
-#define MOVING 1
-
 #define NEGRO 1
 
 struct Node {

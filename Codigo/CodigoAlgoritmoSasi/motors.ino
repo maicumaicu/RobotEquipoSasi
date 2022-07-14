@@ -1,11 +1,48 @@
 
 void movementMachine() {
   switch (movementState) {
-    case IDLE:
+    case OFF:
       runOff();
-      move = ChooseNextNode(actual.x, actual.y) 
+      move = ChooseNextNode(actual.x, actual.y) ;
+      if (move != OFF) {
+        movementState = move;
+        counter1 = 0;
+        counter2 = 0;
+      }
       break;
-    case MOVING:
+    case ADELANTE:
+      if (calculoDistancia(counterD) < FORWARD_DISTANCE && calculoDistancia(counterI) < FORWARD_DISTANCE) {
+        runForward(powerA, powerB);
+      } else {
+        movementState = OFF;
+      }
+      break;
+    case IZQUIERDA:
+      if (calculoDistancia(counterD) < -LEFT_DISTANCE && calculoDistancia(counterI) < LEFT_DISTANCE) {
+        runLeft(powerA, powerB);
+      } else {
+        movementState = ADELANTE;
+        counter1 = 0;
+        counter2 = 0;
+      }
+      break;
+    case DERECHA:
+      if (calculoDistancia(counter1) < RIGHT_DISTANCE && calculoDistancia(counter2) < - RIGHT_DISTANCE) {
+        runRight(powerA, powerB);
+      } else {
+        movementState = ADELANTE;
+        counter1 = 0;
+        counter2 = 0;
+      }
+      break;
+    case ATRAS:
+      if (calculoDistancia(counter1) < RIGHT_DISTANCE * 2  && calculoDistancia(counter2) < - RIGHT_DISTANCE * 2 ) {
+        runRight(powerA, powerB);
+      } else {
+        movementState = ADELANTE;
+        counter1 = 0;
+        counter2 = 0;
+      }
       break;
   }
 }
