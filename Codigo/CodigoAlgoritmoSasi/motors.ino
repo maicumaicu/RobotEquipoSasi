@@ -1,12 +1,12 @@
-#define FORWARD_DISTANCE 259
-#define LEFT_DISTANCE 250
-#define RIGHT_DISTANCE 500
+#define FORWARD_DISTANCE 516
+#define LEFT_DISTANCE 260
+#define RIGHT_DISTANCE 240
 
 void movementMachine() {
   switch (movementState) {
     case OFF:
       runOff(powerA, powerB);
-      move = ADELANTE; //ChooseNextNode(actual.x, actual.y) ;
+      move = IZQUIERDA; //ChooseNextNode(actual.x, actual.y) ;
       SerialBT.println("OFF");
       if (move != OFF) {
         movementState = move;
@@ -20,25 +20,25 @@ void movementMachine() {
         SerialBT.println(counterD);
         runForward(powerA, powerB);
       } else {
-        movementState = OFF;
+        runOff(powerA, powerB);//movementState = OFF;
       }
       break;
     case IZQUIERDA:
-      //SerialBT.println("IZQUIERDA");
+      SerialBT.println("IZQUIERDA");
 
-      if (counterD > -(LEFT_DISTANCE)  && counterI <= LEFT_DISTANCE) {
+      if (counterD > -(LEFT_DISTANCE)  && counterI <= (LEFT_DISTANCE)) {
         SerialBT.println(counterD);
         runLeft(powerA, powerB);
       } else {
         runOff(powerA, powerB);
-        /*movementState = ADELANTE;
-          counterD = 0;
-          counterI = 0;*/
+        movementState = ADELANTE;
+        counterD = 0;
+        counterI = 0;
       }
       break;
     case DERECHA:
       SerialBT.println("DERECHA");
-      if (calculoDistancia(counterD) < RIGHT_DISTANCE && calculoDistancia(counterI) > - RIGHT_DISTANCE) {
+      if (calculoDistancia(counterD) <= RIGHT_DISTANCE && calculoDistancia(counterI) > - RIGHT_DISTANCE) {
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;
@@ -48,7 +48,7 @@ void movementMachine() {
       break;
     case ATRAS:
       SerialBT.println("ATRAS");
-      if (calculoDistancia(counterD) < RIGHT_DISTANCE * 2  && calculoDistancia(counterI) > - RIGHT_DISTANCE * 2 ) {
+      if (calculoDistancia(counterD) <= RIGHT_DISTANCE * 2  && calculoDistancia(counterI) > - RIGHT_DISTANCE * 2 ) {
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;

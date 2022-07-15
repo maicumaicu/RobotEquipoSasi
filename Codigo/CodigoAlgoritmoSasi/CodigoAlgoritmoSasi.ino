@@ -1,6 +1,8 @@
 #include <Preferences.h>
 #include <analogWrite.h>
 #include <BluetoothSerial.h>
+#include "Wire.h"
+#include <MPU6050_light.h>
 
 #define AIN1 19
 #define AIN2 18
@@ -45,7 +47,7 @@
 #define SETUP 0
 #define MAPPING 1
 #define RESOLUTION 2
-#define RACING 3
+#define RACING 3aceñ
 #define NEGRO 1
 
 
@@ -63,6 +65,11 @@ struct Position {
     int x;
     int y;
 };
+
+
+MPU6050 mpu(Wire);
+unsigned long timer = 0;
+
 
 int c, move;
 int direcciones[4];
@@ -138,7 +145,7 @@ void robotMachine() {
       {
         /*int valueCNY = lecturaCNY70(20, CNY70);
           SerialBT.println(valueCNY);*/
-          //SerialBT.println(counterD);
+        //SerialBT.println(counterD);
         if (VisualMap[visual.x][visual.y].final == false) {
           Map[actual.x][actual.y].final = false;
           movementMachine();
