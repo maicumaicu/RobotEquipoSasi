@@ -1,6 +1,6 @@
-#define FORWARD_DISTANCE 516
-#define LEFT_DISTANCE 260
-#define RIGHT_DISTANCE 240
+#define FORWARD_DISTANCE 100
+#define LEFT_ANGLE 90
+#define RIGHT_ANGLE 90
 
 void movementMachine() {
   switch (movementState) {
@@ -16,7 +16,7 @@ void movementMachine() {
       break;
     case ADELANTE:
       //SerialBT.println("ADELANTE");
-      if (counterD < FORWARD_DISTANCE  && counterI < FORWARD_DISTANCE) {
+      if (calcularDistancia(counterD) < FORWARD_DISTANCE  && calcularDistancia(counterI) < FORWARD_DISTANCE) {
         SerialBT.println(counterD);
         runForward(powerA, powerB);
       } else {
@@ -25,20 +25,20 @@ void movementMachine() {
       break;
     case IZQUIERDA:
       SerialBT.println("IZQUIERDA");
-
-      if (counterD > -(LEFT_DISTANCE)  && counterI <= (LEFT_DISTANCE)) {
+      SerialBT.println(getTurnAngle());
+      if (getTurnAngle() <= LEFT_ANGLE) {
         SerialBT.println(counterD);
         runLeft(powerA, powerB);
       } else {
         runOff(powerA, powerB);
-        movementState = ADELANTE;
+        //movementState = ADELANTE;
         counterD = 0;
         counterI = 0;
       }
       break;
     case DERECHA:
       SerialBT.println("DERECHA");
-      if (calculoDistancia(counterD) <= RIGHT_DISTANCE && calculoDistancia(counterI) > - RIGHT_DISTANCE) {
+      if (getTurnAngle() <= -(RIGHT_ANGLE) ) {
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;
@@ -48,7 +48,7 @@ void movementMachine() {
       break;
     case ATRAS:
       SerialBT.println("ATRAS");
-      if (calculoDistancia(counterD) <= RIGHT_DISTANCE * 2  && calculoDistancia(counterI) > - RIGHT_DISTANCE * 2 ) {
+      if (getTurnAngle() <= RIGHT_ANGLE * 2 ) {
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;

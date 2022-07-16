@@ -93,6 +93,6 @@ void isr_B2() {
 
 }
 
-float calculoDistancia(int counter) {
-  return (counter * 3.1416 * DIAMETRO_RUEDA / 12 / 100.35);
+float calcularDistancia(int counter) {
+  return (counter * 2.51 / 10);
 }

@@ -110,7 +110,8 @@ void setup() {
   initializeLeds();
   initializeSharp();
   initializeMotors ();
-  initializeEncoders() ;
+  initializeEncoders();
+  initializeMPU6050();
   createVisualMap();
   //preferences.begin("run", false);
   //preferences.clear();
