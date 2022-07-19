@@ -2,14 +2,20 @@
 #define LEFT_ANGLE 90
 #define RIGHT_ANGLE 90
 
+float degrees = 0;
+
 void movementMachine() {
   switch (movementState) {
     case OFF:
       runOff(powerA, powerB);
+      degrees = 0;
+      offset = offset + getTurnAngle();
       move = IZQUIERDA; //ChooseNextNode(actual.x, actual.y) ;
       SerialBT.println("OFF");
       if (move != OFF) {
         movementState = move;
+        timer = millis();
+
         counterD = 0;
         counterI = 0;
       }
@@ -24,13 +30,14 @@ void movementMachine() {
       }
       break;
     case IZQUIERDA:
-      SerialBT.println("IZQUIERDA");
-      SerialBT.println(getTurnAngle());
-      if (getTurnAngle() <= LEFT_ANGLE) {
-        SerialBT.println(counterD);
+      //SerialBT.println("IZQUIERDA");
+      degrees = getTurnAngle();
+      if (degrees  <= LEFT_ANGLE + offset) {
+        SerialBT.println(degrees);
+        //SerialBT.println(counterD);
         runLeft(powerA, powerB);
       } else {
-        runOff(powerA, powerB);
+        runOff(0, 0);
         //movementState = ADELANTE;
         counterD = 0;
         counterI = 0;
@@ -98,8 +105,8 @@ void runLeft(int powerA, int powerB) {
 }
 
 void runOff(int powerA, int powerB) {
-  setPowerMotor(powerA, MOTOR_A);
-  setPowerMotor(powerB, MOTOR_B);
+  setPowerMotor(0, MOTOR_A);
+  setPowerMotor(0, MOTOR_B);
   runMotor(OFF, MOTOR_A);
   runMotor(OFF, MOTOR_B);
 }

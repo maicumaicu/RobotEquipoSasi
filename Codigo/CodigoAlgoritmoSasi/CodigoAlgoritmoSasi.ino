@@ -47,7 +47,7 @@
 #define SETUP 0
 #define MAPPING 1
 #define RESOLUTION 2
-#define RACING 3aceñ
+#define RACING 3
 #define NEGRO 1
 
 
@@ -92,9 +92,10 @@ Node VisualMap[ALTO][ANCHO];
 volatile int counterD = 0;
 volatile int counterI = 0;
 volatile boolean flag;
+int offset = 0;
 
-int powerA = 100;
-int powerB = 100;
+int powerA = 40;
+int powerB = 50;
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -107,11 +108,13 @@ Preferences preferences;
 void setup() {
   Serial.begin(115200);
   SerialBT.begin("MISA");
-  initializeLeds();
+  initializeMPU6050();
+  //initializeLeds();
   initializeSharp();
   initializeMotors ();
   initializeEncoders();
-  initializeMPU6050();
+  mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
+
   createVisualMap();
   //preferences.begin("run", false);
   //preferences.clear();
@@ -119,6 +122,11 @@ void setup() {
 }
 
 void loop() {
+  if ((millis() - timer) > 5) {
+    runOff(0, 0);
+    mpu.update();
+    timer = millis();
+  }
   robotMachine();
 }
 

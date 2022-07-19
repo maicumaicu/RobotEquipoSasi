@@ -41,8 +41,8 @@ void runLeft() {
 }
 
 void runOff() {
-  setPowerMotor(POWER_A, MOTOR_A);
-  setPowerMotor(POWER_B, MOTOR_B);
+  setPowerMotor(0, MOTOR_A);
+  setPowerMotor(0, MOTOR_B);
   runMotor(OFF, MOTOR_A);
   runMotor(OFF, MOTOR_B);
 }
