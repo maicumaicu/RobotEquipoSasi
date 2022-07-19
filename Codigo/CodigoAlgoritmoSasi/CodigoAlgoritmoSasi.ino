@@ -10,6 +10,7 @@
 #define BIN2 17
 #define BIN1 32
 #define PWMB 12
+#
 
 #define MOTOR_A 0
 #define MOTOR_B 1
@@ -32,8 +33,8 @@
 #define DIAMETRO_RUEDA 42.2
 
 
-#define ALTO 5
-#define ANCHO 5
+#define ALTO 4
+#define ANCHO 4
 
 #define ADELANTE 0
 #define IZQUIERDA 1
@@ -84,8 +85,6 @@ Position last;
 Node Map[alto][ancho];
 
 //visual map creation
-int finalX = 4;
-int finalY = 4;
 Position visual;
 Node VisualMap[ALTO][ANCHO];
 
@@ -94,7 +93,7 @@ volatile int counterI = 0;
 volatile boolean flag;
 int offset = 0;
 
-int powerA = 40;
+int powerA = 50;
 int powerB = 50;
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -113,7 +112,6 @@ void setup() {
   initializeSharp();
   initializeMotors ();
   initializeEncoders();
-  mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
 
   createVisualMap();
   //preferences.begin("run", false);
@@ -124,9 +122,12 @@ void setup() {
 void loop() {
   if ((millis() - timer) > 5) {
     runOff(0, 0);
+    digitalWrite(15, LOW);
     mpu.update();
+    estabilizacion();
     timer = millis();
   }
+  // digitalWrite(15, HIGH);
   robotMachine();
 }
 
@@ -135,6 +136,8 @@ void robotMachine() {
     case SETUP:
       actual.x = ALTO;
       actual.y = ANCHO;
+      visual.x = 0;
+      visual.y = 0;
       resetAxis();
       PrintMap();
       if (SerialBT.available()) {
@@ -154,10 +157,13 @@ void robotMachine() {
       {
         /*int valueCNY = lecturaCNY70(20, CNY70);
           SerialBT.println(valueCNY);*/
-        //SerialBT.println(counterD);
+        //SerialBT.println(lecturaSensor(20, SHARP_I));
+        //SerialBT.println(lecturaSensor(20, SHARP_C));
+        //SerialBT.println(lecturaSensor(20, SHARP_D));
         if (VisualMap[visual.x][visual.y].final == false) {
           Map[actual.x][actual.y].final = false;
           movementMachine();
+          estabilizacion();
         } else {
           Map[actual.x][actual.y].final = true;
           SerialBT.write('S');

@@ -6,24 +6,17 @@ void initializeSharp() {
 }
 
 
-/*int lecturaSensor(int n, int pin)
+int lecSensor(int n, int pin)
 {
   long suma = 0;
   for (int i = 0; i < n; i++)
   {
     suma = suma + analogRead(pin);
   }
-  float adc = suma / n * 0.0008056;
-  int distancia_cm = 12 * pow(adc, -1);
-  Serial.print(pin);
-  Serial.print(" distancia: ");
-  Serial.println(distancia_cm);
-  if (distancia_cm < 15) {
-    return 1;
-  } else {
-    return 0;
-  }
-}*/
+  float adc = suma / n;
+  float distancia_cm = 29.988 * pow(map(adc, 0, 4095, 0, 5000) / 1000.0, -1.173);
+  return distancia_cm;
+}
 
 int lecturaSensor(int direccion) {
   return VisualMap[visual.x][visual.y].Lados[direccion];
