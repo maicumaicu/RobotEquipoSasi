@@ -29,8 +29,6 @@ int ChooseNextNode(int x, int y) {
   } else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
     Serial.println("DERECHA");
     SerialBT.write('D');
-    ledOff(LED_1);
-    ledOff(LED_2);
     Map[x][y].Lados[direcciones[DERECHA]] = 2;
     moveNode(direcciones[DERECHA]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
@@ -40,8 +38,6 @@ int ChooseNextNode(int x, int y) {
     }
     return DERECHA;
   } else {
-    ledOff(LED_1);
-    ledOff(LED_2);
     Serial.println("otro");
     SerialBT.write('O');
     return SearchAvailableNode(x, y);
@@ -154,9 +150,9 @@ void resetAxis() {
 void PrintMap() {
   for (int i = 0; i < alto; i++) {
     for (int j = 0; j < ancho; j++) {
-      Serial.print(Map[i][j].visitado);
-      Serial.print(" ");
+      SerialBT.print(Map[i][j].visitado);
+      SerialBT.print(" ");
     }
-    Serial.println();
+    SerialBT.println();
   }
 }

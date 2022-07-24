@@ -8,11 +8,11 @@ void estabilizacion() {
   int diferencia = diferenciaMotores();
   SerialBT.print("dif: " );
   SerialBT.println(diferencia);
-  /*if (diferencia > 0) {
+  if (diferencia > 0) {
     powerA = 100 + diferencia;
-    } else {
+  } else {
     powerB = 100 + abs(diferencia);
-    }*/
+  }
 }
 
 int diferenciaMotores() {
@@ -25,13 +25,12 @@ int diferenciaMotores() {
   return lecturaD - lecturaI;
 }
 
-void movementMachine() {
+void movementMachine(int move) {
   switch (movementState) {
     case OFF:
       runOff(powerA, powerB);
       degrees = 0;
       offset = offset + getTurnAngle();
-      move = ChooseNextNode(actual.x, actual.y) ;
       //SerialBT.println("OFF");
       delay(1000);
       if (move != OFF) {
@@ -44,7 +43,9 @@ void movementMachine() {
     case ADELANTE:
       //
       if (calcularDistancia(counterD) < FORWARD_DISTANCE  && calcularDistancia(counterI) < FORWARD_DISTANCE) {
-        //SerialBT.println(counterD);
+        estabilizacion();
+        powerA = 100;
+        powerB = 100;
         runForward(powerA, powerB);
       } else {
         movementState = OFF;
@@ -57,6 +58,8 @@ void movementMachine() {
       if (degrees  <= LEFT_ANGLE_MIN + offset || degrees  >= LEFT_ANGLE_MAX + offset ) {
         //SerialBT.println(degrees);
         //SerialBT.println(counterD);
+        powerA = 50;
+        powerB = 50;
         runLeft(powerA, powerB);
       } else {
         //runOff(0, 0);
@@ -68,8 +71,10 @@ void movementMachine() {
     case DERECHA:
       //SerialBT.println("DERECHA");
       degrees = getTurnAngle();
-      //SerialBT.println(degrees);
+      Serial.println(degrees);
       if (degrees  >= -(LEFT_ANGLE_MIN) + offset || degrees  <= -(LEFT_ANGLE_MAX) + offset) {
+        powerA = 20;
+        powerB = 20;
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;
@@ -82,6 +87,8 @@ void movementMachine() {
       degrees = getTurnAngle();
       //SerialBT.println(degrees);
       if (degrees  <= -(LEFT_ANGLE_MIN) * 2 + offset || degrees  >= -(LEFT_ANGLE_MAX) * 2 + offset) {
+        powerA = 50;
+        powerB = 50;
         runRight(powerA, powerB);
       } else {
         movementState = ADELANTE;
@@ -99,6 +106,7 @@ void initializeMotors () {
   pinMode(BIN1, OUTPUT);
   pinMode(BIN2, OUTPUT);
   pinMode(PWMB, OUTPUT);
+  pinMode(STBY, OUTPUT);
 }
 
 

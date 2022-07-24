@@ -34,8 +34,8 @@ void createVisualMap() {
 void PrintVisualMap() {
   for (int i = 0; i < alto; i++) {
     for (int j = 0; j < ancho; j++) {
-      Serial.print(VisualMap[i][j].visitado);
+      SerialBT.print(VisualMap[i][j].visitado);
     }
-    Serial.println();
+    SerialBT.println();
   }
 }

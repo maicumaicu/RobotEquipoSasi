@@ -6,17 +6,14 @@
 
 #define AIN1 19
 #define AIN2 18
-#define PWMA 14
+#define PWMA 27
 #define BIN2 17
 #define BIN1 32
 #define PWMB 12
-#
+#define STBY 15
 
 #define MOTOR_A 0
 #define MOTOR_B 1
-
-#define LED_1 2
-#define LED_2 4
 
 #define SHARP_D 26
 #define SHARP_C 25
@@ -25,9 +22,9 @@
 #define CNY70 13
 
 #define encoderPinA1 23
-#define encoderPinB1 27
+#define encoderPinB1 1
 
-#define encoderPinA2 34
+#define encoderPinA2 16
 #define encoderPinB2 35
 
 #define DIAMETRO_RUEDA 42.2
@@ -49,8 +46,6 @@
 #define MAPPING 1
 #define RESOLUTION 2
 #define RACING 3
-#define NEGRO 1
-
 
 #define NEGRO 1
 
@@ -72,7 +67,7 @@ MPU6050 mpu(Wire);
 unsigned long timer = 0;
 
 
-int c, move;
+int c,m,directionsSize;
 int direcciones[4];
 const int alto = ALTO * 2;
 const int ancho = ANCHO * 2;
@@ -93,8 +88,8 @@ volatile int counterI = 0;
 volatile boolean flag;
 int offset = 0;
 
-int powerA = 50;
-int powerB = 50;
+int powerA = 20;
+int powerB = 20;
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -108,7 +103,6 @@ void setup() {
   Serial.begin(115200);
   SerialBT.begin("MISA");
   initializeMPU6050();
-  //initializeLeds();
   initializeSharp();
   initializeMotors ();
   initializeEncoders();
@@ -122,12 +116,11 @@ void setup() {
 void loop() {
   if ((millis() - timer) > 5) {
     runOff(0, 0);
-    digitalWrite(15, LOW);
+    digitalWrite(STBY, LOW);
     mpu.update();
-    estabilizacion();
     timer = millis();
   }
-  // digitalWrite(15, HIGH);
+   digitalWrite(STBY, HIGH);
   robotMachine();
 }
 
@@ -155,25 +148,24 @@ void robotMachine() {
       break;
     case MAPPING:
       {
-        /*int valueCNY = lecturaCNY70(20, CNY70);
-          SerialBT.println(valueCNY);*/
-        //SerialBT.println(lecturaSensor(20, SHARP_I));
-        //SerialBT.println(lecturaSensor(20, SHARP_C));
-        //SerialBT.println(lecturaSensor(20, SHARP_D));
+        int valueCNY = lecturaCNY70(20, CNY70);
+        /*SerialBT.println(valueCNY);*/
         if (VisualMap[visual.x][visual.y].final == false) {
           Map[actual.x][actual.y].final = false;
-          movementMachine();
-          estabilizacion();
+          movementMachine(DERECHA/*ChooseNextNode(actual.x, actual.y)*/);
         } else {
           Map[actual.x][actual.y].final = true;
           SerialBT.write('S');
-          robotState = SETUP;
+          robotState = RESOLUTION;
         }
       }
       break;
 
     case RESOLUTION:
       addDirection(actual.x, actual.y);
+      break;
+    case RACING:
+    runDirections("addaad");
       break;
   }
 }

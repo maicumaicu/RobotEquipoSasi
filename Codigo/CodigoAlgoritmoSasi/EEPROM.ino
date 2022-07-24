@@ -8,5 +8,5 @@ String ReadRun() {
 }
 
 void ShowRun() {
-  Serial.print(ReadRun());
+  SerialBT.print(ReadRun());
 }
