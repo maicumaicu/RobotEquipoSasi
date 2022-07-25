@@ -37,10 +37,12 @@
 #define IZQUIERDA 1
 #define ATRAS 2
 #define DERECHA 3
-#define OFF 4
+#define SUPER 4
+#define OFF 5
 
-#define PARED 1
-#define LIBRE 0
+#define READING 0
+#define CHOOSING 1
+#define MOVING 2
 
 #define SETUP 0
 #define MAPPING 1
@@ -48,6 +50,10 @@
 #define RACING 3
 
 #define NEGRO 1
+#define BLANCO 0
+
+#define PARED 1
+#define LIBRE 0
 
 struct Node {
   public:
@@ -67,15 +73,17 @@ MPU6050 mpu(Wire);
 unsigned long timer = 0;
 
 
-int c,m,directionsSize;
+int c, m, directionsSize, movimiento;
+int finishFlag, movimientoFlag;
+int valueCNY;
 int direcciones[4];
 const int alto = ALTO * 2;
 const int ancho = ANCHO * 2;
-int robotState = SETUP;
+int mainState = SETUP;
+int robotState = READING;
 int movementState = OFF;
 String directions;
 Position actual;
-
 Position last;
 Node Map[alto][ancho];
 
@@ -110,7 +118,7 @@ void setup() {
   createVisualMap();
   //preferences.begin("run", false);
   //preferences.clear();
-  robotState = 0;
+  mainState = 0;
 }
 
 void loop() {
@@ -120,52 +128,98 @@ void loop() {
     mpu.update();
     timer = millis();
   }
-   digitalWrite(STBY, HIGH);
-  robotMachine();
+  digitalWrite(STBY, HIGH);
+  mainMachine();
 }
 
-void robotMachine() {
-  switch (robotState) {
+void mainMachine() {
+  switch (mainState) {
     case SETUP:
       actual.x = ALTO;
       actual.y = ANCHO;
       visual.x = 0;
       visual.y = 0;
       resetAxis();
-      PrintMap();
+      movimientoFlag = 0;
+      //PrintMap();
       if (SerialBT.available()) {
-        if (SerialBT.read() == '1') {
-          robotState = MAPPING;
+        char read = SerialBT.read();
+        if (read == '1') {
+          mainState = MAPPING;
           SerialBT.println('M');
-
         }
-
-        if (SerialBT.read() == '2') {
-          robotState = RESOLUTION;
+        if (read == '2') {
+          mainState = RACING;
           SerialBT.println('R');
         }
       }
       break;
     case MAPPING:
       {
-        int valueCNY = lecturaCNY70(20, CNY70);
-        /*SerialBT.println(valueCNY);*/
-        if (VisualMap[visual.x][visual.y].final == false) {
-          Map[actual.x][actual.y].final = false;
-          movementMachine(DERECHA/*ChooseNextNode(actual.x, actual.y)*/);
+        if (finishFlag == 0) {
+          robotMachine();
         } else {
-          Map[actual.x][actual.y].final = true;
-          SerialBT.write('S');
-          robotState = RESOLUTION;
+          actual.x = ALTO;
+          actual.y = ANCHO;
+          visual.x = 0;
+          visual.y = 0;
+          finishFlag = 0;
+          resetAxis();
+          PrintMap();
+          mainState = RESOLUTION;
         }
       }
       break;
-
     case RESOLUTION:
-      addDirection(actual.x, actual.y);
+      if (Map[actual.x][actual.y].final == false) {
+        addDirection(actual.x, actual.y);
+      } else {
+        SerialBT.println(directions);
+        directions = optimizeDirections(directions);
+        SerialBT.println(directions);
+        mainState = SETUP;
+
+      }
+
       break;
     case RACING:
-    runDirections("addaad");
+      runDirections(directions);
+      break;
+  }
+}
+
+
+void robotMachine() {
+  switch (robotState) {
+    case READING:
+      SerialBT.println("R");
+      Map[actual.x][actual.y].visitado++;
+      if (Map[actual.x][actual.y].visitado == 1) {
+        Serial.println("creo nodo");
+        CreateNode(actual.x, actual.y);
+      }
+      valueCNY = lecturaCNY70(20, CNY70);
+      if (/*valueCNY == BLANCO*/ VisualMap[visual.x][visual.y].final == true) {
+        Map[actual.x][actual.y].final = true;
+        finishFlag = 1;
+      } else {
+        Map[actual.x][actual.y].final = false;
+        robotState = CHOOSING;
+      }
+      break;
+    case CHOOSING:
+      SerialBT.println("C");
+      movimiento = ChooseNextNode(actual.x, actual.y);
+      movimientoFlag = 0;
+      robotState = MOVING;
+      break;
+    case MOVING:
+      movementMachine(movimiento);
+      if (movimientoFlag == 1) {
+        robotState == READING;
+      }
+      SerialBT.println("M");
+      robotState = READING;
       break;
   }
 }

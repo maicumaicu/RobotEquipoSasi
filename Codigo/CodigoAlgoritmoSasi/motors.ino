@@ -31,8 +31,6 @@ void movementMachine(int move) {
       runOff(powerA, powerB);
       degrees = 0;
       offset = offset + getTurnAngle();
-      //SerialBT.println("OFF");
-      delay(1000);
       if (move != OFF) {
         movementState = move;
         SerialBT.println(move);
@@ -41,13 +39,14 @@ void movementMachine(int move) {
       }
       break;
     case ADELANTE:
-      //
-      if (calcularDistancia(counterD) < FORWARD_DISTANCE  && calcularDistancia(counterI) < FORWARD_DISTANCE) {
+
+      if (calcularDistancia(counterD) < FORWARD_DISTANCE  || calcularDistancia(counterI) < FORWARD_DISTANCE) {
         estabilizacion();
         powerA = 100;
         powerB = 100;
         runForward(powerA, powerB);
       } else {
+        movimientoFlag = 1;
         movementState = OFF;
       }
       break;
@@ -94,6 +93,18 @@ void movementMachine(int move) {
         movementState = ADELANTE;
         counterD = 0;
         counterI = 0;
+      }
+      break;
+    case SUPER:
+      int X = directions[m] - '0';
+      if (calcularDistancia(counterD) < FORWARD_DISTANCE * X  && calcularDistancia(counterI) < FORWARD_DISTANCE * X) {
+        estabilizacion();
+        powerA = 200;
+        powerB = 200;
+        runForward(powerA, powerB);
+      } else {
+        movimientoFlag = 1;
+        movementState = OFF;
       }
       break;
   }

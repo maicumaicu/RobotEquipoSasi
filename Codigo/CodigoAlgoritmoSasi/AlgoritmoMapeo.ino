@@ -1,9 +1,4 @@
 int ChooseNextNode(int x, int y) {
-  Map[x][y].visitado++;
-  if (Map[x][y].visitado == 1) {
-    Serial.println("creo nodo");
-    CreateNode(x, y);
-  }
   if (Map[x][y].Lados[direcciones[ADELANTE]] == 0) {
     Serial.println("Adelante");
     SerialBT.write('A');
@@ -16,15 +11,14 @@ int ChooseNextNode(int x, int y) {
     return ADELANTE;
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
     Serial.println("IZQUIERDA");
-
     SerialBT.write('I');
     Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
     moveNode(direcciones[IZQUIERDA]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
-    rotateAxis(IZQUIERDA);
     if (Map[x][y].visitado > 1 ) {
       EliminateNode(x, y);
     }
+    rotateAxis(IZQUIERDA);
     return IZQUIERDA;
   } else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
     Serial.println("DERECHA");
@@ -32,17 +26,18 @@ int ChooseNextNode(int x, int y) {
     Map[x][y].Lados[direcciones[DERECHA]] = 2;
     moveNode(direcciones[DERECHA]);
     if (Map[x][y].Lados[direcciones[ATRAS]] != 1) Map[x][y].Lados[direcciones[ATRAS]] = 2;
-    rotateAxis(DERECHA);
     if (Map[x][y].visitado > 1 ) {
       EliminateNode(x, y);
     }
+    rotateAxis(DERECHA);
     return DERECHA;
   } else {
     Serial.println("otro");
     SerialBT.write('O');
     return SearchAvailableNode(x, y);
-
   }
+  last.x = x;
+  last.y = y;
 }
 
 void EliminateNode(int x, int y) {
@@ -56,17 +51,26 @@ int SearchAvailableNode(int x, int y) {
     Serial.println("Adelante1");
     Map[x][y].Lados[direcciones[ADELANTE]] = 2;
     moveNode(direcciones[ADELANTE]);
+    if (Map[x][y].visitado > 1 ) {
+      EliminateNode(x, y);
+    }
     return ADELANTE;
   } else if (Map[x][y].Lados[direcciones[IZQUIERDA]] != 1) {
     Serial.println("IZQUIERDA1");
     Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
     moveNode(direcciones[IZQUIERDA]);
     rotateAxis(IZQUIERDA);
+    if (Map[x][y].visitado > 1 ) {
+      EliminateNode(x, y);
+    }
     return IZQUIERDA;
   } else if (Map[x][y].Lados[direcciones[DERECHA]] != 1) {
     Serial.println("DERECHA1");
     Map[x][y].Lados[direcciones[DERECHA]] = 2;
     moveNode(direcciones[DERECHA]);
+    if (Map[x][y].visitado > 1 ) {
+      EliminateNode(x, y);
+    }
     rotateAxis(DERECHA);
     return DERECHA;
   } else if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
