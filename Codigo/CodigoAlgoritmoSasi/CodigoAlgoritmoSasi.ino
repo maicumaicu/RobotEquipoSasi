@@ -110,13 +110,14 @@ Preferences preferences;
 void setup() {
   Serial.begin(115200);
   SerialBT.begin("MISA");
+  preferences.begin("run", false);
   initializeMPU6050();
   initializeSharp();
   initializeMotors ();
-  initializeEncoders();
+  //initializeEncoders();
 
   createVisualMap();
-  //preferences.begin("run", false);
+
   //preferences.clear();
   mainState = 0;
 }
@@ -128,7 +129,7 @@ void loop() {
     mpu.update();
     timer = millis();
   }
-  digitalWrite(STBY, HIGH);
+  //digitalWrite(STBY, HIGH);
   mainMachine();
 }
 
@@ -146,10 +147,15 @@ void mainMachine() {
         char read = SerialBT.read();
         if (read == '1') {
           mainState = MAPPING;
+          interrupts();
           SerialBT.println('M');
         }
         if (read == '2') {
           mainState = RACING;
+          noInterrupts();
+          directions = ReadRun();
+          interrupts();
+          //ShowRun();
           SerialBT.println('R');
         }
       }
@@ -166,6 +172,7 @@ void mainMachine() {
           finishFlag = 0;
           resetAxis();
           PrintMap();
+          noInterrupts();
           mainState = RESOLUTION;
         }
       }
@@ -177,8 +184,8 @@ void mainMachine() {
         SerialBT.println(directions);
         directions = optimizeDirections(directions);
         SerialBT.println(directions);
+        UploadRun(directions);
         mainState = SETUP;
-
       }
 
       break;
