@@ -1661,7 +1661,7 @@
   (symbol (lib_id "propios:Mt3608") (at 106.934 90.424 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 1006db73-c34f-41b0-93b6-72c6dc7ecac9)
-    (property "Reference" "U3" (id 0) (at 106.934 88.392 0))
+    (property "Reference" "Step Up" (id 0) (at 106.934 88.392 0))
     (property "Value" "Mt3608" (id 1) (at 106.934 90.932 0))
     (property "Footprint" "propios:MT3608" (id 2) (at 106.934 90.424 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -1712,7 +1712,7 @@
   (symbol (lib_id "Connector:Conn_01x04_Male") (at 145.034 36.83 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 1b542c8d-f86a-45c1-82d8-e335102770e7)
-    (property "Reference" "J4" (id 0) (at 145.669 29.21 0))
+    (property "Reference" "SHARP_D" (id 0) (at 145.669 29.21 0))
     (property "Value" "Conn_01x04_Male" (id 1) (at 145.669 31.75 0))
     (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" (id 2) (at 145.034 36.83 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -1729,7 +1729,7 @@
   (symbol (lib_id "Connector:Conn_01x06_Male") (at 96.52 66.548 270) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 1e53534e-bfac-48cd-bb22-52f3e6f63605)
-    (property "Reference" "J8" (id 0) (at 102.87 61.468 90)
+    (property "Reference" "Motor Derecha" (id 0) (at 102.87 61.468 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Conn_01x06_Male" (id 1) (at 102.87 64.008 90)
@@ -1770,7 +1770,7 @@
   (symbol (lib_id "Switch:SW_Push") (at 66.294 130.048 270) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 292583fb-ded7-4f76-9a68-104c43b23ac5)
-    (property "Reference" "SW3" (id 0) (at 70.612 128.7779 90)
+    (property "Reference" "RUN 1" (id 0) (at 70.612 128.7779 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SW_Push" (id 1) (at 67.818 131.318 90)
@@ -1840,7 +1840,7 @@
   (symbol (lib_id "Connector:Conn_01x02_Male") (at 52.832 96.52 180) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 61e0d6a5-e542-4747-af4a-a9773071934f)
-    (property "Reference" "J5" (id 0) (at 54.61 93.9799 0)
+    (property "Reference" "BATERIA" (id 0) (at 54.61 93.9799 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Conn_01x02_Male" (id 1) (at 54.61 96.5199 0)
@@ -1859,7 +1859,7 @@
   (symbol (lib_id "esp32-devkit-v1:ESP32-Devkit-V1") (at 31.496 22.352 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 623bd57d-01aa-4d20-a945-eb99f420bd2e)
-    (property "Reference" "U1" (id 0) (at 45.466 17.272 0)
+    (property "Reference" "Esp 32" (id 0) (at 45.466 17.272 0)
       (effects (font (size 1.524 1.524)))
     )
     (property "Value" "ESP32-Devkit-V1" (id 1) (at 45.466 21.082 0)
@@ -1922,7 +1922,7 @@
   (symbol (lib_id "Device:LED") (at 151.638 132.08 180) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 68cb137c-b2d1-4172-bd77-42db79a5e3b6)
-    (property "Reference" "D2" (id 0) (at 153.2255 124.46 0))
+    (property "Reference" "On Led" (id 0) (at 153.2255 124.46 0))
     (property "Value" "LED" (id 1) (at 153.2255 127 0))
     (property "Footprint" "LED_THT:LED_D5.0mm" (id 2) (at 151.638 132.08 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -1977,7 +1977,7 @@
   (symbol (lib_id "Connector:Conn_01x04_Male") (at 145.288 21.844 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 854aeff3-7c36-4aa8-95d6-f12f2ee4a4fc)
-    (property "Reference" "J3" (id 0) (at 145.923 14.224 0))
+    (property "Reference" "SHARP_C" (id 0) (at 145.923 14.224 0))
     (property "Value" "Conn_01x04_Male" (id 1) (at 145.923 16.764 0))
     (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" (id 2) (at 145.288 21.844 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -2114,7 +2114,7 @@
   (symbol (lib_id "propios:tb6612fng") (at 104.902 18.796 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid c49ec4a8-cf98-4b9f-bc23-d4ea9f58b4b1)
-    (property "Reference" "U2" (id 0) (at 104.902 16.256 0))
+    (property "Reference" "Driver" (id 0) (at 104.902 16.256 0))
     (property "Value" "tb6612fng" (id 1) (at 104.902 18.796 0))
     (property "Footprint" "propios:tb6612fng" (id 2) (at 104.902 18.796 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -2161,7 +2161,7 @@
   (symbol (lib_id "Connector:Conn_01x06_Male") (at 116.84 66.548 270) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid c60ed0c5-ec5d-4c45-ab6c-1f3a527e5538)
-    (property "Reference" "J7" (id 0) (at 123.19 61.468 90)
+    (property "Reference" "Motor Izquierda" (id 0) (at 123.19 61.468 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Conn_01x06_Male" (id 1) (at 123.19 64.008 90)
@@ -2202,7 +2202,7 @@
   (symbol (lib_id "Switch:SW_Push") (at 21.844 130.048 270) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid d967410b-0bcf-4f17-ace0-d51795b176f1)
-    (property "Reference" "SW4" (id 0) (at 26.67 128.7779 90)
+    (property "Reference" "MAP" (id 0) (at 26.67 128.7779 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SW_Push" (id 1) (at 23.622 131.318 90)
@@ -2285,7 +2285,7 @@
   (symbol (lib_id "Switch:SW_Push") (at 43.688 130.048 270) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid e3f0bfbd-3086-4dd7-b413-aae9505cd5a1)
-    (property "Reference" "SW1" (id 0) (at 47.752 128.7779 90)
+    (property "Reference" "RUN 2" (id 0) (at 47.752 128.7779 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SW_Push" (id 1) (at 45.466 131.318 90)
@@ -2448,11 +2448,17 @@
     (path "/c5c0c3c1-e1cd-4434-9d55-370f056b0b9d"
       (reference "#PWR0120") (unit 1) (value "GND") (footprint "")
     )
+    (path "/61e0d6a5-e542-4747-af4a-a9773071934f"
+      (reference "BATERIA") (unit 1) (value "Conn_01x02_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
+    )
     (path "/e2e32438-01b5-4d59-bb59-30fcde023cd1"
       (reference "D1") (unit 1) (value "DIODE") (footprint "Diode_THT:D_5W_P12.70mm_Horizontal")
     )
-    (path "/68cb137c-b2d1-4172-bd77-42db79a5e3b6"
-      (reference "D2") (unit 1) (value "LED") (footprint "LED_THT:LED_D5.0mm")
+    (path "/c49ec4a8-cf98-4b9f-bc23-d4ea9f58b4b1"
+      (reference "Driver") (unit 1) (value "tb6612fng") (footprint "propios:tb6612fng")
+    )
+    (path "/623bd57d-01aa-4d20-a945-eb99f420bd2e"
+      (reference "Esp 32") (unit 1) (value "ESP32-Devkit-V1") (footprint "DOIT_ESP32:DOIT_ESP32_Devkit_mirko")
     )
     (path "/db2a75f3-02e6-4afb-a40c-2df2c98f6508"
       (reference "J1") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
@@ -2460,23 +2466,20 @@
     (path "/f0256833-8d49-4582-8be6-e4c3fb9e68aa"
       (reference "J2") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
     )
-    (path "/854aeff3-7c36-4aa8-95d6-f12f2ee4a4fc"
-      (reference "J3") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
-    )
-    (path "/1b542c8d-f86a-45c1-82d8-e335102770e7"
-      (reference "J4") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
-    )
-    (path "/61e0d6a5-e542-4747-af4a-a9773071934f"
-      (reference "J5") (unit 1) (value "Conn_01x02_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
-    )
     (path "/6933c3e7-b53d-42c7-aba1-3a3787dfb9a2"
       (reference "J6") (unit 1) (value "Conn_01x08_Female") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical")
     )
-    (path "/c60ed0c5-ec5d-4c45-ab6c-1f3a527e5538"
-      (reference "J7") (unit 1) (value "Conn_01x06_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
+    (path "/d967410b-0bcf-4f17-ace0-d51795b176f1"
+      (reference "MAP") (unit 1) (value "SW_Push") (footprint "Button_Switch_THT:SW_PUSH_6mm")
     )
     (path "/1e53534e-bfac-48cd-bb22-52f3e6f63605"
-      (reference "J8") (unit 1) (value "Conn_01x06_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
+      (reference "Motor Derecha") (unit 1) (value "Conn_01x06_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
+    )
+    (path "/c60ed0c5-ec5d-4c45-ab6c-1f3a527e5538"
+      (reference "Motor Izquierda") (unit 1) (value "Conn_01x06_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
+    )
+    (path "/68cb137c-b2d1-4172-bd77-42db79a5e3b6"
+      (reference "On Led") (unit 1) (value "LED") (footprint "LED_THT:LED_D5.0mm")
     )
     (path "/71812cab-a712-4b88-95ec-b036eed5b667"
       (reference "R1") (unit 1) (value "R") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
@@ -2490,26 +2493,23 @@
     (path "/e78f5a0f-acdb-4b42-bf97-ba71f3e29316"
       (reference "R4") (unit 1) (value "R") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
     )
+    (path "/292583fb-ded7-4f76-9a68-104c43b23ac5"
+      (reference "RUN 1") (unit 1) (value "SW_Push") (footprint "Button_Switch_THT:SW_PUSH_6mm")
+    )
     (path "/e3f0bfbd-3086-4dd7-b413-aae9505cd5a1"
-      (reference "SW1") (unit 1) (value "SW_Push") (footprint "Button_Switch_THT:SW_PUSH_6mm")
+      (reference "RUN 2") (unit 1) (value "SW_Push") (footprint "Button_Switch_THT:SW_PUSH_6mm")
+    )
+    (path "/854aeff3-7c36-4aa8-95d6-f12f2ee4a4fc"
+      (reference "SHARP_C") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
+    )
+    (path "/1b542c8d-f86a-45c1-82d8-e335102770e7"
+      (reference "SHARP_D") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
     )
     (path "/8db25535-8ffe-4d44-b4cc-70265388bf1d"
       (reference "SW2") (unit 1) (value "SW_DPDT_x2") (footprint "Button_Switch_THT:SW_Slide_1P2T_CK_OS102011MS2Q")
     )
-    (path "/292583fb-ded7-4f76-9a68-104c43b23ac5"
-      (reference "SW3") (unit 1) (value "SW_Push") (footprint "Button_Switch_THT:SW_PUSH_6mm")
-    )
-    (path "/d967410b-0bcf-4f17-ace0-d51795b176f1"
-      (reference "SW4") (unit 1) (value "SW_Push") (footprint "Button_Switch_THT:SW_PUSH_6mm")
-    )
-    (path "/623bd57d-01aa-4d20-a945-eb99f420bd2e"
-      (reference "U1") (unit 1) (value "ESP32-Devkit-V1") (footprint "DOIT_ESP32:DOIT_ESP32_Devkit_mirko")
-    )
-    (path "/c49ec4a8-cf98-4b9f-bc23-d4ea9f58b4b1"
-      (reference "U2") (unit 1) (value "tb6612fng") (footprint "propios:tb6612fng")
-    )
     (path "/1006db73-c34f-41b0-93b6-72c6dc7ecac9"
-      (reference "U3") (unit 1) (value "Mt3608") (footprint "propios:MT3608")
+      (reference "Step Up") (unit 1) (value "Mt3608") (footprint "propios:MT3608")
     )
   )
 )

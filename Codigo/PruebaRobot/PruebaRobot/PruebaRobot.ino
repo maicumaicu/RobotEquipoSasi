@@ -56,7 +56,8 @@ void setup() {
 }
 
 void loop() {
-  
+  digitalWrite(15, HIGH);
+  runForward();
   /*if ((millis() - timer) > 100 && (millis() - timer) < 120) {
     digitalWrite(15, LOW);
     runOff();
@@ -65,7 +66,6 @@ void loop() {
     timer = millis();
     } else {
     Serial.println(lectura);
-    digitalWrite(15, HIGH);
-    //runForward();
+
     }*/
 }

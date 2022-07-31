@@ -114,7 +114,7 @@ void setup() {
   initializeMPU6050();
   initializeSharp();
   initializeMotors ();
-  //initializeEncoders();
+  initializeEncoders();
 
   createVisualMap();
 
@@ -129,7 +129,7 @@ void loop() {
     mpu.update();
     timer = millis();
   }
-  //digitalWrite(STBY, HIGH);
+  digitalWrite(STBY, HIGH);
   mainMachine();
 }
 
@@ -223,10 +223,9 @@ void robotMachine() {
     case MOVING:
       movementMachine(movimiento);
       if (movimientoFlag == 1) {
-        robotState == READING;
+        robotState = READING;
       }
       SerialBT.println("M");
-      robotState = READING;
       break;
   }
 }

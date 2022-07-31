@@ -32,7 +32,7 @@ void movementMachine(int move) {
       degrees = 0;
       offset = offset + getTurnAngle();
       if (move != OFF) {
-        movementState = move;
+        movementState = ADELANTE;
         SerialBT.println(move);
         counterD = 0;
         counterI = 0;
