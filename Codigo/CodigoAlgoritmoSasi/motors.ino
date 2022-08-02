@@ -32,22 +32,26 @@ void movementMachine(int move) {
       degrees = 0;
       offset = offset + getTurnAngle();
       if (move != OFF) {
-        movementState = ADELANTE;
+        //movementState = move;
         SerialBT.println(move);
         counterD = 0;
         counterI = 0;
       }
       break;
     case ADELANTE:
-
+      //SerialBT.print(calcularDistancia(counterI));
       if (calcularDistancia(counterD) < FORWARD_DISTANCE  || calcularDistancia(counterI) < FORWARD_DISTANCE) {
-        estabilizacion();
+        //estabilizacion();
         powerA = 100;
         powerB = 100;
         runForward(powerA, powerB);
+        SerialBT.print(calcularDistancia(counterI));
+        SerialBT.print("  ");
+        SerialBT.println(calcularDistancia(counterD));
       } else {
         movimientoFlag = 1;
         movementState = OFF;
+        SerialBT.print("listo");
       }
       break;
     case IZQUIERDA:
@@ -76,7 +80,8 @@ void movementMachine(int move) {
         powerB = 20;
         runRight(powerA, powerB);
       } else {
-        movementState = ADELANTE;
+        //movementState = ADELANTE;
+        runOff(0, 0);
         counterD = 0;
         counterI = 0;
       }
@@ -84,7 +89,7 @@ void movementMachine(int move) {
     case ATRAS:
       //SerialBT.println("ATRAS");
       degrees = getTurnAngle();
-      //SerialBT.println(degrees);
+      SerialBT.println(degrees);
       if (degrees  <= -(LEFT_ANGLE_MIN) * 2 + offset || degrees  >= -(LEFT_ANGLE_MAX) * 2 + offset) {
         powerA = 50;
         powerB = 50;
@@ -95,18 +100,18 @@ void movementMachine(int move) {
         counterI = 0;
       }
       break;
-    case SUPER:
-      int X = directions[m] - '0';
-      if (calcularDistancia(counterD) < FORWARD_DISTANCE * X  && calcularDistancia(counterI) < FORWARD_DISTANCE * X) {
-        estabilizacion();
-        powerA = 200;
-        powerB = 200;
-        runForward(powerA, powerB);
-      } else {
-        movimientoFlag = 1;
-        movementState = OFF;
-      }
-      break;
+      /*case SUPER:
+        int X = directions[m] - '0';
+        if (calcularDistancia(counterD) < FORWARD_DISTANCE * X  && calcularDistancia(counterI) < FORWARD_DISTANCE * X) {
+          estabilizacion();
+          powerA = 200;
+          powerB = 200;
+          runForward(powerA, powerB);
+        } else {
+          movimientoFlag = 1;
+          movementState = OFF;
+        }
+        break;*/
   }
 }
 

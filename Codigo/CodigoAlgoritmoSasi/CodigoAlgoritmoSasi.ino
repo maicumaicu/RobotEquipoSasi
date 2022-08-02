@@ -123,12 +123,13 @@ void setup() {
 }
 
 void loop() {
-  if ((millis() - timer) > 5) {
+  /*if ((millis() - timer) > 5) {
     runOff(0, 0);
     digitalWrite(STBY, LOW);
     mpu.update();
     timer = millis();
-  }
+  }*/
+  mpu.update();
   digitalWrite(STBY, HIGH);
   mainMachine();
 }
@@ -142,6 +143,7 @@ void mainMachine() {
       visual.y = 0;
       resetAxis();
       movimientoFlag = 0;
+      finishFlag = 0;
       //PrintMap();
       if (SerialBT.available()) {
         char read = SerialBT.read();
@@ -199,7 +201,7 @@ void mainMachine() {
 void robotMachine() {
   switch (robotState) {
     case READING:
-      SerialBT.println("R");
+      SerialBT.println("Rea");
       Map[actual.x][actual.y].visitado++;
       if (Map[actual.x][actual.y].visitado == 1) {
         Serial.println("creo nodo");
@@ -215,7 +217,7 @@ void robotMachine() {
       }
       break;
     case CHOOSING:
-      SerialBT.println("C");
+      SerialBT.println("Cho");
       movimiento = ChooseNextNode(actual.x, actual.y);
       movimientoFlag = 0;
       robotState = MOVING;
@@ -225,7 +227,7 @@ void robotMachine() {
       if (movimientoFlag == 1) {
         robotState = READING;
       }
-      SerialBT.println("M");
+      SerialBT.println("Mov");
       break;
   }
 }
