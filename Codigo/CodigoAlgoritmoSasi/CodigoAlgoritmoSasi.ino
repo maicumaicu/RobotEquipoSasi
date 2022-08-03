@@ -9,7 +9,7 @@
 #define PWMA 27
 #define BIN2 17
 #define BIN1 32
-#define PWMB 12
+#define PWMB 14
 #define STBY 15
 
 #define MOTOR_A 0
@@ -123,13 +123,13 @@ void setup() {
 }
 
 void loop() {
-  /*if ((millis() - timer) > 5) {
+  if ((millis() - timer) > 5) {
     runOff(0, 0);
     digitalWrite(STBY, LOW);
     mpu.update();
     timer = millis();
-  }*/
-  mpu.update();
+  }
+  //mpu.update();
   digitalWrite(STBY, HIGH);
   mainMachine();
 }
@@ -201,7 +201,7 @@ void mainMachine() {
 void robotMachine() {
   switch (robotState) {
     case READING:
-      SerialBT.println("Rea");
+      //SerialBT.println("Rea");
       Map[actual.x][actual.y].visitado++;
       if (Map[actual.x][actual.y].visitado == 1) {
         Serial.println("creo nodo");
@@ -215,9 +215,10 @@ void robotMachine() {
         Map[actual.x][actual.y].final = false;
         robotState = CHOOSING;
       }
+      delay(1000);
       break;
     case CHOOSING:
-      SerialBT.println("Cho");
+      //SerialBT.println("Cho");
       movimiento = ChooseNextNode(actual.x, actual.y);
       movimientoFlag = 0;
       robotState = MOVING;
@@ -227,7 +228,7 @@ void robotMachine() {
       if (movimientoFlag == 1) {
         robotState = READING;
       }
-      SerialBT.println("Mov");
+      //SerialBT.println("Mov");
       break;
   }
 }

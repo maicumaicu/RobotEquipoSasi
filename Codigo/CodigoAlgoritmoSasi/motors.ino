@@ -9,9 +9,9 @@ void estabilizacion() {
   SerialBT.print("dif: " );
   SerialBT.println(diferencia);
   if (diferencia > 0) {
-    powerA = 100 + diferencia;
+    powerB = 100 + diferencia * 5;
   } else {
-    powerB = 100 + abs(diferencia);
+    powerA = 100 + abs(diferencia) * 5;
   }
 }
 
@@ -32,7 +32,7 @@ void movementMachine(int move) {
       degrees = 0;
       offset = offset + getTurnAngle();
       if (move != OFF) {
-        //movementState = move;
+        movementState = move;
         SerialBT.println(move);
         counterD = 0;
         counterI = 0;
@@ -41,9 +41,9 @@ void movementMachine(int move) {
     case ADELANTE:
       //SerialBT.print(calcularDistancia(counterI));
       if (calcularDistancia(counterD) < FORWARD_DISTANCE  || calcularDistancia(counterI) < FORWARD_DISTANCE) {
-        //estabilizacion();
-        powerA = 100;
-        powerB = 100;
+        estabilizacion();
+        //powerA = 100;
+        //powerB = 100;
         runForward(powerA, powerB);
         SerialBT.print(calcularDistancia(counterI));
         SerialBT.print("  ");
@@ -57,13 +57,15 @@ void movementMachine(int move) {
     case IZQUIERDA:
       //SerialBT.println("IZQUIERDA");
       degrees = getTurnAngle();
-      //SerialBT.println(degrees);
-      if (degrees  <= LEFT_ANGLE_MIN + offset || degrees  >= LEFT_ANGLE_MAX + offset ) {
+      SerialBT.println(degrees);
+      if (degrees  <= LEFT_ANGLE_MIN + offset) {
         //SerialBT.println(degrees);
         //SerialBT.println(counterD);
         powerA = 50;
         powerB = 50;
         runLeft(powerA, powerB);
+      } else if (degrees  >= LEFT_ANGLE_MAX + offset) {
+        runRight(powerA, powerB);
       } else {
         //runOff(0, 0);
         movementState = ADELANTE;
@@ -73,14 +75,16 @@ void movementMachine(int move) {
       break;
     case DERECHA:
       //SerialBT.println("DERECHA");
-      degrees = getTurnAngle();
+      degrees = abs(getTurnAngle());
       Serial.println(degrees);
-      if (degrees  >= -(LEFT_ANGLE_MIN) + offset || degrees  <= -(LEFT_ANGLE_MAX) + offset) {
-        powerA = 20;
-        powerB = 20;
+      if (degrees  >= (LEFT_ANGLE_MIN) + offset) {
+        powerA = 50;
+        powerB = 50;
         runRight(powerA, powerB);
+      } else if (degrees  >= LEFT_ANGLE_MAX + offset) {
+        runLeft(powerA, powerB);
       } else {
-        //movementState = ADELANTE;
+        movementState = ADELANTE;
         runOff(0, 0);
         counterD = 0;
         counterI = 0;
@@ -100,18 +104,18 @@ void movementMachine(int move) {
         counterI = 0;
       }
       break;
-      /*case SUPER:
-        int X = directions[m] - '0';
-        if (calcularDistancia(counterD) < FORWARD_DISTANCE * X  && calcularDistancia(counterI) < FORWARD_DISTANCE * X) {
-          estabilizacion();
-          powerA = 200;
-          powerB = 200;
-          runForward(powerA, powerB);
-        } else {
-          movimientoFlag = 1;
-          movementState = OFF;
-        }
-        break;*/
+    case SUPER:
+      int X = directions[m] - '0';
+      if (calcularDistancia(counterD) < FORWARD_DISTANCE * X  && calcularDistancia(counterI) < FORWARD_DISTANCE * X) {
+        estabilizacion();
+        powerA = 200;
+        powerB = 200;
+        runForward(powerA, powerB);
+      } else {
+        movimientoFlag = 1;
+        movementState = OFF;
+      }
+      break;
   }
 }
 

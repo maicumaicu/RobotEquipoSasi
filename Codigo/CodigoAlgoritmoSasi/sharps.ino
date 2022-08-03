@@ -15,7 +15,17 @@ int lecSensor(int n, int pin)
   }
   float adc = suma / n;
   float distancia_cm = 29.988 * pow(map(adc, 0, 4095, 0, 5000) / 1000.0, -1.173);
+  SerialBT.println(distancia_cm);
   return distancia_cm;
+}
+
+int wallDetector(int n, int pin) {
+  int valor = lecSensor(n, pin);
+  if (valor > 15) {
+    return 0;
+  } else {
+    return 1;
+  }
 }
 
 int lecturaSensor(int direccion) {

@@ -110,19 +110,19 @@ void moveNode(int lado) {
   }
 }
 
-/*void CreateNode(int x, int y) {
-  Map[x][y].Lados[ADELANTE] = lecturaSensor(20, SHARP_C);
-  Map[x][y].Lados[IZQUIERDA] = lecturaSensor(20, SHARP_I);
-  Map[x][y].Lados[DERECHA] = lecturaSensor(20, SHARP_D);
-  Map[x][y].Lados[ATRAS] = 0;
-  }*/
-
 void CreateNode(int x, int y) {
+  Map[x][y].Lados[ADELANTE] = wallDetector(20, SHARP_C);
+  Map[x][y].Lados[IZQUIERDA] = wallDetector(20, SHARP_I);
+  Map[x][y].Lados[DERECHA] = wallDetector(20, SHARP_D);
+  Map[x][y].Lados[ATRAS] = 0;
+  }
+
+/*void CreateNode(int x, int y) {
   Map[x][y].Lados[ADELANTE] = lecturaSensor(ADELANTE);
   Map[x][y].Lados[IZQUIERDA] = lecturaSensor(IZQUIERDA);
   Map[x][y].Lados[DERECHA] = lecturaSensor(DERECHA);
   Map[x][y].Lados[ATRAS] = lecturaSensor(ATRAS);
-}
+}*/
 
 void rotateAxis(int direccion) {
   switch (direccion) {
