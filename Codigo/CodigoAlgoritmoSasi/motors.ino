@@ -8,7 +8,7 @@ void estabilizacion() {
   int diferencia = diferenciaMotores();
   SerialBT.print("dif: " );
   SerialBT.println(diferencia);
-  if (diferencia > 0) {
+  if (diferencia > 0 ) {
     powerB = 100 + diferencia * 5;
   } else {
     powerA = 100 + abs(diferencia) * 5;
@@ -22,6 +22,14 @@ int diferenciaMotores() {
   SerialBT.println(lecturaD);
   SerialBT.print("I: ");
   SerialBT.println(lecturaI);
+  /*if (lecturaI > 20) {
+    return lecturaD - 15;
+    }
+
+    if (lecturaD > 20) {
+    return 15 - lecturaI;
+    }*/
+
   return lecturaD - lecturaI;
 }
 
@@ -77,7 +85,7 @@ void movementMachine(int move) {
       //SerialBT.println("DERECHA");
       degrees = abs(getTurnAngle());
       Serial.println(degrees);
-      if (degrees  >= (LEFT_ANGLE_MIN) + offset) {
+      if (degrees  <= (LEFT_ANGLE_MIN) + offset) {
         powerA = 50;
         powerB = 50;
         runRight(powerA, powerB);
@@ -85,7 +93,7 @@ void movementMachine(int move) {
         runLeft(powerA, powerB);
       } else {
         movementState = ADELANTE;
-        runOff(0, 0);
+        //runOff(0, 0);
         counterD = 0;
         counterI = 0;
       }

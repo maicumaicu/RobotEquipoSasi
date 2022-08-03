@@ -29,5 +29,18 @@ int wallDetector(int n, int pin) {
 }
 
 int lecturaSensor(int direccion) {
-  return VisualMap[visual.x][visual.y].Lados[direccion];
+  switch (direccion) {
+    case ADELANTE:
+      return wallDetector(20, SHARP_C);
+      break;
+    case DERECHA:
+      return wallDetector(20, SHARP_D);
+      break;
+    case IZQUIERDA:
+      return wallDetector(20, SHARP_I);
+      break;
+    case ATRAS:
+      return 0;
+      break;
+  }
 }

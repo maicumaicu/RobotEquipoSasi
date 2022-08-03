@@ -202,6 +202,7 @@ void robotMachine() {
   switch (robotState) {
     case READING:
       //SerialBT.println("Rea");
+      //runOff(0,0);
       Map[actual.x][actual.y].visitado++;
       if (Map[actual.x][actual.y].visitado == 1) {
         Serial.println("creo nodo");
@@ -215,7 +216,7 @@ void robotMachine() {
         Map[actual.x][actual.y].final = false;
         robotState = CHOOSING;
       }
-      delay(1000);
+      //delay(1000);
       break;
     case CHOOSING:
       //SerialBT.println("Cho");
