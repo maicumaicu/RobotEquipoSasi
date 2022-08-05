@@ -68,7 +68,6 @@ struct Position {
     int y;
 };
 
-
 MPU6050 mpu(Wire);
 unsigned long timer = 0;
 
@@ -96,8 +95,8 @@ volatile int counterI = 0;
 volatile boolean flag;
 int offset = 0;
 
-int powerA = 20;
-int powerB = 20;
+int powerA = 100;
+int powerB = 100;
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it

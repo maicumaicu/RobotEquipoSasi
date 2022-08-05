@@ -1,6 +1,10 @@
 #define FORWARD_DISTANCE 250
-#define LEFT_ANGLE_MIN 85
-#define LEFT_ANGLE_MAX 95
+#define LEFT_ANGLE_MIN 88
+#define LEFT_ANGLE_MAX 93
+#define FORWARD_VELOCITY_I 80
+#define FORWARD_VELOCITY_D 70
+#define TURN_VELOCITY_D 60
+#define TURN_VELOCITY_I 60
 
 float degrees = 0;
 
@@ -9,9 +13,9 @@ void estabilizacion() {
   SerialBT.print("dif: " );
   SerialBT.println(diferencia);
   if (diferencia > 0 ) {
-    powerB = 100 + diferencia * 5;
+    powerB = FORWARD_VELOCITY_D + (diferencia * 4);
   } else {
-    powerA = 100 + abs(diferencia) * 5;
+    powerA = FORWARD_VELOCITY_I + (abs(diferencia) * 4);
   }
 }
 
@@ -22,15 +26,17 @@ int diferenciaMotores() {
   SerialBT.println(lecturaD);
   SerialBT.print("I: ");
   SerialBT.println(lecturaI);
-  /*if (lecturaI > 20) {
-    return lecturaD - 15;
-    }
-
-    if (lecturaD > 20) {
-    return 15 - lecturaI;
-    }*/
-
-  return lecturaD - lecturaI;
+  if (lecturaI > 15 && lecturaD > 15) {
+    return 0;
+  }
+  else if (lecturaI > 15 || lecturaI == 4 ) {
+    return lecturaD - (22 - lecturaD);
+  }
+  else if (lecturaD > 15 || lecturaD == 4 ) {
+    return (22 - lecturaI) - lecturaI;
+  } else {
+    return lecturaD - lecturaI;
+  }
 }
 
 void movementMachine(int move) {
@@ -38,7 +44,7 @@ void movementMachine(int move) {
     case OFF:
       runOff(powerA, powerB);
       degrees = 0;
-      offset = offset + getTurnAngle();
+      offset = getTurnAngle();
       if (move != OFF) {
         movementState = move;
         SerialBT.println(move);
@@ -53,24 +59,25 @@ void movementMachine(int move) {
         //powerA = 100;
         //powerB = 100;
         runForward(powerA, powerB);
-        SerialBT.print(calcularDistancia(counterI));
-        SerialBT.print("  ");
-        SerialBT.println(calcularDistancia(counterD));
+        //SerialBT.print(calcularDistancia(counterI));
+        //SerialBT.print("  ");
+        //SerialBT.println(calcularDistancia(counterD));
       } else {
         movimientoFlag = 1;
         movementState = OFF;
-        SerialBT.print("listo");
+        //SerialBT.print("listo");
       }
       break;
     case IZQUIERDA:
+
       //SerialBT.println("IZQUIERDA");
       degrees = getTurnAngle();
-      SerialBT.println(degrees);
+      //SerialBT.println(degrees);
       if (degrees  <= LEFT_ANGLE_MIN + offset) {
         //SerialBT.println(degrees);
         //SerialBT.println(counterD);
-        powerA = 50;
-        powerB = 50;
+        powerA = TURN_VELOCITY_I;
+        powerB = TURN_VELOCITY_D;
         runLeft(powerA, powerB);
       } else if (degrees  >= LEFT_ANGLE_MAX + offset) {
         runRight(powerA, powerB);
@@ -84,10 +91,10 @@ void movementMachine(int move) {
     case DERECHA:
       //SerialBT.println("DERECHA");
       degrees = abs(getTurnAngle());
-      Serial.println(degrees);
+      SerialBT.println(degrees);
       if (degrees  <= (LEFT_ANGLE_MIN) + offset) {
-        powerA = 50;
-        powerB = 50;
+        powerA = TURN_VELOCITY_I;
+        powerB = TURN_VELOCITY_D;
         runRight(powerA, powerB);
       } else if (degrees  >= LEFT_ANGLE_MAX + offset) {
         runLeft(powerA, powerB);
@@ -101,7 +108,7 @@ void movementMachine(int move) {
     case ATRAS:
       //SerialBT.println("ATRAS");
       degrees = getTurnAngle();
-      SerialBT.println(degrees);
+      //SerialBT.println(degrees);
       if (degrees  <= -(LEFT_ANGLE_MIN) * 2 + offset || degrees  >= -(LEFT_ANGLE_MAX) * 2 + offset) {
         powerA = 50;
         powerB = 50;
@@ -156,13 +163,13 @@ void runRight(int powerA, int powerB) {
   setPowerMotor(powerA, MOTOR_A);
   setPowerMotor(powerB, MOTOR_B);
   runMotor(ADELANTE, MOTOR_A);
-  runMotor(ATRAS, MOTOR_B);
+  runMotor(OFF, MOTOR_B);
 }
 
 void runLeft(int powerA, int powerB) {
   setPowerMotor(powerA, MOTOR_A);
   setPowerMotor(powerB, MOTOR_B);
-  runMotor(ATRAS, MOTOR_A);
+  runMotor(OFF, MOTOR_A);
   runMotor(ADELANTE, MOTOR_B);
 }
 
