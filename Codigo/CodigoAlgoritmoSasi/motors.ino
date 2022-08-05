@@ -29,11 +29,11 @@ int diferenciaMotores() {
   if (lecturaI > 15 && lecturaD > 15) {
     return 0;
   }
-  else if (lecturaI > 15 || lecturaI == 4 ) {
-    return lecturaD - (22 - lecturaD);
+  else if (lecturaI > 16 || lecturaI < 3) {
+    return lecturaD - (12 - lecturaD);
   }
-  else if (lecturaD > 15 || lecturaD == 4 ) {
-    return (22 - lecturaI) - lecturaI;
+  else if (lecturaD > 16 || lecturaD < 3) {
+    return (12 - lecturaI) - lecturaI;
   } else {
     return lecturaD - lecturaI;
   }

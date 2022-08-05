@@ -14,9 +14,10 @@ float lecSensor(int n, int pin)
     suma = suma + analogRead(pin);
   }
   float adc = suma / n;
-  float distancia_cm = 29.988 * pow(map(adc, 0, 4095, 0, 5000) / 1000.0, -1.173);
+  float volts = adc * 0.0008056640; // value from sensor * (5/1024)
+  int distance = 13 * pow(volts, -1);
   //SerialBT.println(distancia_cm);
-  return distancia_cm;
+  return distance;
 }
 
 int wallDetector(int n, int pin) {

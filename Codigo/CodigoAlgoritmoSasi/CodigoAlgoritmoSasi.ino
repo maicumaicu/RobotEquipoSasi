@@ -128,6 +128,8 @@ void loop() {
     mpu.update();
     timer = millis();
   }
+  /*estabilizacion();
+  delay(1000);*/
   //mpu.update();
   digitalWrite(STBY, HIGH);
   mainMachine();
