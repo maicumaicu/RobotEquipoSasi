@@ -115,6 +115,9 @@ void CreateNode(int x, int y) {
   Map[x][y].Lados[IZQUIERDA] = lecturaSensor(direcciones[IZQUIERDA]);
   Map[x][y].Lados[DERECHA] = lecturaSensor(direcciones[DERECHA]);
   Map[x][y].Lados[ATRAS] = lecturaSensor(direcciones[ATRAS]);
+  SerialBT.println(lecturaSensor(direcciones[ADELANTE]));
+  SerialBT.println(lecturaSensor(direcciones[IZQUIERDA]));
+  SerialBT.println(lecturaSensor(direcciones[DERECHA]));
   }
 
 /*void CreateNode(int x, int y) {

@@ -15,21 +15,30 @@ float lecSensor(int n, int pin)
   }
   float adc = suma / n;
   float volts = adc * 0.0008056640; // value from sensor * (5/1024)
-  int distance = 13 * pow(volts, -1);
+  float distance = 13 * pow(volts, -1);
   //SerialBT.println(distancia_cm);
   return distance;
 }
 
 int wallDetector(int n, int pin) {
   float valor = lecSensor(n, pin);
-  if (valor > 15) {
-    return 0;
+  SerialBT.println(valor);
+  if (pin != direcciones[ADELANTE]) {
+    if (valor > 14) {
+      return 0;
+    } else {
+      return 1;
+    }
   } else {
-    return 1;
+    if (valor > 25) {
+      return 0;
+    } else {
+      return 1;
+    }
   }
 }
 
-int lecturaSensor(int direccion) {
+float lecturaSensor(int direccion) {
   switch (direccion) {
     case ADELANTE:
       return wallDetector(20, SHARP_C);
@@ -43,5 +52,17 @@ int lecturaSensor(int direccion) {
     case ATRAS:
       return 0;
       break;
+  }
+}
+
+void confirmacionCentrado() {
+  float valorD = lecSensor(20, SHARP_D);
+  float valorI = lecSensor(20, SHARP_I);
+  SerialBT.println(valorD);
+  SerialBT.println(valorI);
+  if ((valorD - valorI) < 0.5 && (valorD - valorI) > -0.5) {
+    digitalWrite(2, HIGH);
+  } else {
+    digitalWrite(2, LOW);
   }
 }

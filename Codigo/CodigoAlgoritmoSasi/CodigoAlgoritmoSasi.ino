@@ -30,8 +30,8 @@
 #define DIAMETRO_RUEDA 42.2
 
 
-#define ALTO 4
-#define ANCHO 4
+#define ALTO 5
+#define ANCHO 5
 
 #define ADELANTE 0
 #define IZQUIERDA 1
@@ -94,6 +94,7 @@ volatile int counterD = 0;
 volatile int counterI = 0;
 volatile boolean flag;
 int offset = 0;
+int estabilizationOffset = 0;
 
 int powerA = 100;
 int powerB = 100;
@@ -110,15 +111,15 @@ void setup() {
   Serial.begin(115200);
   SerialBT.begin("MISA");
   preferences.begin("run", false);
+  pinMode(2, OUTPUT);
+  pinMode(CNY70, INPUT);
   initializeMPU6050();
   initializeSharp();
   initializeMotors ();
   initializeEncoders();
-
   createVisualMap();
-
-  //preferences.clear();
   mainState = 0;
+
 }
 
 void loop() {
@@ -128,9 +129,8 @@ void loop() {
     mpu.update();
     timer = millis();
   }
-  /*estabilizacion();
-  delay(1000);*/
-  //mpu.update();
+  SerialBT.println(lecturaCNY70(20, CNY70));
+  //delay(1000);
   digitalWrite(STBY, HIGH);
   mainMachine();
 }
@@ -146,12 +146,27 @@ void mainMachine() {
       movimientoFlag = 0;
       finishFlag = 0;
       //PrintMap();
+      /*if (digitalRead(4) == LOW) {
+        mainState = RACING;
+        noInterrupts();
+        directions = ReadRun();
+        interrupts();
+        //ShowRun();
+        SerialBT.println('R');
+        }
+        if (digitalRead(4) == LOW) {
+        mainState = MAPPING;
+        interrupts();
+        SerialBT.println('M');
+        estabilizationOffset = getTurnAngle();
+        }*/
       if (SerialBT.available()) {
         char read = SerialBT.read();
         if (read == '1') {
           mainState = MAPPING;
           interrupts();
           SerialBT.println('M');
+          estabilizationOffset = getTurnAngle();
         }
         if (read == '2') {
           mainState = RACING;
@@ -162,6 +177,7 @@ void mainMachine() {
           SerialBT.println('R');
         }
       }
+      confirmacionCentrado();
       break;
     case MAPPING:
       {
@@ -203,20 +219,24 @@ void robotMachine() {
   switch (robotState) {
     case READING:
       //SerialBT.println("Rea");
-      //runOff(0,0);
+      //
       Map[actual.x][actual.y].visitado++;
       if (Map[actual.x][actual.y].visitado == 1) {
         Serial.println("creo nodo");
+        runOff(0, 0);
         CreateNode(actual.x, actual.y);
       }
       valueCNY = lecturaCNY70(20, CNY70);
-      if (/*valueCNY == BLANCO*/ VisualMap[visual.x][visual.y].final == true) {
-        Map[actual.x][actual.y].final = true;
-        finishFlag = 1;
-      } else {
-        Map[actual.x][actual.y].final = false;
-        robotState = CHOOSING;
-      }
+
+      /*if (valueCNY == BLANCO) {
+              Map[actual.x][actual.y].final = true;
+              finishFlag = 1;
+            } else {
+              Map[actual.x][actual.y].final = false;
+              robotState = CHOOSING;
+            }*/
+      Map[actual.x][actual.y].final = false;
+      robotState = CHOOSING;
       //delay(1000);
       break;
     case CHOOSING:

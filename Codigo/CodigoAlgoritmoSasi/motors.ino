@@ -1,10 +1,11 @@
-#define FORWARD_DISTANCE 250
-#define LEFT_ANGLE_MIN 88
-#define LEFT_ANGLE_MAX 93
-#define FORWARD_VELOCITY_I 80
-#define FORWARD_VELOCITY_D 70
-#define TURN_VELOCITY_D 60
-#define TURN_VELOCITY_I 60
+#define FORWARD_DISTANCE 260
+#define LEFT_ANGLE_MIN 90
+#define LEFT_ANGLE_MAX 96
+#define FORWARD_VELOCITY_I 40
+#define FORWARD_VELOCITY_D 47
+#define TURN_VELOCITY_D 50
+#define TURN_VELOCITY_I 50
+#define MULTIPLIER 8
 
 float degrees = 0;
 
@@ -12,31 +13,44 @@ void estabilizacion() {
   int diferencia = diferenciaMotores();
   SerialBT.print("dif: " );
   SerialBT.println(diferencia);
-  if (diferencia > 0 ) {
-    powerB = FORWARD_VELOCITY_D + (diferencia * 4);
+  if (diferencia > 0) {
+    if (diferencia < 10) {
+      powerA = FORWARD_VELOCITY_D + (diferencia * MULTIPLIER);
+    } else {
+      powerA = FORWARD_VELOCITY_D + (20 * MULTIPLIER);
+    }
+  } else if (diferencia < 0) {
+    if (diferencia > - 10) {
+      powerB = FORWARD_VELOCITY_I + (abs(diferencia) * MULTIPLIER);
+    } else {
+      powerB = FORWARD_VELOCITY_I + (20 * MULTIPLIER);
+    }
   } else {
-    powerA = FORWARD_VELOCITY_I + (abs(diferencia) * 4);
+    powerB = FORWARD_VELOCITY_D;
+    powerA = FORWARD_VELOCITY_I;
   }
 }
 
 int diferenciaMotores() {
-  int lecturaD = lecSensor(20, SHARP_D);
-  int lecturaI = lecSensor(20, SHARP_I);
-  SerialBT.print("D: " );
-  SerialBT.println(lecturaD);
-  SerialBT.print("I: ");
-  SerialBT.println(lecturaI);
-  if (lecturaI > 15 && lecturaD > 15) {
+  int grados = getTurnAngle() - estabilizationOffset;
+  return - grados;
+  /*int lecturaD = lecSensor(20, SHARP_D);
+    int lecturaI = lecSensor(20, SHARP_I);
+    SerialBT.print("D: " );
+    SerialBT.println(lecturaD);
+    SerialBT.print("I: ");
+    SerialBT.println(lecturaI);
+    if (lecturaI > 15 && lecturaD > 15) {
     return 0;
-  }
-  else if (lecturaI > 16 || lecturaI < 3) {
+    }
+    else if (lecturaI > 16 || lecturaI < 3) {
     return lecturaD - (12 - lecturaD);
-  }
-  else if (lecturaD > 16 || lecturaD < 3) {
+    }
+    else if (lecturaD > 16 || lecturaD < 3) {
     return (12 - lecturaI) - lecturaI;
-  } else {
+    } else {
     return lecturaD - lecturaI;
-  }
+    }*/
 }
 
 void movementMachine(int move) {
@@ -63,6 +77,7 @@ void movementMachine(int move) {
         //SerialBT.print("  ");
         //SerialBT.println(calcularDistancia(counterD));
       } else {
+        estabilizationOffset = getTurnAngle();
         movimientoFlag = 1;
         movementState = OFF;
         //SerialBT.print("listo");
@@ -83,6 +98,7 @@ void movementMachine(int move) {
         runRight(powerA, powerB);
       } else {
         //runOff(0, 0);
+        estabilizationOffset = getTurnAngle();
         movementState = ADELANTE;
         counterD = 0;
         counterI = 0;
@@ -99,6 +115,7 @@ void movementMachine(int move) {
       } else if (degrees  >= LEFT_ANGLE_MAX + offset) {
         runLeft(powerA, powerB);
       } else {
+        estabilizationOffset = getTurnAngle();
         movementState = ADELANTE;
         //runOff(0, 0);
         counterD = 0;
