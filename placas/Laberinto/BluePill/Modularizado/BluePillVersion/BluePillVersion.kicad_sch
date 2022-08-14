@@ -118,10 +118,10 @@
       (reference "D3") (unit 1) (value "DIODE") (footprint "Diode_THT:D_5W_P12.70mm_Horizontal")
     )
     (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/5b67dba6-2c7d-431b-8d24-5405855650b1"
-      (reference "J1") (unit 1) (value "Conn_01x06_Female") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical")
+      (reference "J1") (unit 1) (value "Conn_01x06_Female") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
     )
     (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/87fae434-7974-416f-9d0d-064ee585e3bd"
-      (reference "J2") (unit 1) (value "Conn_01x06_Female") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical")
+      (reference "J2") (unit 1) (value "Conn_01x06_Female") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
     )
     (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/8192afbe-8e8d-48a7-92cd-919968cbab9d"
       (reference "J3") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
