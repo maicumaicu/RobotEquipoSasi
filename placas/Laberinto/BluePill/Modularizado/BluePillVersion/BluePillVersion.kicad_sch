@@ -90,6 +90,24 @@
     (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/c9dbd0ff-8a0b-45c3-a9b6-e87aac742458"
       (reference "#PWR0117") (unit 1) (value "GND") (footprint "")
     )
+    (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/c35fd526-ced0-4dd7-af3c-fec07192a0c7"
+      (reference "#PWR0118") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/c215f651-db9e-43c5-a15c-ab20120dffd3"
+      (reference "#PWR0119") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/36290033-9e99-4403-9950-075edef46075"
+      (reference "#PWR0120") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/876af342-d07e-4672-ab7d-5d06103057de"
+      (reference "#PWR0121") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/1043f99c-e619-4a49-8290-578c8047f091"
+      (reference "#PWR0122") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/555ab27b-a08d-42b8-9a27-64f618b56dfb"
+      (reference "#PWR0123") (unit 1) (value "GND") (footprint "")
+    )
     (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/a959b2a5-2442-4da6-aeb2-8b43c25c6ae6"
       (reference "D1") (unit 1) (value "LED") (footprint "LED_THT:LED_D3.0mm")
     )
@@ -122,6 +140,24 @@
     )
     (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/d9d3879c-c129-4ee7-9ab9-3e43d92e8d54"
       (reference "J8") (unit 1) (value "Conn_01x02_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
+    )
+    (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/3a1c76dc-9187-4d7f-ba57-cf3340b12568"
+      (reference "J9") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
+    )
+    (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/b03b3205-b36e-4fab-8149-bddfd475722a"
+      (reference "J10") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
+    )
+    (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/bab68a84-450b-43fa-9a66-c03fffb0911f"
+      (reference "J11") (unit 1) (value "Conn_01x08_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical")
+    )
+    (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/3c027fa8-e3b6-4a48-bea0-30dc2702b698"
+      (reference "J12") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical")
+    )
+    (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/9cc1f0d0-22f0-4f7c-86d8-150b0e2b64b9"
+      (reference "J13") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical")
+    )
+    (path "/8a93025d-ae0b-4637-828e-5f9162c8274c/6eea5c74-74e4-4561-98d5-f88060458b32"
+      (reference "J14") (unit 1) (value "Conn_01x08_Male") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical")
     )
     (path "/33d524d2-d8f3-42c6-8947-93d1af53651e/396b0072-28c1-4c75-8573-77add3d3f678"
       (reference "R1") (unit 1) (value "R") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
