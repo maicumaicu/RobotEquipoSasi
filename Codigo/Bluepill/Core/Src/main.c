@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+//#include "motors.cpp"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -31,6 +32,16 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define BIN2 BIN2_GPIO_Port,BIN2_Pin
+#define BIN1 BIN1_GPIO_Port,BIN1_Pin
+#define STBY STBY_GPIO_Port,STBY_Pin
+#define AIN1 AIN1_GPIO_Port,AIN1_Pin
+#define AIN2 AIN2_GPIO_Port,AIN2_Pin
+#define BTN1 BTN1_GPIO_Port,BTN1_Pin
+#define BTN2 BTN2_GPIO_Port,BTN2_Pin
+#define BTN3 BTN3_GPIO_Port,BTN3_Pin
+#define PWMA TIM2
+#define PWMB TIM1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -63,7 +74,26 @@ static void MX_TIM1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void adelante(int powerA, int powerB){
+		HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
+}
 
+void setPower(int motor, int power){
+	switch(motor){
+		case DERECHA:
+			PWMA-> CCR1 = power;
+			break;
+		case IZQUIERDA:
+			PWMB-> CCR1 = power;
+			break;
+	}
+}
+
+void adelante(int powerA, int powerB){
+		HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
+}
 /* USER CODE END 0 */
 
 /**
@@ -106,16 +136,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
-  TIM3->CCR1 = 30000;
-  TIM1->CCR1 = 30000;
+  HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
+  PWMA->CCR1 = 30000;
+  PWMB->CCR1 = 30000;
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	/* USER CODE END 3 */
   }
-  /* USER CODE END 3 */
+
 }
 
 /**
