@@ -101,6 +101,16 @@ void Error_Handler(void);
 #define MB1_GPIO_Port GPIOB
 #define MB2_Pin GPIO_PIN_9
 #define MB2_GPIO_Port GPIOB
+#define BIN2 BIN2_GPIO_Port,BIN2_Pin
+#define BIN1 BIN1_GPIO_Port,BIN1_Pin
+#define STBY STBY_GPIO_Port,STBY_Pin
+#define AIN1 AIN1_GPIO_Port,AIN1_Pin
+#define AIN2 AIN2_GPIO_Port,AIN2_Pin
+#define BTN1 BTN1_GPIO_Port,BTN1_Pin
+#define BTN2 BTN2_GPIO_Port,BTN2_Pin
+#define BTN3 BTN3_GPIO_Port,BTN3_Pin
+#define PWMA TIM4
+#define PWMB TIM1
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
