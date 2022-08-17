@@ -1,7 +1,7 @@
-../Core/Src/motors.c:10:6:runForward	16	static
-../Core/Src/motors.c:17:6:runBackwards	16	static
-../Core/Src/motors.c:24:6:runRight	16	static
-../Core/Src/motors.c:31:6:runLeft	16	static
-../Core/Src/motors.c:38:6:runOff	16	static
-../Core/Src/motors.c:46:6:setPowerMotor	16	static
-../Core/Src/motors.c:55:6:runMotor	16	static
+../Core/Src/motors.c:9:6:runForward	16	static
+../Core/Src/motors.c:16:6:runBackwards	16	static
+../Core/Src/motors.c:23:6:runRight	16	static
+../Core/Src/motors.c:30:6:runLeft	16	static
+../Core/Src/motors.c:37:6:runOff	16	static
+../Core/Src/motors.c:44:6:setPowerMotor	16	static
+../Core/Src/motors.c:53:6:runMotor	16	static

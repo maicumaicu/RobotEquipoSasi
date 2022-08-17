@@ -79,8 +79,10 @@ void Error_Handler(void);
 #define BTN3_GPIO_Port GPIOB
 #define LED_Pin GPIO_PIN_15
 #define LED_GPIO_Port GPIOB
-#define PWMB_Pin GPIO_PIN_8
-#define PWMB_GPIO_Port GPIOA
+#define MB2_Pin GPIO_PIN_8
+#define MB2_GPIO_Port GPIOA
+#define MB1_Pin GPIO_PIN_9
+#define MB1_GPIO_Port GPIOA
 #define BIN2_Pin GPIO_PIN_11
 #define BIN2_GPIO_Port GPIOA
 #define BIN1_Pin GPIO_PIN_12
@@ -91,16 +93,17 @@ void Error_Handler(void);
 #define AIN1_GPIO_Port GPIOB
 #define AIN2_Pin GPIO_PIN_4
 #define AIN2_GPIO_Port GPIOB
-#define MA1_Pin GPIO_PIN_5
-#define MA1_GPIO_Port GPIOB
+#define PWMA_Pin GPIO_PIN_5
+#define PWMA_GPIO_Port GPIOB
 #define MA2_Pin GPIO_PIN_6
 #define MA2_GPIO_Port GPIOB
-#define PWMA_Pin GPIO_PIN_7
-#define PWMA_GPIO_Port GPIOB
-#define MB1_Pin GPIO_PIN_8
-#define MB1_GPIO_Port GPIOB
-#define MB2_Pin GPIO_PIN_9
-#define MB2_GPIO_Port GPIOB
+#define MA1_Pin GPIO_PIN_7
+#define MA1_GPIO_Port GPIOB
+#define PWMAB8_Pin GPIO_PIN_8
+#define PWMAB8_GPIO_Port GPIOB
+#define PWMB_Pin GPIO_PIN_9
+#define PWMB_GPIO_Port GPIOB
+/* USER CODE BEGIN Private defines */
 #define BIN2 BIN2_GPIO_Port,BIN2_Pin
 #define BIN1 BIN1_GPIO_Port,BIN1_Pin
 #define STBY STBY_GPIO_Port,STBY_Pin
@@ -109,10 +112,6 @@ void Error_Handler(void);
 #define BTN1 BTN1_GPIO_Port,BTN1_Pin
 #define BTN2 BTN2_GPIO_Port,BTN2_Pin
 #define BTN3 BTN3_GPIO_Port,BTN3_Pin
-#define PWMA TIM4
-#define PWMB TIM1
-/* USER CODE BEGIN Private defines */
-
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

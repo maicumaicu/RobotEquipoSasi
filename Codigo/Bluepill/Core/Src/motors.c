@@ -6,49 +6,47 @@
  */
 #include "motors.h"
 
-
 void runForward(int powerA, int powerB) {
-  setPowerMotor(powerA, MOTOR_A);
-  setPowerMotor(powerB, MOTOR_B);
-  runMotor(ADELANTE, MOTOR_A);
-  runMotor(ADELANTE, MOTOR_B);
+	setPowerMotor(powerA, MOTOR_A);
+	setPowerMotor(powerB, MOTOR_B);
+	runMotor(ADELANTE, MOTOR_A);
+	runMotor(ADELANTE, MOTOR_B);
 }
 
 void runBackwards(int powerA, int powerB) {
-  setPowerMotor(powerA, MOTOR_A);
-  setPowerMotor(powerB, MOTOR_B);
-  runMotor(ATRAS, MOTOR_A);
-  runMotor(ATRAS, MOTOR_B);
+	setPowerMotor(powerA, MOTOR_A);
+	setPowerMotor(powerB, MOTOR_B);
+	runMotor(ATRAS, MOTOR_A);
+	runMotor(ATRAS, MOTOR_B);
 }
 
 void runRight(int powerA, int powerB) {
-  setPowerMotor(powerA, MOTOR_A);
-  setPowerMotor(powerB, MOTOR_B);
-  runMotor(ADELANTE, MOTOR_A);
-  runMotor(OFF, MOTOR_B);
+	setPowerMotor(powerA, MOTOR_A);
+	setPowerMotor(powerB, MOTOR_B);
+	runMotor(ADELANTE, MOTOR_A);
+	runMotor(OFF, MOTOR_B);
 }
 
 void runLeft(int powerA, int powerB) {
-  setPowerMotor(powerA, MOTOR_A);
-  setPowerMotor(powerB, MOTOR_B);
-  runMotor(OFF, MOTOR_A);
-  runMotor(ADELANTE, MOTOR_B);
+	setPowerMotor(powerA, MOTOR_A);
+	setPowerMotor(powerB, MOTOR_B);
+	runMotor(OFF, MOTOR_A);
+	runMotor(ADELANTE, MOTOR_B);
 }
 
 void runOff(int powerA, int powerB) {
-  setPowerMotor(0, MOTOR_A);
-  setPowerMotor(0, MOTOR_B);
-  runMotor(OFF, MOTOR_A);
-  runMotor(OFF, MOTOR_B);
+	setPowerMotor(0, MOTOR_A);
+	setPowerMotor(0, MOTOR_B);
+	runMotor(OFF, MOTOR_A);
+	runMotor(OFF, MOTOR_B);
 }
-
 
 void setPowerMotor(int power, int motor) {
 	if (motor == MOTOR_A) {
-		PWMA->CCR2 = power;
+		TIM4->CCR4 = power;
 
 	} else {
-		PWMB->CCR1 = power;
+		TIM4->CCR3 = power;
 	}
 }
 
