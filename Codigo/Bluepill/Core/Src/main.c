@@ -21,7 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "motors.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -116,10 +115,9 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 		/* USER CODE END WHILE */
-		HAL_GPIO_WritePin(AIN1, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(AIN2, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(BIN1, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(BIN2, GPIO_PIN_RESET);
+		runMotor(ADELANTE, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
+		//runForward(powerA, powerB);
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */

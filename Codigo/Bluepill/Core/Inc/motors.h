@@ -29,6 +29,7 @@
 #define TURN_VELOCITY_D 50
 #define TURN_VELOCITY_I 50
 
+void toggleLed();
 void setPowerMotor(int power, int motor);
 void runMotor(int dir, int motor);
 void runForward(int powerA, int powerB);
@@ -36,7 +37,4 @@ void runBackwards(int powerA, int powerB);
 void runRight(int powerA, int powerB);
 void runLeft(int powerA, int powerB);
 void runOff(int powerA, int powerB);
-
-
-
 #endif /* INC_MOTORS_H_ */
