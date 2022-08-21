@@ -36,7 +36,16 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+struct Node {
+    int Lados[4];
+    int visitado;
+    int final;
+};
 
+struct Position {
+    int x;
+    int y;
+};
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -59,6 +68,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BUILT_IN_LED_Pin GPIO_PIN_13
+#define BUILT_IN_LED_GPIO_Port GPIOC
 #define CNY70_Pin GPIO_PIN_0
 #define CNY70_GPIO_Port GPIOA
 #define SHARP_D_Pin GPIO_PIN_1
@@ -89,18 +100,16 @@ void Error_Handler(void);
 #define BIN1_GPIO_Port GPIOA
 #define STBY_Pin GPIO_PIN_15
 #define STBY_GPIO_Port GPIOA
-#define AIN1_Pin GPIO_PIN_3
-#define AIN1_GPIO_Port GPIOB
 #define AIN2_Pin GPIO_PIN_4
 #define AIN2_GPIO_Port GPIOB
-#define PWMA_Pin GPIO_PIN_5
-#define PWMA_GPIO_Port GPIOB
+#define AIN1_Pin GPIO_PIN_5
+#define AIN1_GPIO_Port GPIOB
 #define MA2_Pin GPIO_PIN_6
 #define MA2_GPIO_Port GPIOB
 #define MA1_Pin GPIO_PIN_7
 #define MA1_GPIO_Port GPIOB
-#define PWMAB8_Pin GPIO_PIN_8
-#define PWMAB8_GPIO_Port GPIOB
+#define PWMA_Pin GPIO_PIN_8
+#define PWMA_GPIO_Port GPIOB
 #define PWMB_Pin GPIO_PIN_9
 #define PWMB_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
@@ -113,6 +122,45 @@ void Error_Handler(void);
 #define BTN2 BTN2_GPIO_Port,BTN2_Pin
 #define BTN3 BTN3_GPIO_Port,BTN3_Pin
 #define LED LED_GPIO_Port, LED_Pin
+
+#define MOTOR_A 0
+#define MOTOR_B 1
+
+
+#define ADELANTE 0
+#define IZQUIERDA 1
+#define ATRAS 2
+#define DERECHA 3
+#define SUPER 4
+#define OFF 5
+
+#define FORWARD_DISTANCE 260
+#define LEFT_ANGLE_MIN 90
+#define LEFT_ANGLE_MAX 96
+#define FORWARD_VELOCITY_I 40
+#define FORWARD_VELOCITY_D 47
+#define TURN_VELOCITY_D 50
+#define TURN_VELOCITY_I 50
+
+#define ALTO 5
+#define ANCHO 5
+
+#define READING 0
+#define CHOOSING 1
+#define MOVING 2
+
+#define SETUP 0
+#define MAPPING 1
+#define RESOLUTION 2
+#define RACING 3
+
+#define NEGRO 1
+#define BLANCO 0
+
+#define PARED 1
+#define LIBRE 0
+
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
