@@ -353,10 +353,10 @@ void initAK8963(I2C_HandleTypeDef *I2Cx, float * destination){
   destination[2] =  (float)(rawMagCalData[2] - 128)/256. + 1.;
 
   if(SerialDebugA){
-	printf("Mag cal off X: %f\r\n", destination[0]);
+	/*printf("Mag cal off X: %f\r\n", destination[0]);
 	printf("Mag cal off Y: %f\r\n", destination[1]);
 	printf("Mag cal off Z: %f\r\n", destination[2]);
-	printf("-------------------------\r\n");
+	printf("-------------------------\r\n");*/
   }
 
   writeData = 0x00;
@@ -605,11 +605,11 @@ void calibrateMPU9250(I2C_HandleTypeDef *I2Cx, float * dest1, float * dest2){
 		float gyroBiasY = (float) gyro_bias[1]/(float) gyrosensitivity;
 		float gyroBiasZ = (float) gyro_bias[2]/(float) gyrosensitivity;
 
-		printf("Gyro bias X: %f\r\n", gyroBiasX);
+		/*printf("Gyro bias X: %f\r\n", gyroBiasX);
 		printf("Gyro bias Y: %f\r\n", gyroBiasY);
 		printf("Gyro bias Z: %f\r\n", gyroBiasZ);
 
-		printf("-------------------------\r\n");
+		printf("-------------------------\r\n");*/
 	}
 
 	//Construct the accelerometer biases for push to the hardware accelerometer bias registers.
@@ -670,11 +670,11 @@ void calibrateMPU9250(I2C_HandleTypeDef *I2Cx, float * dest1, float * dest2){
 		float accelBiasY = (float) accel_bias[1]/(float) accelsensitivity;
 		float accelBiasZ = (float) accel_bias[2]/(float) accelsensitivity;
 
-		printf("Accel bias X: %f\r\n", accelBiasX);
+		/*printf("Accel bias X: %f\r\n", accelBiasX);
 		printf("Accel bias Y: %f\r\n", accelBiasY);
 		printf("Accel bias Z: %f\r\n", accelBiasZ);
 
-		printf("-------------------------\r\n");
+		printf("-------------------------\r\n");*/
 	}
 }
 
@@ -787,13 +787,13 @@ void MPU9250SelfTest(I2C_HandleTypeDef *I2Cx, float * destination) {
 		float testResultGyroY = testResults[4];
 		float testResultGyroZ = testResults[5];
 
-		printf("Accel Test X: %f\r\n", testResultAccelX);
+		/*printf("Accel Test X: %f\r\n", testResultAccelX);
 		printf("Accel Test Y: %f\r\n", testResultAccelY);
 		printf("Accel Test Z: %f\r\n", testResultAccelZ);
 		printf("Gyro Test X: %f\r\n", testResultGyroX);
 		printf("Gyro Test Y: %f\r\n", testResultGyroY);
 		printf("Gyro Test Z: %f\r\n", testResultGyroZ);
-		printf("-------------------------\r\n");
+		printf("-------------------------\r\n");*/
 	}
 
    for (int i = 0; i < 3; i++) {

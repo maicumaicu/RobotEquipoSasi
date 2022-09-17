@@ -10,5 +10,8 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
-void readSensor(uint32_t *value);
+
+uint32_t * readSensor(uint32_t *value);
+float lecSensor(int n, uint32_t *values);
+
 #endif /* INC_SHARP_H_ */

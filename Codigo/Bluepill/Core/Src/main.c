@@ -50,6 +50,7 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
+uint32_t *values;
 uint32_t adc_buf[ADC_BUF_LEN];
 MPU9255_t MPU9255;
 /* USER CODE END PV */
@@ -117,7 +118,8 @@ int main(void) {
 	powerA = TIM4->CCR3 = 30000;
 	powerB = TIM4->CCR4 = 30000;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
-	while (MPU9255_Init(&hi2c2) == 1);
+	while (MPU9255_Init(&hi2c2) == 1)
+		;
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -130,7 +132,7 @@ int main(void) {
 		//runMotor(ADELANTE, MOTOR_A);
 		//runMotor(ADELANTE, MOTOR_B);
 		//sprintf(MSG, TIM4->CNT);
-		//runForward(powerA, powerB);
+		runForward(powerA, powerB);
 	}
 	/* USER CODE END 3 */
 }
@@ -466,7 +468,7 @@ static void MX_GPIO_Init(void) {
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOB,
-			BTN1_Pin | BTN2_Pin | BTN3_Pin | LED_Pin | AIN1_Pin | AIN2_Pin,
+	BTN1_Pin | BTN2_Pin | BTN3_Pin | LED_Pin | AIN1_Pin | AIN2_Pin,
 			GPIO_PIN_RESET);
 
 	/*Configure GPIO pin Output Level */
@@ -493,7 +495,7 @@ static void MX_GPIO_Init(void) {
 /* USER CODE BEGIN 4 */
 // Called when buffer is completely filled
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	readSensor(adc_buf);
+	values = readSensor(adc_buf);
 }
 /* USER CODE END 4 */
 
