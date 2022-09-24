@@ -26,6 +26,7 @@ Core/Src/mpu9255.o: ../Core/Src/mpu9255.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  ../Core/Inc/motors.h ../Core/Inc/main.h ../Core/Inc/sharp.h \
  ../Core/Inc/mpu9255.h ../Core/Inc/mpu9255_defs.h
 ../Core/Inc/main.h:
@@ -56,6 +57,7 @@ Core/Src/mpu9255.o: ../Core/Src/mpu9255.c ../Core/Inc/main.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
 ../Core/Inc/motors.h:
 ../Core/Inc/main.h:
 ../Core/Inc/sharp.h:

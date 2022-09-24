@@ -38,16 +38,16 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-struct Node {
+typedef struct {
 	int Lados[4];
 	int visitado;
 	int final;
-};
+} Node;
 
-struct Position {
+typedef struct {
 	int x;
 	int y;
-};
+} Position;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -60,13 +60,17 @@ struct Position {
 
 /* USER CODE END EM */
 
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+int ChooseNextNode(int x, int y);
+void EliminateNode(int x, int y);
+void CreateNode(int x, int y);
+int SearchAvailableNode(int x, int y);
+void moveNode(int lado);
+void rotateAxis(int direccion);
+void resetAxis();
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -78,6 +82,10 @@ void Error_Handler(void);
 #define SHARP_C_GPIO_Port GPIOA
 #define SHARP_I_Pin GPIO_PIN_3
 #define SHARP_I_GPIO_Port GPIOA
+#define MB1_Pin GPIO_PIN_6
+#define MB1_GPIO_Port GPIOA
+#define MB2_Pin GPIO_PIN_7
+#define MB2_GPIO_Port GPIOA
 #define SCL_Pin GPIO_PIN_10
 #define SCL_GPIO_Port GPIOB
 #define SDA_Pin GPIO_PIN_11
@@ -90,10 +98,6 @@ void Error_Handler(void);
 #define BTN3_GPIO_Port GPIOB
 #define LED_Pin GPIO_PIN_15
 #define LED_GPIO_Port GPIOB
-#define MB2_Pin GPIO_PIN_8
-#define MB2_GPIO_Port GPIOA
-#define MB1_Pin GPIO_PIN_9
-#define MB1_GPIO_Port GPIOA
 #define BIN2_Pin GPIO_PIN_11
 #define BIN2_GPIO_Port GPIOA
 #define BIN1_Pin GPIO_PIN_12
@@ -104,14 +108,12 @@ void Error_Handler(void);
 #define AIN1_GPIO_Port GPIOB
 #define AIN2_Pin GPIO_PIN_4
 #define AIN2_GPIO_Port GPIOB
-#define PWMA_Pin GPIO_PIN_5
-#define PWMA_GPIO_Port GPIOB
 #define MA2_Pin GPIO_PIN_6
 #define MA2_GPIO_Port GPIOB
 #define MA1_Pin GPIO_PIN_7
 #define MA1_GPIO_Port GPIOB
-#define PWMAB8_Pin GPIO_PIN_8
-#define PWMAB8_GPIO_Port GPIOB
+#define PWMA_Pin GPIO_PIN_8
+#define PWMA_GPIO_Port GPIOB
 #define PWMB_Pin GPIO_PIN_9
 #define PWMB_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
@@ -145,6 +147,8 @@ void Error_Handler(void);
 
 #define ALTO 5
 #define ANCHO 5
+#define ancho ANCHO * 2
+#define alto ALTO * 2
 
 #define READING 0
 #define CHOOSING 1

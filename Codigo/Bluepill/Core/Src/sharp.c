@@ -26,6 +26,31 @@ uint32_t* readSensor(uint32_t *value) {
 	return Sensors;
 }
 
+int wallDetector(int n) {
+	if (n < 25) {
+		return 1;
+	}
+	return 0;
+}
+
+float lecturaSensor(int direccion, uint32_t *values) {
+	switch (direccion) {
+	case ADELANTE:
+		return wallDetector(values[1]);
+		break;
+	case DERECHA:
+		return wallDetector(values[2]);
+		break;
+	case IZQUIERDA:
+		return wallDetector(values[3]);
+		break;
+	case ATRAS:
+		return 0;
+		break;
+	}
+	return 0;
+}
+
 float lecSensor(int n, uint32_t *values) {
 	long suma = 0;
 	for (int i = 0; i < n; i++) {

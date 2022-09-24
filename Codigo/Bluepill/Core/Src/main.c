@@ -18,10 +18,18 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "mpu9255.h"
+#include "adc.h"
+#include "dma.h"
+#include "i2c.h"
+#include "tim.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sharp.h"
+#include "motors.h"
+#include "mpu9255.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,30 +48,16 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
-
-I2C_HandleTypeDef hi2c2;
-
-TIM_HandleTypeDef htim1;
-TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
 uint32_t *values;
 uint32_t adc_buf[ADC_BUF_LEN];
 MPU9255_t MPU9255;
+int direcciones[4];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_DMA_Init(void);
-static void MX_TIM4_Init(void);
-static void MX_I2C2_Init(void);
-static void MX_TIM1_Init(void);
-static void MX_TIM3_Init(void);
-static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -72,7 +66,20 @@ static void MX_ADC1_Init(void);
 /* USER CODE BEGIN 0 */
 int powerA;
 int powerB;
+uint8_t RX_BUFFER[1] = { 0 };
+uint8_t TX_BUFFER[1] = { 0 };
+int c, m, directionsSize, movimiento;
+int finishFlag, movimientoFlag;
+int valueCNY;
+int direcciones[4];
 
+int mainState = SETUP;
+int robotState = READING;
+int movementState = OFF;
+char directions[10];
+Position actual;
+Position last;
+Node Map[alto][ancho];
 /* USER CODE END 0 */
 
 /**
@@ -105,34 +112,40 @@ int main(void) {
 	MX_DMA_Init();
 	MX_TIM4_Init();
 	MX_I2C2_Init();
-	MX_TIM1_Init();
 	MX_TIM3_Init();
 	MX_ADC1_Init();
+	MX_USART1_UART_Init();
 	/* USER CODE BEGIN 2 */
 
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
 	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
-	HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
+	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 	HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
 	powerA = TIM4->CCR3 = 30000;
 	powerB = TIM4->CCR4 = 30000;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
-	while (MPU9255_Init(&hi2c2) == 1)
-		;
+	//while (MPU9255_Init(&hi2c2) == 1)
+	//;
+	//HAL_UART_Receive_IT(&huart1, RX_BUFFER, 1);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 		/* USER CODE END WHILE */
+
 		/* USER CODE BEGIN 3 */
-		readAll(&hi2c2, &MPU9255);
-		MPU9255.yaw;
+		TX_BUFFER[0] = values[1] + '0';
+		HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+		HAL_Delay(100);
+		//readAll(&hi2c2, &MPU9255);
+		//MPU9255.yaw;
 		//runMotor(ADELANTE, MOTOR_A);
 		//runMotor(ADELANTE, MOTOR_B);
 		//sprintf(MSG, TIM4->CNT);
-		runForward(powerA, powerB);
+		//runForward(powerA, powerB);
 	}
 	/* USER CODE END 3 */
 }
@@ -179,323 +192,223 @@ void SystemClock_Config(void) {
 	}
 }
 
-/**
- * @brief ADC1 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_ADC1_Init(void) {
-
-	/* USER CODE BEGIN ADC1_Init 0 */
-
-	/* USER CODE END ADC1_Init 0 */
-
-	ADC_ChannelConfTypeDef sConfig = { 0 };
-
-	/* USER CODE BEGIN ADC1_Init 1 */
-
-	/* USER CODE END ADC1_Init 1 */
-
-	/** Common config
-	 */
-	hadc1.Instance = ADC1;
-	hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
-	hadc1.Init.ContinuousConvMode = ENABLE;
-	hadc1.Init.DiscontinuousConvMode = DISABLE;
-	hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	hadc1.Init.NbrOfConversion = 4;
-	if (HAL_ADC_Init(&hadc1) != HAL_OK) {
-		Error_Handler();
-	}
-
-	/** Configure Regular Channel
-	 */
-	sConfig.Channel = ADC_CHANNEL_0;
-	sConfig.Rank = ADC_REGULAR_RANK_1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
-
-	/** Configure Regular Channel
-	 */
-	sConfig.Channel = ADC_CHANNEL_1;
-	sConfig.Rank = ADC_REGULAR_RANK_2;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
-
-	/** Configure Regular Channel
-	 */
-	sConfig.Channel = ADC_CHANNEL_2;
-	sConfig.Rank = ADC_REGULAR_RANK_3;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
-
-	/** Configure Regular Channel
-	 */
-	sConfig.Channel = ADC_CHANNEL_3;
-	sConfig.Rank = ADC_REGULAR_RANK_4;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN ADC1_Init 2 */
-
-	/* USER CODE END ADC1_Init 2 */
-
-}
-
-/**
- * @brief I2C2 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_I2C2_Init(void) {
-
-	/* USER CODE BEGIN I2C2_Init 0 */
-
-	/* USER CODE END I2C2_Init 0 */
-
-	/* USER CODE BEGIN I2C2_Init 1 */
-
-	/* USER CODE END I2C2_Init 1 */
-	hi2c2.Instance = I2C2;
-	hi2c2.Init.ClockSpeed = 400000;
-	hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-	hi2c2.Init.OwnAddress1 = 0;
-	hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-	hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	hi2c2.Init.OwnAddress2 = 0;
-	hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-	if (HAL_I2C_Init(&hi2c2) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN I2C2_Init 2 */
-
-	/* USER CODE END I2C2_Init 2 */
-
-}
-
-/**
- * @brief TIM1 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_TIM1_Init(void) {
-
-	/* USER CODE BEGIN TIM1_Init 0 */
-
-	/* USER CODE END TIM1_Init 0 */
-
-	TIM_Encoder_InitTypeDef sConfig = { 0 };
-	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
-
-	/* USER CODE BEGIN TIM1_Init 1 */
-
-	/* USER CODE END TIM1_Init 1 */
-	htim1.Instance = TIM1;
-	htim1.Init.Prescaler = 0;
-	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim1.Init.Period = 65535;
-	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	htim1.Init.RepetitionCounter = 0;
-	htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
-	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
-	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-	sConfig.IC1Filter = 10;
-	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
-	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-	sConfig.IC2Filter = 0;
-	if (HAL_TIM_Encoder_Init(&htim1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
-	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN TIM1_Init 2 */
-
-	/* USER CODE END TIM1_Init 2 */
-
-}
-
-/**
- * @brief TIM3 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_TIM3_Init(void) {
-
-	/* USER CODE BEGIN TIM3_Init 0 */
-
-	/* USER CODE END TIM3_Init 0 */
-
-	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
-	TIM_OC_InitTypeDef sConfigOC = { 0 };
-
-	/* USER CODE BEGIN TIM3_Init 1 */
-
-	/* USER CODE END TIM3_Init 1 */
-	htim3.Instance = TIM3;
-	htim3.Init.Prescaler = 0;
-	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim3.Init.Period = 65535;
-	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-	if (HAL_TIM_PWM_Init(&htim3) != HAL_OK) {
-		Error_Handler();
-	}
-	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse = 0;
-	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN TIM3_Init 2 */
-
-	/* USER CODE END TIM3_Init 2 */
-	HAL_TIM_MspPostInit(&htim3);
-
-}
-
-/**
- * @brief TIM4 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_TIM4_Init(void) {
-
-	/* USER CODE BEGIN TIM4_Init 0 */
-
-	/* USER CODE END TIM4_Init 0 */
-
-	TIM_Encoder_InitTypeDef sConfig = { 0 };
-	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
-	TIM_OC_InitTypeDef sConfigOC = { 0 };
-
-	/* USER CODE BEGIN TIM4_Init 1 */
-
-	/* USER CODE END TIM4_Init 1 */
-	htim4.Instance = TIM4;
-	htim4.Init.Prescaler = 0;
-	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim4.Init.Period = 65535;
-	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-	if (HAL_TIM_PWM_Init(&htim4) != HAL_OK) {
-		Error_Handler();
-	}
-	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
-	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
-	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-	sConfig.IC1Filter = 10;
-	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
-	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-	sConfig.IC2Filter = 0;
-	if (HAL_TIM_Encoder_Init(&htim4, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
-	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse = 0;
-	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_3)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN TIM4_Init 2 */
-
-	/* USER CODE END TIM4_Init 2 */
-	HAL_TIM_MspPostInit(&htim4);
-
-}
-
-/**
- * Enable DMA controller clock
- */
-static void MX_DMA_Init(void) {
-
-	/* DMA controller clock enable */
-	__HAL_RCC_DMA1_CLK_ENABLE();
-
-	/* DMA interrupt init */
-	/* DMA1_Channel1_IRQn interrupt configuration */
-	HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-
-}
-
-/**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
-static void MX_GPIO_Init(void) {
-	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
-
-	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOD_CLK_ENABLE();
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOB,
-	BTN1_Pin | BTN2_Pin | BTN3_Pin | LED_Pin | AIN1_Pin | AIN2_Pin,
-			GPIO_PIN_RESET);
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOA, BIN2_Pin | BIN1_Pin | STBY_Pin, GPIO_PIN_RESET);
-
-	/*Configure GPIO pins : BTN1_Pin BTN2_Pin BTN3_Pin LED_Pin
-	 AIN1_Pin AIN2_Pin */
-	GPIO_InitStruct.Pin = BTN1_Pin | BTN2_Pin | BTN3_Pin | LED_Pin | AIN1_Pin
-			| AIN2_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-	/*Configure GPIO pins : BIN2_Pin BIN1_Pin STBY_Pin */
-	GPIO_InitStruct.Pin = BIN2_Pin | BIN1_Pin | STBY_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-}
-
 /* USER CODE BEGIN 4 */
+void robotMachine() {
+	switch (robotState) {
+	case READING:
+		//SerialBT.println("Rea");
+		Map[actual.x][actual.y].visitado++;
+		if (Map[actual.x][actual.y].visitado == 1) {
+			//Serial.println("creo nodo");
+			runOff(0, 0);
+			CreateNode(actual.x, actual.y);
+		}
+		//valueCNY = lecturaCNY70(20, CNY70);
+
+		/*if (valueCNY == BLANCO) {
+		 Map[actual.x][actual.y].final = true;
+		 finishFlag = 1;
+		 } else {
+		 Map[actual.x][actual.y].final = false;
+		 robotState = CHOOSING;
+		 }*/
+		Map[actual.x][actual.y].final = 0;
+		robotState = CHOOSING;
+		//delay(1000);
+		break;
+	case CHOOSING:
+		//SerialBT.println("Cho");
+		movimiento = ChooseNextNode(actual.x, actual.y);
+		movimientoFlag = 0;
+		robotState = MOVING;
+		break;
+	case MOVING:
+		movementMachine(movimiento);
+		if (movimientoFlag == 1) {
+			robotState = READING;
+		}
+		//SerialBT.println("Mov");
+		break;
+	}
+}
+
+int ChooseNextNode(int x, int y) {
+	if (Map[x][y].Lados[direcciones[ADELANTE]] == 0) {
+		Map[x][y].Lados[direcciones[ADELANTE]] = 2;
+		moveNode(direcciones[ADELANTE]);
+		if (Map[x][y].Lados[direcciones[ATRAS]] != 1)
+			Map[x][y].Lados[direcciones[ATRAS]] = 2;
+		if (Map[x][y].visitado > 1) {
+			EliminateNode(x, y);
+		}
+		return ADELANTE;
+	} else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
+		//Serial.println("IZQUIERDA");
+		//SerialBT.write('I');
+		Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
+		moveNode(direcciones[IZQUIERDA]);
+		if (Map[x][y].Lados[direcciones[ATRAS]] != 1)
+			Map[x][y].Lados[direcciones[ATRAS]] = 2;
+		if (Map[x][y].visitado > 1) {
+			EliminateNode(x, y);
+		}
+		rotateAxis(IZQUIERDA);
+		return IZQUIERDA;
+	} else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
+		//Serial.println("DERECHA");
+		//SerialBT.write('D');
+		Map[x][y].Lados[direcciones[DERECHA]] = 2;
+		moveNode(direcciones[DERECHA]);
+		if (Map[x][y].Lados[direcciones[ATRAS]] != 1)
+			Map[x][y].Lados[direcciones[ATRAS]] = 2;
+		if (Map[x][y].visitado > 1) {
+			EliminateNode(x, y);
+		}
+		rotateAxis(DERECHA);
+		return DERECHA;
+	} else {
+		//Serial.println("otro");
+		//SerialBT.write('O');
+		return SearchAvailableNode(x, y);
+	}
+	last.x = x;
+	last.y = y;
+}
+
+void EliminateNode(int x, int y) {
+	//Serial.println("Borro");
+	Map[x][y].Lados[direcciones[ATRAS]] = 1;
+	Map[last.x][last.y].visitado = 0;
+}
+
+int SearchAvailableNode(int x, int y) {
+	if (Map[x][y].Lados[direcciones[ADELANTE]] != 1) {
+		//Serial.println("Adelante1");
+		Map[x][y].Lados[direcciones[ADELANTE]] = 2;
+		moveNode(direcciones[ADELANTE]);
+		if (Map[x][y].visitado > 1) {
+			EliminateNode(x, y);
+		}
+		return ADELANTE;
+	} else if (Map[x][y].Lados[direcciones[IZQUIERDA]] != 1) {
+		//Serial.println("IZQUIERDA1");
+		Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
+		moveNode(direcciones[IZQUIERDA]);
+		rotateAxis(IZQUIERDA);
+		if (Map[x][y].visitado > 1) {
+			EliminateNode(x, y);
+		}
+		return IZQUIERDA;
+	} else if (Map[x][y].Lados[direcciones[DERECHA]] != 1) {
+		//Serial.println("DERECHA1");
+		Map[x][y].Lados[direcciones[DERECHA]] = 2;
+		moveNode(direcciones[DERECHA]);
+		if (Map[x][y].visitado > 1) {
+			EliminateNode(x, y);
+		}
+		rotateAxis(DERECHA);
+		return DERECHA;
+	} else if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
+		//Serial.println("atras1");
+		rotateAxis(DERECHA);
+		rotateAxis(DERECHA);
+		return ATRAS;
+	}
+	return 0;
+}
+void moveNode(int lado) {
+	switch (lado) {
+	case ADELANTE:
+		if (visual.y != ALTO - 1) {
+			actual.y++;
+			visual.y++;
+		}
+		break;
+	case IZQUIERDA:
+		if (visual.x != 0) {
+			actual.x--;
+			visual.x--;
+		}
+		break;
+	case DERECHA:
+		if (visual.x != ANCHO - 1) {
+			actual.x++;
+			visual.x++;
+		}
+		break;
+	case ATRAS:
+		if (visual.y != 0) {
+			actual.y--;
+			visual.y--;
+		}
+
+		break;
+	}
+}
+
+void CreateNode(int x, int y) {
+	Map[x][y].Lados[ADELANTE] = lecturaSensor(direcciones[ADELANTE], values);
+	Map[x][y].Lados[IZQUIERDA] = lecturaSensor(direcciones[IZQUIERDA], values);
+	Map[x][y].Lados[DERECHA] = lecturaSensor(direcciones[DERECHA], values);
+	Map[x][y].Lados[ATRAS] = lecturaSensor(direcciones[ATRAS], values);
+	/*SerialBT.println(lecturaSensor(direcciones[ADELANTE]));
+	 SerialBT.println(lecturaSensor(direcciones[IZQUIERDA]));
+	 SerialBT.println(lecturaSensor(direcciones[DERECHA]));*/
+}
+
+/*void CreateNode(int x, int y) {
+ Map[x][y].Lados[ADELANTE] = lecturaSensor(ADELANTE);
+ Map[x][y].Lados[IZQUIERDA] = lecturaSensor(IZQUIERDA);
+ Map[x][y].Lados[DERECHA] = lecturaSensor(DERECHA);
+ Map[x][y].Lados[ATRAS] = lecturaSensor(ATRAS);
+ }*/
+
+void rotateAxis(int direccion) {
+	switch (direccion) {
+	case DERECHA:
+		for (int i = 0; i < 4; i++) {
+			direcciones[i] = direcciones[i] - 1;
+			if (direcciones[i] == -1) {
+				direcciones[i] = 3;
+			}
+		}
+		break;
+	case IZQUIERDA:
+		for (int j = 0; j < 4; j++) {
+			direcciones[j] = direcciones[j] + 1;
+			if (direcciones[j] == 4) {
+				direcciones[j] = 0;
+			}
+		}
+		break;
+	}
+}
+
+void resetAxis() {
+	for (int i = 0; i < 4; i++) {
+		direcciones[i] = i;
+	}
+}
+
+void PrintMap() {
+	for (int i = 0; i < alto; i++) {
+		for (int j = 0; j < ancho; j++) {
+			//SerialBT.print(Map[i][j].visitado);
+			//SerialBT.print(" ");
+		}
+		//SerialBT.println();
+	}
+}
+
 // Called when buffer is completely filled
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	values = readSensor(adc_buf);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	if (huart->Instance == huart1.Instance) {
+		HAL_UART_Receive_IT(&huart1, RX_BUFFER, 1);
+	}
 }
 /* USER CODE END 4 */
 
