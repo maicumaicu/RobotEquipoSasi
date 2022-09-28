@@ -14,10 +14,7 @@ float calcularDistancia(int counter) {
 }
 
 
-void runForward() {
-	runMotor(ADELANTE, MOTOR_A);
-	runMotor(ADELANTE, MOTOR_B);
-}
+
 
 void runBackwards() {
 	runMotor(ATRAS, MOTOR_A);

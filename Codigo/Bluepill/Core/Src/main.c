@@ -50,9 +50,13 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint32_t *values;
 uint32_t adc_buf[ADC_BUF_LEN];
 MPU9255_t MPU9255;
+uint32_t CNY70[10];
+uint32_t SHARP_1[10];
+uint32_t SHARP_2[10];
+uint32_t SHARP_3[10];
+static uint32_t Sensors[4];
 int direcciones[4];
 /* USER CODE END PV */
 
@@ -122,13 +126,18 @@ int main(void) {
 	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 	HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
-	powerA = TIM4->CCR3 = 30000;
-	powerB = TIM4->CCR4 = 30000;
+	powerA = TIM4->CCR3 = 5000;
+	powerB = TIM4->CCR4 = 5000;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
-	//while (MPU9255_Init(&hi2c2) == 1)
-	//;
+	/*while (MPU9255_Init(&hi2c2) == 1) {
+		TX_BUFFER[0] = MPU9255.yaw + '0';
+		HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+	}*/
+	HAL_Delay(3000);
 	//HAL_UART_Receive_IT(&huart1, RX_BUFFER, 1);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
+	//readAll(&hi2c2, &MPU9255);
+	//int yaw = MPU9255.yaw;
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -137,15 +146,20 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-		TX_BUFFER[0] = values[1] + '0';
-		HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
-		HAL_Delay(100);
+		//readAll(&hi2c2, &MPU9255);
+		/*TX_BUFFER[0] = MPU9255.yaw + '0';
+		 HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);*/
+		/*if (MPU9255.yaw - yaw > 90) {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
+		} else {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);
+		}*/
 		//readAll(&hi2c2, &MPU9255);
 		//MPU9255.yaw;
-		//runMotor(ADELANTE, MOTOR_A);
-		//runMotor(ADELANTE, MOTOR_B);
+		runMotor(ADELANTE, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
 		//sprintf(MSG, TIM4->CNT);
-		//runForward(powerA, powerB);
+		//runForward();
 	}
 	/* USER CODE END 3 */
 }
@@ -193,6 +207,9 @@ void SystemClock_Config(void) {
 }
 
 /* USER CODE BEGIN 4 */
+
+
+
 void robotMachine() {
 	switch (robotState) {
 	case READING:
@@ -317,40 +334,40 @@ int SearchAvailableNode(int x, int y) {
 	return 0;
 }
 void moveNode(int lado) {
-	switch (lado) {
-	case ADELANTE:
-		if (visual.y != ALTO - 1) {
-			actual.y++;
-			visual.y++;
-		}
-		break;
-	case IZQUIERDA:
-		if (visual.x != 0) {
-			actual.x--;
-			visual.x--;
-		}
-		break;
-	case DERECHA:
-		if (visual.x != ANCHO - 1) {
-			actual.x++;
-			visual.x++;
-		}
-		break;
-	case ATRAS:
-		if (visual.y != 0) {
-			actual.y--;
-			visual.y--;
-		}
+	/*switch (lado) {
+	 case ADELANTE:
+	 if (visual.y != ALTO - 1) {
+	 actual.y++;
+	 visual.y++;
+	 }
+	 break;
+	 case IZQUIERDA:
+	 if (visual.x != 0) {
+	 actual.x--;
+	 visual.x--;
+	 }
+	 break;
+	 case DERECHA:
+	 if (visual.x != ANCHO - 1) {
+	 actual.x++;
+	 visual.x++;
+	 }
+	 break;
+	 case ATRAS:
+	 if (visual.y != 0) {
+	 actual.y--;
+	 visual.y--;
+	 }
 
-		break;
-	}
+	 break;
+	 }*/
 }
 
 void CreateNode(int x, int y) {
-	Map[x][y].Lados[ADELANTE] = lecturaSensor(direcciones[ADELANTE], values);
-	Map[x][y].Lados[IZQUIERDA] = lecturaSensor(direcciones[IZQUIERDA], values);
-	Map[x][y].Lados[DERECHA] = lecturaSensor(direcciones[DERECHA], values);
-	Map[x][y].Lados[ATRAS] = lecturaSensor(direcciones[ATRAS], values);
+	/*Map[x][y].Lados[ADELANTE] = lecturaSensor(direcciones[ADELANTE], values);
+	 Map[x][y].Lados[IZQUIERDA] = lecturaSensor(direcciones[IZQUIERDA], values);
+	 Map[x][y].Lados[DERECHA] = lecturaSensor(direcciones[DERECHA], values);
+	 Map[x][y].Lados[ATRAS] = lecturaSensor(direcciones[ATRAS], values);*/
 	/*SerialBT.println(lecturaSensor(direcciones[ADELANTE]));
 	 SerialBT.println(lecturaSensor(direcciones[IZQUIERDA]));
 	 SerialBT.println(lecturaSensor(direcciones[DERECHA]));*/
@@ -402,13 +419,21 @@ void PrintMap() {
 
 // Called when buffer is completely filled
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	values = readSensor(adc_buf);
+	for (int i = 0; i < 10; i++) {
+		CNY70[i] = adc_buf[i * 4];
+		SHARP_1[i] = adc_buf[i * 4 + 1];
+		SHARP_2[i] = adc_buf[i * 4 + 2];
+		SHARP_3[i] = adc_buf[i * 4 + 3];
+	}
+	Sensors[0] = lecSensor(10, CNY70);
+	Sensors[1] = lecSensor(10, SHARP_1);
+	Sensors[2] = lecSensor(10, SHARP_2);
+	Sensors[3] = lecSensor(10, SHARP_3);
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if (huart->Instance == huart1.Instance) {
-		HAL_UART_Receive_IT(&huart1, RX_BUFFER, 1);
-	}
+void runForward() {
+	runMotor(ADELANTE, MOTOR_A);
+	runMotor(ADELANTE, MOTOR_B);
 }
 /* USER CODE END 4 */
 

@@ -91,7 +91,7 @@ uint8_t MPU9255_Init(I2C_HandleTypeDef *I2Cx){
 
 	if (SerialDebugA) {printf("MPU -WHO AM I- is: (Must return 113) %d\r\n", readData);}
 
-	if (readData == 113) {
+	if (readData == 115) {
 
 		//Start by performing self test and reporting values
 		MPU9250SelfTest(I2Cx, SelfTest);
