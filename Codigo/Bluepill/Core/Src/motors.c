@@ -10,7 +10,7 @@
 int counterD, counterI;
 
 float calcularDistancia(int counter) {
-  return ((counter- 32767.5) * 2.51 / 10);
+  return ((counter) * 2.51 / 10);
 }
 
 

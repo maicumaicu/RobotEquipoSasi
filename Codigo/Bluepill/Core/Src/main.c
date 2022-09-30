@@ -123,19 +123,20 @@ int main(void) {
 
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
-	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
-	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
+	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
 	HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
-	powerA = TIM4->CCR3 = 5000;
-	powerB = TIM4->CCR4 = 5000;
+	TIM4->CCR3 = 20000;
+	TIM4->CCR4 = 20000;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
 	/*while (MPU9255_Init(&hi2c2) == 1) {
-		TX_BUFFER[0] = MPU9255.yaw + '0';
-		HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
-	}*/
-	HAL_Delay(3000);
+	 TX_BUFFER[0] = MPU9255.yaw + '0';
+	 HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+	 }*/
+	//HAL_Delay(3000);
 	//HAL_UART_Receive_IT(&huart1, RX_BUFFER, 1);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
+	TIM4->CNT = 0;
 	//readAll(&hi2c2, &MPU9255);
 	//int yaw = MPU9255.yaw;
 	/* USER CODE END 2 */
@@ -150,14 +151,25 @@ int main(void) {
 		/*TX_BUFFER[0] = MPU9255.yaw + '0';
 		 HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);*/
 		/*if (MPU9255.yaw - yaw > 90) {
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
-		} else {
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);
-		}*/
+		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
+		 } else {
+		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);
+		 }*/
 		//readAll(&hi2c2, &MPU9255);
 		//MPU9255.yaw;
-		runMotor(ADELANTE, MOTOR_A);
-		runMotor(ADELANTE, MOTOR_B);
+		int d = calcularDistancia(TIM4->CNT);
+		if (calcularDistancia(TIM4->CNT) < 100) {
+			//TX_BUFFER[0] = TIM4->CNT;
+			//HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+			runMotor(ADELANTE, MOTOR_A);
+			runMotor(ADELANTE, MOTOR_B);
+		} else {
+			TX_BUFFER[0] = 'n';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+			runMotor(OFF, MOTOR_A);
+			runMotor(OFF, MOTOR_B);
+		}
+
 		//sprintf(MSG, TIM4->CNT);
 		//runForward();
 	}
@@ -207,8 +219,6 @@ void SystemClock_Config(void) {
 }
 
 /* USER CODE BEGIN 4 */
-
-
 
 void robotMachine() {
 	switch (robotState) {
