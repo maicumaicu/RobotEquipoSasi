@@ -84,8 +84,6 @@ void resetAxis();
 #define SHARP_I_GPIO_Port GPIOA
 #define MB1_Pin GPIO_PIN_6
 #define MB1_GPIO_Port GPIOA
-#define MB2_Pin GPIO_PIN_7
-#define MB2_GPIO_Port GPIOA
 #define SCL_Pin GPIO_PIN_10
 #define SCL_GPIO_Port GPIOB
 #define SDA_Pin GPIO_PIN_11
