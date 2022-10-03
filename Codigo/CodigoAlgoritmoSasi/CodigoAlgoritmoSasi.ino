@@ -24,7 +24,7 @@
 #define encoderPinA1 23
 #define encoderPinB1 1
 
-#define encoderPinA2 16
+#define encoderPinA2 34
 #define encoderPinB2 35
 
 #define DIAMETRO_RUEDA 42.2
@@ -123,6 +123,7 @@ void setup() {
 }
 
 void loop() {
+  Serial.println( counterD);
   if ((millis() - timer) > 5) {
     runOff(0, 0);
     digitalWrite(STBY, LOW);

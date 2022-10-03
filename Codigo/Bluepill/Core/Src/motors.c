@@ -23,7 +23,7 @@ void runBackwards() {
 
 void runRight() {
 	runMotor(ADELANTE, MOTOR_A);
-	runMotor(OFF, MOTOR_B);
+	runMotor(ATRAS, MOTOR_B);
 }
 
 void runLeft() {

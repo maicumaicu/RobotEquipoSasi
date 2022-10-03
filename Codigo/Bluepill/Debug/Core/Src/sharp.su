@@ -1,3 +1,4 @@
-../Core/Src/sharp.c:12:5:wallDetector	16	static
-../Core/Src/sharp.c:19:7:lecturaSensor	16	static
-../Core/Src/sharp.c:37:7:lecSensor	32	static
+../Core/Src/sharp.c:11:5:wallDetector	16	static
+../Core/Src/sharp.c:18:7:lecturaSensor	16	static
+../Core/Src/sharp.c:36:7:lecSensor	32	static
+../Core/Src/sharp.c:53:5:lecturaCNY70	32	static

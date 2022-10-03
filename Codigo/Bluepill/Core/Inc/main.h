@@ -68,9 +68,12 @@ int ChooseNextNode(int x, int y);
 void EliminateNode(int x, int y);
 void CreateNode(int x, int y);
 int SearchAvailableNode(int x, int y);
+void mainMachine();
+void robotMachine();
 void moveNode(int lado);
 void rotateAxis(int direccion);
 void resetAxis();
+void movementMachine(int move);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -82,20 +85,22 @@ void resetAxis();
 #define SHARP_C_GPIO_Port GPIOA
 #define SHARP_I_Pin GPIO_PIN_3
 #define SHARP_I_GPIO_Port GPIOA
+#define LED_Pin GPIO_PIN_4
+#define LED_GPIO_Port GPIOA
+#define BTN2_Pin GPIO_PIN_5
+#define BTN2_GPIO_Port GPIOA
 #define MB1_Pin GPIO_PIN_6
 #define MB1_GPIO_Port GPIOA
-#define SCL_Pin GPIO_PIN_10
-#define SCL_GPIO_Port GPIOB
-#define SDA_Pin GPIO_PIN_11
-#define SDA_GPIO_Port GPIOB
+#define MB2_Pin GPIO_PIN_7
+#define MB2_GPIO_Port GPIOA
+#define BTN3_Pin GPIO_PIN_0
+#define BTN3_GPIO_Port GPIOB
+#define PWMA_Pin GPIO_PIN_10
+#define PWMA_GPIO_Port GPIOB
+#define PWMB_Pin GPIO_PIN_11
+#define PWMB_GPIO_Port GPIOB
 #define BTN1_Pin GPIO_PIN_12
 #define BTN1_GPIO_Port GPIOB
-#define BTN2_Pin GPIO_PIN_13
-#define BTN2_GPIO_Port GPIOB
-#define BTN3_Pin GPIO_PIN_14
-#define BTN3_GPIO_Port GPIOB
-#define LED_Pin GPIO_PIN_15
-#define LED_GPIO_Port GPIOB
 #define BIN2_Pin GPIO_PIN_11
 #define BIN2_GPIO_Port GPIOA
 #define BIN1_Pin GPIO_PIN_12
@@ -110,10 +115,6 @@ void resetAxis();
 #define MA2_GPIO_Port GPIOB
 #define MA1_Pin GPIO_PIN_7
 #define MA1_GPIO_Port GPIOB
-#define PWMA_Pin GPIO_PIN_8
-#define PWMA_GPIO_Port GPIOB
-#define PWMB_Pin GPIO_PIN_9
-#define PWMB_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define BIN2 BIN2_GPIO_Port,BIN2_Pin
 #define BIN1 BIN1_GPIO_Port,BIN1_Pin
@@ -122,7 +123,7 @@ void resetAxis();
 #define AIN2 AIN2_GPIO_Port,AIN2_Pin
 #define BTN1 BTN1_GPIO_Port,BTN1_Pin
 #define BTN2 BTN2_GPIO_Port,BTN2_Pin
-#define BTN3 BTN3_GPIO_Port,BTN3_Pin
+#define BTN3 BTN3_GPIO_Port , BTN3_Pin
 #define LED LED_GPIO_Port, LED_Pin
 
 #define MOTOR_A 0
@@ -135,7 +136,7 @@ void resetAxis();
 #define SUPER 4
 #define OFF 5
 
-#define FORWARD_DISTANCE 260
+#define FORWARD_DISTANCE 100
 #define LEFT_ANGLE_MIN 90
 #define LEFT_ANGLE_MAX 96
 #define FORWARD_VELOCITY_I 40

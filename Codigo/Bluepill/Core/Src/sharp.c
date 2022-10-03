@@ -8,9 +8,8 @@
 
 #include <math.h>
 
-
 int wallDetector(int n) {
-	if (n < 25) {
+	if (n < 15) {
 		return 1;
 	}
 	return 0;
@@ -19,10 +18,10 @@ int wallDetector(int n) {
 float lecturaSensor(int direccion, uint32_t *values) {
 	switch (direccion) {
 	case ADELANTE:
-		return wallDetector(values[1]);
+		return wallDetector(values[2]);
 		break;
 	case DERECHA:
-		return wallDetector(values[2]);
+		return wallDetector(values[1]);
 		break;
 	case IZQUIERDA:
 		return wallDetector(values[3]);
@@ -49,5 +48,18 @@ float lecSensor(int n, uint32_t values[10]) {
 
 	return volts;
 
+}
+
+int lecturaCNY70(int n, uint32_t values[10]) {
+	long suma = 0;
+	for (int i = 0; i < n; i++) {
+		suma = suma + values[i];
+	}
+	int adc = (suma / n);
+	if (adc < 800) {
+		return BLANCO;
+	} else {
+		return NEGRO;
+	}
 }
 

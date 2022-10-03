@@ -75,8 +75,8 @@ all: main-build
 main-build: RobotAlgoritmoSasi.elf secondary-outputs
 
 # Tool invocations
-RobotAlgoritmoSasi.elf RobotAlgoritmoSasi.map: $(OBJS) $(USER_OBJS) C:\Users\jore\Documents\GitHub\RobotEquipoSasi\Codigo\Bluepill\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "RobotAlgoritmoSasi.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\jore\Documents\GitHub\RobotEquipoSasi\Codigo\Bluepill\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RobotAlgoritmoSasi.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+RobotAlgoritmoSasi.elf RobotAlgoritmoSasi.map: $(OBJS) $(USER_OBJS) C:\Users\usuario\Desktop\Prieto\Quinto\RobotEquipoSasi\Codigo\Bluepill\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "RobotAlgoritmoSasi.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\usuario\Desktop\Prieto\Quinto\RobotEquipoSasi\Codigo\Bluepill\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RobotAlgoritmoSasi.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
