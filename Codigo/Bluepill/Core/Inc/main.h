@@ -85,22 +85,20 @@ void movementMachine(int move);
 #define SHARP_C_GPIO_Port GPIOA
 #define SHARP_I_Pin GPIO_PIN_3
 #define SHARP_I_GPIO_Port GPIOA
-#define LED_Pin GPIO_PIN_4
-#define LED_GPIO_Port GPIOA
-#define BTN2_Pin GPIO_PIN_5
-#define BTN2_GPIO_Port GPIOA
 #define MB1_Pin GPIO_PIN_6
 #define MB1_GPIO_Port GPIOA
 #define MB2_Pin GPIO_PIN_7
 #define MB2_GPIO_Port GPIOA
-#define BTN3_Pin GPIO_PIN_0
-#define BTN3_GPIO_Port GPIOB
 #define PWMA_Pin GPIO_PIN_10
 #define PWMA_GPIO_Port GPIOB
 #define PWMB_Pin GPIO_PIN_11
 #define PWMB_GPIO_Port GPIOB
 #define BTN1_Pin GPIO_PIN_12
 #define BTN1_GPIO_Port GPIOB
+#define BTN2_Pin GPIO_PIN_13
+#define BTN2_GPIO_Port GPIOB
+#define BTN3_Pin GPIO_PIN_14
+#define BTN3_GPIO_Port GPIOB
 #define BIN2_Pin GPIO_PIN_11
 #define BIN2_GPIO_Port GPIOA
 #define BIN1_Pin GPIO_PIN_12
@@ -136,7 +134,7 @@ void movementMachine(int move);
 #define SUPER 4
 #define OFF 5
 
-#define FORWARD_DISTANCE 100
+#define FORWARD_DISTANCE 250
 #define LEFT_ANGLE_MIN 90
 #define LEFT_ANGLE_MAX 96
 #define FORWARD_VELOCITY_I 40

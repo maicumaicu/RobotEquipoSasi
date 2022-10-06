@@ -9,13 +9,15 @@
 #include <math.h>
 
 int wallDetector(int n) {
-	if (n < 15) {
+	if (n < 17) {
 		return 1;
+	} else {
+		return 0;
 	}
-	return 0;
+
 }
 
-float lecturaSensor(int direccion, uint32_t *values) {
+float lecturaSensor(int direccion, uint32_t values[4]) {
 	switch (direccion) {
 	case ADELANTE:
 		return wallDetector(values[2]);
@@ -30,7 +32,7 @@ float lecturaSensor(int direccion, uint32_t *values) {
 		return 0;
 		break;
 	}
-	return 0;
+	return 15;
 }
 
 float lecSensor(int n, uint32_t values[10]) {

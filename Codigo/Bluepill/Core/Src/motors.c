@@ -13,9 +13,6 @@ float calcularDistancia(int counter) {
   return ((counter) * 2.51 / 10);
 }
 
-
-
-
 void runBackwards() {
 	runMotor(ATRAS, MOTOR_A);
 	runMotor(ATRAS, MOTOR_B);
@@ -61,8 +58,8 @@ void runMotor(int dir, int motor) {
 			HAL_GPIO_WritePin(AIN1, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(AIN2, GPIO_PIN_SET);
 		} else {
-			HAL_GPIO_WritePin(BIN1, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(BIN2, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(BIN1, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(BIN2, GPIO_PIN_RESET);
 		}
 		break;
 	case OFF:
