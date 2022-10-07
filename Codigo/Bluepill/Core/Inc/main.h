@@ -144,7 +144,7 @@ void runDirections(char moves[25]);
 #define SUPER 4
 #define OFF 5
 
-#define FORWARD_DISTANCE 240
+#define FORWARD_DISTANCE 230
 #define LEFT_ANGLE_MIN 90
 #define LEFT_ANGLE_MAX 96
 #define FORWARD_VELOCITY_I 40

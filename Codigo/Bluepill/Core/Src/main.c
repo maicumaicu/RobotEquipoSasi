@@ -77,9 +77,9 @@ uint8_t RX_BUFFER[1] = { 0 };
 uint8_t TX_BUFFER[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 float KP, KD, tiempoDelay;
 float velocity;
-float KPchoice[2] = { 70, 100 }; //17                           //Elección de constante proporcional del PID
-float KDchoice[2] = { 5, 500 }; //0.5                          //Elección de constante derivada del PID
-float velocityChoice[2] = { 300, 800 }; //150
+float KPchoice[2] = { 50, 100 }; //17                           //Elección de constante proporcional del PID
+float KDchoice[2] = { 2, 500 }; //0.5                          //Elección de constante derivada del PID
+float velocityChoice[2] = { 250, 500 }; //150
 int c, m, directionsSize, movimiento;
 int finishFlag, movimientoFlag;
 int valueCNY;
@@ -653,7 +653,7 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
-			offset = 20;
+			offset = 30;
 		}
 		break;
 	case DERECHA:
@@ -666,7 +666,7 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
-			offset = 20;
+			offset = 30;
 		}
 		break;
 	case ATRAS:
@@ -679,7 +679,7 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
-			offset = 20;
+			offset = 30;
 		}
 		break;
 		/*case SUPER:
