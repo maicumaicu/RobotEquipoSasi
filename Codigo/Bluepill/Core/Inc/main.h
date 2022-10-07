@@ -75,6 +75,9 @@ void rotateAxis(int direccion);
 void resetAxis();
 void movementMachine(int move);
 void moveStraight();
+void addDirection(int x, int y);
+void intUartSend(int entero);
+void runDirections(char moves[25]);
 
 /* USER CODE END EFP */
 
@@ -141,7 +144,7 @@ void moveStraight();
 #define SUPER 4
 #define OFF 5
 
-#define FORWARD_DISTANCE 270
+#define FORWARD_DISTANCE 240
 #define LEFT_ANGLE_MIN 90
 #define LEFT_ANGLE_MAX 96
 #define FORWARD_VELOCITY_I 40

@@ -32,6 +32,7 @@
 #include "string.h"
 #include "stdio.h"
 #include "math.h"
+#include <float.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +58,7 @@ uint32_t CNY70[10];
 uint32_t SHARP_1[10];
 uint32_t SHARP_2[10];
 uint32_t SHARP_3[10];
-static uint32_t Sensors[4];
+static float Sensors[4];
 int direcciones[4];
 uint8_t serialBuf[100];
 /* USER CODE END PV */
@@ -76,9 +77,9 @@ uint8_t RX_BUFFER[1] = { 0 };
 uint8_t TX_BUFFER[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 float KP, KD, tiempoDelay;
 float velocity;
-float KPchoice[2] = { 100, 100 }; //17                           //Elección de constante proporcional del PID
-float KDchoice[2] = { 10, 500 }; //0.5                          //Elección de constante derivada del PID
-float velocityChoice[2] = { 80, 800 }; //150
+float KPchoice[2] = { 70, 100 }; //17                           //Elección de constante proporcional del PID
+float KDchoice[2] = { 5, 500 }; //0.5                          //Elección de constante derivada del PID
+float velocityChoice[2] = { 300, 800 }; //150
 int c, m, directionsSize, movimiento;
 int finishFlag, movimientoFlag;
 int valueCNY;
@@ -89,7 +90,8 @@ int counter;
 int mainState = SETUP;
 int robotState = READING;
 int movementState = OFF;
-char directions[10];
+char directions[25];
+int directionsSize;
 Position actual;
 Position last;
 Node Map[alto][ancho];
@@ -153,9 +155,9 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		mainMachine();
-		intUartSend(Sensors[1]);
-		intUartSend(Sensors[2]);
-		intUartSend(Sensors[3]);
+		//intUartSend(Sensors[0]);
+		//intUartSend(Sensors[2]);
+		//intUartSend(Sensors[3]);
 
 		/*HAL_GetTick()
 		 * int d = calcularDistancia(TIM4->CNT);
@@ -218,12 +220,6 @@ void SystemClock_Config(void) {
 /* USER CODE BEGIN 4 */
 void intUartSend(int entero) {
 
-	int i;
-	char mC;
-	char cC;
-	char dC;
-	char uC;
-
 	int m;
 	int c;
 	int d;
@@ -276,6 +272,12 @@ void mainMachine() {
 			/*TX_BUFFER[0] = 'L';
 			 HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);*/
 		} else {
+			TX_BUFFER[0] = 'X';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+			intUartSend(actual.x);
+			TX_BUFFER[0] = 'Y';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+			intUartSend(actual.y);
 			actual.x = ALTO;
 			actual.y = ANCHO;
 			//visual.x = 0;
@@ -286,24 +288,28 @@ void mainMachine() {
 			mainState = RESOLUTION;
 		}
 		break;
-		/*case RESOLUTION:
-		 if (Map[actual.x][actual.y].final == false) {
-		 addDirection(actual.x, actual.y);
-		 } else {
+	case RESOLUTION:
+		if (Map[actual.x][actual.y].final == 0) {
+			addDirection(actual.x, actual.y);
+			TX_BUFFER[0] = 'X';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+			intUartSend(actual.x);
+			TX_BUFFER[0] = 'Y';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+			intUartSend(actual.y);
+		} else {
+			//directions = optimizeDirections(directions);
+			//SerialBT.println(directions);
+			// UploadRun(directions);
+			mainState = SETUP;
+		}
 
-		 directions = optimizeDirections(directions);
-		 SerialBT.println(directions);
-		 UploadRun(directions);
-		 mainState = SETUP;
-		 }
-
-		 break;
-		 case RACING:
-		 //runDirections(directions);
-		 break;
-		 }*/
-
+		break;
+	case RACING:
+		runDirections(directions);
+		break;
 	}
+
 }
 
 void robotMachine() {
@@ -351,7 +357,7 @@ void robotMachine() {
 		TX_BUFFER[10] = Map[actual.x][actual.y].Lados[ATRAS] + '0';
 		TX_BUFFER[11] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
-		valueCNY = NEGRO;
+		valueCNY = Sensors[0];
 		if (valueCNY == BLANCO) {
 			Map[actual.x][actual.y].final = 1;
 			finishFlag = 1;
@@ -407,6 +413,52 @@ void robotMachine() {
 		}
 		break;
 	}
+}
+
+void runDirections(char moves[25]) {
+	if (moves[m] == 'a') {
+		movementMachine(ADELANTE);
+	} else if (moves[m] == 'd') {
+		movementMachine(DERECHA);
+	} else if (moves[m] == 'i') {
+		movementMachine(IZQUIERDA);
+	}/* else {
+	 movementMachine(SUPER);
+	 }*/
+	TX_BUFFER[0] = moves[m];
+	HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+	if (movimientoFlag == 1) {
+		m++;
+		movimientoFlag = 0;
+	}
+}
+
+void addDirection(int x, int y) {
+
+	if (Map[x][y].Lados[direcciones[ADELANTE]] != 1) {
+		Map[x][y].Lados[direcciones[ADELANTE]] = 2;
+		moveNode(ADELANTE);
+		directions[directionsSize] = 'a';
+	} else if (Map[x][y].Lados[direcciones[IZQUIERDA]] != 1) {
+		Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
+		moveNode(IZQUIERDA);
+		rotateAxis(IZQUIERDA);
+		directions[directionsSize] = 'i';
+	} else if (Map[x][y].Lados[direcciones[DERECHA]] != 1) {
+		Map[x][y].Lados[direcciones[DERECHA]] = 2;
+		moveNode(DERECHA);
+		rotateAxis(DERECHA);
+		directions[directionsSize] = 'd';
+	}
+	intUartSend(Map[x][y].Lados[direcciones[ADELANTE]]);
+	intUartSend(Map[x][y].Lados[direcciones[IZQUIERDA]]);
+	intUartSend(Map[x][y].Lados[direcciones[DERECHA]]);
+	TX_BUFFER[0] = 'D';
+	TX_BUFFER[1] = directions[directionsSize];
+	TX_BUFFER[2] = '\n';
+	HAL_UART_Transmit(&huart1, TX_BUFFER, 3, 100);
+	directionsSize++;
+
 }
 
 int ChooseNextNode(int x, int y) {
@@ -576,7 +628,7 @@ void movementMachine(int move) {
 
 		if (calcularDistancia((TIM3->CNT) >> 1) < FORWARD_DISTANCE - offset
 				|| calcularDistancia((TIM4->CNT) >> 1)
-						< FORWARD_DISTANCE - offset) {
+						< FORWARD_DISTANCE - offset || Sensors[2] < 10) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
@@ -618,7 +670,7 @@ void movementMachine(int move) {
 		}
 		break;
 	case ATRAS:
-		if (calcularDistancia(TIM4->CNT) < 290) {
+		if (calcularDistancia(TIM4->CNT) < 310) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -722,7 +774,19 @@ int constrain(int x, int a, int b) {
 }
 
 void moveStraight() {
-	error = Sensors[3] - 9;
+	if (Sensors[3] < 16 && Sensors[1] < 16) {
+		intUartSend(0);
+		error = Sensors[3] - Sensors[1];
+	} else if (Sensors[3] < 16) {
+		intUartSend(1);
+		error = Sensors[3] - 9;
+	} else if (Sensors[1] < 16) {
+		intUartSend(2);
+		error = 9 - Sensors[1];
+	} else {
+		intUartSend(3);
+		error = 0;
+	}
 
 	timePrev = timeNow;
 	timeNow = HAL_GetTick();
@@ -731,14 +795,16 @@ void moveStraight() {
 	pidP = KP * error;
 	pid = pidP + pidD;
 	if (pid > velocity) {
+		//intUartSend(1);
 		pid = velocity;
 	}
 	if (pid < -velocity) {
+		//intUartSend(0);
 		pid = -velocity;
 	}
-
-	motRight = velocity - pid;
-	motLeft = velocity + pid;
+	//intUartSend(abs(pid));
+	motLeft = velocity - pid;
+	motRight = velocity + pid;
 	if (motLeft < 0) {
 		motLeft = 0;
 	}
@@ -746,14 +812,14 @@ void moveStraight() {
 		motRight = 0;
 	}
 
-	//setMotors(motLeft, motRight);
 	previousError = error;
 	motRight = constrain(motRight, -1000, 1000);
 	motLeft = constrain(motLeft, -1000, 1000);
-	motRight = MAP(motRight, -1000, 1000, 0, 15000);
-	motLeft = MAP(motLeft, -1000, 1000, 0, 15000);
-	TIM2->CCR3 = motRight;
-	TIM2->CCR4 = motLeft;
+
+	motRight = MAP(motRight, -1000, 1000, 0, 30000);
+	motLeft = MAP(motLeft, -1000, 1000, 0, 30000);
+	TIM2->CCR3 = motLeft;
+	TIM2->CCR4 = motRight;
 }
 
 void runForward() {
