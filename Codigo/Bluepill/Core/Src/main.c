@@ -153,6 +153,10 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		mainMachine();
+		intUartSend(Sensors[1]);
+		intUartSend(Sensors[2]);
+		intUartSend(Sensors[3]);
+
 		/*HAL_GetTick()
 		 * int d = calcularDistancia(TIM4->CNT);
 		 if (calcularDistancia(TIM4->CNT) < 100) {
@@ -212,6 +216,31 @@ void SystemClock_Config(void) {
 }
 
 /* USER CODE BEGIN 4 */
+void intUartSend(int entero) {
+
+	int i;
+	char mC;
+	char cC;
+	char dC;
+	char uC;
+
+	int m;
+	int c;
+	int d;
+	int u;
+
+	m = entero / 1000;
+	c = entero / 100 - m * 10;
+	d = entero / 10 - (m * 100 + c * 10);
+	u = entero - (m * 1000 + c * 100 + d * 10);
+
+	TX_BUFFER[0] = m + '0';
+	TX_BUFFER[1] = c + '0';
+	TX_BUFFER[2] = d + '0';
+	TX_BUFFER[3] = u + '0';
+	TX_BUFFER[4] = '\n';
+	HAL_UART_Transmit(&huart1, TX_BUFFER, 5, 100);
+}
 
 void mainMachine() {
 	switch (mainState) {
@@ -226,8 +255,6 @@ void mainMachine() {
 		if (!HAL_GPIO_ReadPin(BTN1)) {
 			// Set The LED ON!
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-			TX_BUFFER[0] = 'S';
-			HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
 			velocity = velocityChoice[SLOW];
 			TIM2->CCR3 = 8000;
 			TIM2->CCR4 = 8000;

@@ -10,13 +10,13 @@
 
 int wallDetector(int n, int d) {
 	if (d == ADELANTE) {
-		if (n < 12) {
+		if (n < 16) {
 			return 1;
 		} else {
 			return 0;
 		}
 	}
-	if (n < 15) {
+	if (n < 16) {
 		return 1;
 	} else {
 		return 0;
