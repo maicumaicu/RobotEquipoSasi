@@ -74,6 +74,11 @@ int powerA;
 int powerB;
 uint8_t RX_BUFFER[1] = { 0 };
 uint8_t TX_BUFFER[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+float KP, KD, tiempoDelay;
+float velocity;
+float KPchoice[2] = { 100, 100 }; //17                           //Elección de constante proporcional del PID
+float KDchoice[2] = { 10, 500 }; //0.5                          //Elección de constante derivada del PID
+float velocityChoice[2] = { 80, 800 }; //150
 int c, m, directionsSize, movimiento;
 int finishFlag, movimientoFlag;
 int valueCNY;
@@ -88,6 +93,8 @@ char directions[10];
 Position actual;
 Position last;
 Node Map[alto][ancho];
+float error, pid, previousError, elapsedTime, timeNow, timePrev, pidP, pidD;
+int motLeft, motRight;
 /*Position visual;
  Node VisualMap[ALTO][ANCHO];*/
 /* USER CODE END 0 */
@@ -131,8 +138,8 @@ int main(void) {
 	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 	HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
-	TIM2->CCR3 = 8000;
-	TIM2->CCR4 = 8000;
+	TIM2->CCR3 = 15000;
+	TIM2->CCR4 = 15000;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
 	TIM3->CNT = 0;
@@ -146,8 +153,8 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		mainMachine();
-
-		/*int d = calcularDistancia(TIM4->CNT);
+		/*HAL_GetTick()
+		 * int d = calcularDistancia(TIM4->CNT);
 		 if (calcularDistancia(TIM4->CNT) < 100) {
 
 
@@ -221,6 +228,11 @@ void mainMachine() {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 			TX_BUFFER[0] = 'S';
 			HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+			velocity = velocityChoice[SLOW];
+			TIM2->CCR3 = 8000;
+			TIM2->CCR4 = 8000;
+			KP = KPchoice[SLOW];
+			KD = KDchoice[SLOW];
 			mainState = MAPPING;
 		}
 		if (!HAL_GPIO_ReadPin(BTN2)) {
@@ -299,7 +311,19 @@ void robotMachine() {
 			TX_BUFFER[11] = '\n';
 			HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
 		}
-
+		TX_BUFFER[0] = 'D';
+		TX_BUFFER[1] = Map[actual.x][actual.y].Lados[DERECHA] + '0';
+		TX_BUFFER[2] = '\n';
+		TX_BUFFER[3] = 'C';
+		TX_BUFFER[4] = Map[actual.x][actual.y].Lados[ADELANTE] + '0';
+		TX_BUFFER[5] = '\n';
+		TX_BUFFER[6] = 'I';
+		TX_BUFFER[7] = Map[actual.x][actual.y].Lados[IZQUIERDA] + '0';
+		TX_BUFFER[8] = '\n';
+		TX_BUFFER[9] = 'A';
+		TX_BUFFER[10] = Map[actual.x][actual.y].Lados[ATRAS] + '0';
+		TX_BUFFER[11] = '\n';
+		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
 		valueCNY = NEGRO;
 		if (valueCNY == BLANCO) {
 			Map[actual.x][actual.y].final = 1;
@@ -364,7 +388,6 @@ int ChooseNextNode(int x, int y) {
 		TX_BUFFER[1] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 2, 100);
 		Map[x][y].Lados[direcciones[ADELANTE]] = 2;
-
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
 		}
@@ -457,7 +480,7 @@ int SearchAvailableNode(int x, int y) {
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
 		}
-		return direcciones[ADELANTE];
+		return ADELANTE;
 	} else if (Map[x][y].Lados[direcciones[IZQUIERDA]] != 1) {
 		//Serial.println("IZQUIERDA1");
 		Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
@@ -466,7 +489,7 @@ int SearchAvailableNode(int x, int y) {
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
 		}
-		return direcciones[IZQUIERDA];
+		return IZQUIERDA;
 	} else if (Map[x][y].Lados[direcciones[DERECHA]] != 1) {
 		//Serial.println("DERECHA1");
 		Map[x][y].Lados[direcciones[DERECHA]] = 2;
@@ -475,11 +498,10 @@ int SearchAvailableNode(int x, int y) {
 			EliminateNode(x, y);
 		}
 		//rotateAxis(DERECHA);
-		return direcciones[DERECHA];
+		return DERECHA;
 	} else if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
 		//Serial.println("atras1");
-
-		return direcciones[ATRAS];
+		return ATRAS;
 	}
 	return 0;
 }
@@ -528,6 +550,7 @@ void movementMachine(int move) {
 		if (calcularDistancia((TIM3->CNT) >> 1) < FORWARD_DISTANCE - offset
 				|| calcularDistancia((TIM4->CNT) >> 1)
 						< FORWARD_DISTANCE - offset) {
+			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
 		} else {
@@ -568,7 +591,7 @@ void movementMachine(int move) {
 		}
 		break;
 	case ATRAS:
-		if (calcularDistancia(TIM4->CNT) < 310) {
+		if (calcularDistancia(TIM4->CNT) < 290) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -601,19 +624,7 @@ void CreateNode(int x, int y) {
 	Map[x][y].Lados[direcciones[IZQUIERDA]] = lecturaSensor(IZQUIERDA, Sensors);
 	Map[x][y].Lados[direcciones[DERECHA]] = lecturaSensor(DERECHA, Sensors);
 	Map[x][y].Lados[direcciones[ATRAS]] = lecturaSensor(ATRAS, Sensors);
-	TX_BUFFER[0] = 'D';
-	TX_BUFFER[1] = Map[x][y].Lados[DERECHA] + '0';
-	TX_BUFFER[2] = '\n';
-	TX_BUFFER[3] = 'C';
-	TX_BUFFER[4] = Map[x][y].Lados[ADELANTE] + '0';
-	TX_BUFFER[5] = '\n';
-	TX_BUFFER[6] = 'I';
-	TX_BUFFER[7] = Map[x][y].Lados[IZQUIERDA] + '0';
-	TX_BUFFER[8] = '\n';
-	TX_BUFFER[9] = 'A';
-	TX_BUFFER[10] = Map[x][y].Lados[ATRAS] + '0';
-	TX_BUFFER[11] = '\n';
-	HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
+
 }
 
 void rotateAxis(int direccion) {
@@ -666,6 +677,56 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	Sensors[2] = lecSensor(10, SHARP_2);
 	Sensors[3] = lecSensor(10, SHARP_3);
 
+}
+
+uint32_t MAP(uint32_t au32_IN, uint32_t au32_INmin, uint32_t au32_INmax,
+		uint32_t au32_OUTmin, uint32_t au32_OUTmax) {
+	return ((((au32_IN - au32_INmin) * (au32_OUTmax - au32_OUTmin))
+			/ (au32_INmax - au32_INmin)) + au32_OUTmin);
+}
+
+int constrain(int x, int a, int b) {
+	if (x < a) {
+		return a;
+	} else if (b < x) {
+		return b;
+	} else
+		return x;
+}
+
+void moveStraight() {
+	error = Sensors[3] - 9;
+
+	timePrev = timeNow;
+	timeNow = HAL_GetTick();
+	elapsedTime = (timeNow - timePrev) / 1000;
+	pidD = KD * ((error - previousError) / elapsedTime);
+	pidP = KP * error;
+	pid = pidP + pidD;
+	if (pid > velocity) {
+		pid = velocity;
+	}
+	if (pid < -velocity) {
+		pid = -velocity;
+	}
+
+	motRight = velocity - pid;
+	motLeft = velocity + pid;
+	if (motLeft < 0) {
+		motLeft = 0;
+	}
+	if (motRight < 0) {
+		motRight = 0;
+	}
+
+	//setMotors(motLeft, motRight);
+	previousError = error;
+	motRight = constrain(motRight, -1000, 1000);
+	motLeft = constrain(motLeft, -1000, 1000);
+	motRight = MAP(motRight, -1000, 1000, 0, 15000);
+	motLeft = MAP(motLeft, -1000, 1000, 0, 15000);
+	TIM2->CCR3 = motRight;
+	TIM2->CCR4 = motLeft;
 }
 
 void runForward() {

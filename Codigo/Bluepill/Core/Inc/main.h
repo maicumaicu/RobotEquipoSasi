@@ -74,6 +74,8 @@ void moveNode(int lado);
 void rotateAxis(int direccion);
 void resetAxis();
 void movementMachine(int move);
+void moveStraight();
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -99,6 +101,8 @@ void movementMachine(int move);
 #define BTN2_GPIO_Port GPIOB
 #define BTN3_Pin GPIO_PIN_14
 #define BTN3_GPIO_Port GPIOB
+#define LED_Pin GPIO_PIN_15
+#define LED_GPIO_Port GPIOB
 #define BIN2_Pin GPIO_PIN_11
 #define BIN2_GPIO_Port GPIOA
 #define BIN1_Pin GPIO_PIN_12
@@ -127,6 +131,9 @@ void movementMachine(int move);
 #define MOTOR_A 0
 #define MOTOR_B 1
 
+#define SLOW 0
+#define FAST 1
+
 #define ADELANTE 0
 #define IZQUIERDA 1
 #define ATRAS 2
@@ -134,7 +141,7 @@ void movementMachine(int move);
 #define SUPER 4
 #define OFF 5
 
-#define FORWARD_DISTANCE 250
+#define FORWARD_DISTANCE 270
 #define LEFT_ANGLE_MIN 90
 #define LEFT_ANGLE_MAX 96
 #define FORWARD_VELOCITY_I 40
@@ -161,6 +168,8 @@ void movementMachine(int move);
 
 #define PARED 1
 #define LIBRE 0
+
+#define SETPOINT 8
 
 /* USER CODE END Private defines */
 
