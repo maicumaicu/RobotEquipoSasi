@@ -77,13 +77,17 @@ uint8_t RX_BUFFER[1] = { 0 };
 uint8_t TX_BUFFER[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 float KP, KD, tiempoDelay;
 float velocity;
-float KPchoice[2] = { 200, 100 }; //17                           //Elección de constante proporcional del PID
-float KDchoice[2] = { 3, 500 }; //0.5                          //Elección de constante derivada del PID
-float velocityChoice[2] = { 700, 500 };
-int baseChoice[2] = { 8000, 15000 }; //150
-int forwardChoice[2] = { 250, 230 };
-int RightChoice[2] = { 155, 135 };
-int LeftChoice[2] = { 155, 135 };
+long ticksNow;
+int timerForward = 1000;
+int timerLeft = 1000;
+int timerRight = 1000;
+float KPchoice[2] = { 150, 500 }; //17                           //Elección de constante proporcional del PID
+float KDchoice[2] = { 40, 5 }; //0.5                          //Elección de constante derivada del PID
+float velocityChoice[2] = { 1000, 1000 };
+int baseChoice[2] = { 10000, 15000 }; //150
+int forwardChoice[2] = { 310, 290 };
+int RightChoice[2] = { 155, 155 };
+int LeftChoice[2] = { 155, 155 };
 int choice;
 int c, m, directionsSize, movimiento;
 int finishFlag, movimientoFlag;
@@ -91,6 +95,7 @@ int valueCNY;
 int direcciones[4];
 int offset;
 int counter;
+int tick;
 
 int mainState = SETUP;
 int robotState = READING;
@@ -102,6 +107,7 @@ Position last;
 Node Map[alto][ancho];
 float error, pid, previousError, elapsedTime, timeNow, timePrev, pidP, pidD;
 int motLeft, motRight;
+int q;
 /*Position visual;
  Node VisualMap[ALTO][ANCHO];*/
 /* USER CODE END 0 */
@@ -270,6 +276,17 @@ void mainMachine() {
 			//directions = ReadRun();
 			//ShowRun();
 		}
+		if (!HAL_GPIO_ReadPin(BTN3)) {
+			// Set The LED ON!
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+			choice = FAST;
+			velocity = velocityChoice[FAST];
+			TIM2->CCR3 = baseChoice[FAST];
+			TIM2->CCR4 = baseChoice[FAST];
+			KP = KPchoice[FAST];
+			KD = KDchoice[FAST];
+			mainState = MAPPING;
+		}
 		//confirmacionCentrado();
 		break;
 	case MAPPING:
@@ -377,7 +394,7 @@ void robotMachine() {
 			Map[actual.x][actual.y].final = 0;
 			robotState = CHOOSING;
 		}
-		HAL_Delay(1000);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		break;
 	case CHOOSING:
 		movimiento = ChooseNextNode(actual.x, actual.y);
@@ -417,13 +434,16 @@ void robotMachine() {
 		TX_BUFFER[2] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 3, 100);
 		movimientoFlag = 0;
+		ticksNow = HAL_GetTick();
 		robotState = MOVING;
 
 		break;
 	case MOVING:
 		//TX_BUFFER[0] = 'M';
 		//HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 		movementMachine(movimiento);
+
 		if (movimientoFlag == 1) {
 			robotState = READING;
 		}
@@ -653,9 +673,10 @@ void movementMachine(int move) {
 		}
 		break;
 	case ADELANTE:
-
+		tick = HAL_GetTick();
+		intUartSend(tick);
 		if (calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice]
-				&& calcularDistancia((TIM4->CNT) >> 1)
+				|| calcularDistancia((TIM4->CNT) >> 1)
 						< forwardChoice[choice]) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
@@ -673,7 +694,7 @@ void movementMachine(int move) {
 	case IZQUIERDA:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia(TIM3->CNT) < LeftChoice[choice]) {
+		if (calcularDistancia((TIM3->CNT) >> 1) < LeftChoice[choice]) {
 			runMotor(ATRAS, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
 		} else {
@@ -688,7 +709,7 @@ void movementMachine(int move) {
 	case DERECHA:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia(TIM4->CNT) < RightChoice[choice]) {
+		if (calcularDistancia((TIM4->CNT) >> 1) < RightChoice[choice]) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -703,17 +724,17 @@ void movementMachine(int move) {
 	case ATRAS:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia(TIM4->CNT) < RightChoice[choice] * 2) {
+		if (calcularDistancia((TIM4->CNT) >> 1) < RightChoice[choice] * 2) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
-			movementState = ADELANTE;
-			runMotor(OFF, MOTOR_A);
-			runMotor(OFF, MOTOR_B);
-			TIM3->CNT = 0;
-			TIM4->CNT = 0;
-			offset = 30;
-		}
+				movementState = ADELANTE;
+				runMotor(OFF, MOTOR_A);
+				runMotor(OFF, MOTOR_B);
+				TIM3->CNT = 0;
+				TIM4->CNT = 0;
+				offset = 30;
+			}
 		break;
 		/*case SUPER:
 		 int X = directions[m] - '0';
@@ -807,19 +828,19 @@ int constrain(int x, int a, int b) {
 }
 
 void moveStraight() {
-	if (Sensors[3] < 16 && Sensors[1] < 16) {
+	if (Sensors[3] < 22) {
 		//intUartSend(0);
-		error = Sensors[3] - Sensors[1];
-	} else if (Sensors[3] < 16) {
-		//intUartSend(1);
-		error = Sensors[3] - 9;
-	} else if (Sensors[1] < 16) {
-		//intUartSend(2);
-		error = 9 - Sensors[1];
-	} else {
-		//intUartSend(3);
-		error = 0;
-	}
+		error = Sensors[3] - 11;
+	}/* else if (Sensors[3] < 22) {
+	 //intUartSend(1);
+	 error = Sensors[3] ;
+	 } else if (Sensors[1] < 22) {
+	 //intUartSend(2);
+	 error = 14 - Sensors[1];
+	 } else {
+	 //intUartSend(3);
+	 error = 0;
+	 }*/
 
 	timePrev = timeNow;
 	timeNow = HAL_GetTick();

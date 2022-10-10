@@ -62,7 +62,7 @@ defined in linker script */
 Reset_Handler:
 
 /* Copy the data segment initializers from flash to SRAM */
-ldr r0, =_sdata
+	ldr r0, =_sdata
   ldr r1, =_edata
   ldr r2, =_sidata
   movs r3, #0
@@ -80,7 +80,7 @@ LoopCopyDataInit:
   
 /* Zero fill the bss segment. */
   ldr r2, =_sbss
-  ldr r4, =_ebss
+ ldr r4, =_ebss
   movs r3, #0
   b LoopFillZerobss
 

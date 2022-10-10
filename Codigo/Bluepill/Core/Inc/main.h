@@ -152,8 +152,8 @@ void runDirections(char moves[25]);
 #define TURN_VELOCITY_D 50
 #define TURN_VELOCITY_I 50
 
-#define ALTO 5
-#define ANCHO 5
+#define ALTO 8
+#define ANCHO 8
 #define ancho ANCHO * 2
 #define alto ALTO * 2
 
