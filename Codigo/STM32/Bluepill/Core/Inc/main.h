@@ -48,6 +48,13 @@ typedef struct {
 	int x;
 	int y;
 } Position;
+
+typedef struct {
+	GPIO_TypeDef *Port;
+	uint16_t pin;
+	int estado;
+	int flag;
+} button;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -78,6 +85,9 @@ void moveStraight();
 void addDirection(int x, int y);
 void intUartSend(int entero);
 void runDirections(char moves[25]);
+void btnMachine(int index);
+void calibrateMachine();
+int wallDetector(int n, int d);
 
 /* USER CODE END EFP */
 
@@ -131,6 +141,12 @@ void runDirections(char moves[25]);
 #define BTN3 BTN3_GPIO_Port , BTN3_Pin
 #define LED LED_GPIO_Port, LED_Pin
 
+#define CANT_BTN 3
+#define ESPERA 0
+#define CONFIRMACION 1
+#define LIBERACION 2
+#define TICKS_BTN  25
+
 #define MOTOR_A 0
 #define MOTOR_B 1
 
@@ -144,6 +160,11 @@ void runDirections(char moves[25]);
 #define SUPER 4
 #define OFF 5
 
+#define CENTER 0
+#define LEFT 1
+#define RIGHT 2
+#define FORWARD 3
+
 #define FORWARD_DISTANCE 230
 #define LEFT_ANGLE_MIN 90
 #define LEFT_ANGLE_MAX 96
@@ -152,8 +173,8 @@ void runDirections(char moves[25]);
 #define TURN_VELOCITY_D 50
 #define TURN_VELOCITY_I 50
 
-#define ALTO 5
-#define ANCHO 5
+#define ALTO 8
+#define ANCHO 8
 #define ancho ANCHO * 2
 #define alto ALTO * 2
 
@@ -165,6 +186,7 @@ void runDirections(char moves[25]);
 #define MAPPING 1
 #define RESOLUTION 2
 #define RACING 3
+#define CALIBRATE 4
 
 #define NEGRO 1
 #define BLANCO 0

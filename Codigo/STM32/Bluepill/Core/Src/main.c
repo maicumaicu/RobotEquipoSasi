@@ -71,21 +71,32 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int calState, CenterDistanceRight, CenterDistanceLeft, MaxRightDistance,
+		MaxLeftDistance, MaxCenterDistance;
 int powerA;
 int powerB;
+int ticks, lecturaBtn;
 uint8_t RX_BUFFER[1] = { 0 };
 uint8_t TX_BUFFER[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 float KP, KD, tiempoDelay;
 float velocity;
-float KPchoice[2] = { 50, 100 }; //17                           //Elección de constante proporcional del PID
-float KDchoice[2] = { 2, 500 }; //0.5                          //Elección de constante derivada del PID
-float velocityChoice[2] = { 250, 500 }; //150
+long ticksNow;
+float KPchoice[2] = { 180, 500 }; //17                           //Elección de constante proporcional del PID
+float KDchoice[2] = { 5, 5 }; //0.5                          //Elección de constante derivada del PID
+float velocityChoice[2] = { 1000, 1000 };
+int baseChoice[2] = { 10000, 15000 }; //150
+int forwardChoice[2] = { 310, 290 };
+int RightChoice[2] = { 155, 155 };
+int LeftChoice[2] = { 155, 155 };
+int choice;
 int c, m, directionsSize, movimiento;
 int finishFlag, movimientoFlag;
 int valueCNY;
 int direcciones[4];
 int offset;
 int counter;
+int tick;
+button btns[CANT_BTN];
 
 int mainState = SETUP;
 int robotState = READING;
@@ -97,6 +108,7 @@ Position last;
 Node Map[alto][ancho];
 float error, pid, previousError, elapsedTime, timeNow, timePrev, pidP, pidD;
 int motLeft, motRight;
+int q;
 /*Position visual;
  Node VisualMap[ALTO][ANCHO];*/
 /* USER CODE END 0 */
@@ -135,6 +147,18 @@ int main(void) {
 	MX_USART1_UART_Init();
 	MX_TIM2_Init();
 	/* USER CODE BEGIN 2 */
+	btns[0].Port = BTN1_GPIO_Port;
+	btns[0].pin = BTN1_Pin;
+	btns[0].estado = ESPERA;
+	btns[0].flag = 0;
+	btns[1].Port = BTN2_GPIO_Port;
+	btns[1].pin = BTN2_Pin;
+	btns[1].estado = ESPERA;
+	btns[1].flag = 0;
+	btns[2].Port = BTN3_GPIO_Port;
+	btns[2].pin = BTN3_Pin;
+	btns[2].estado = ESPERA;
+	btns[2].flag = 0;
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
 	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
@@ -155,8 +179,11 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		mainMachine();
+		btnMachine(0);
+		btnMachine(1);
+		btnMachine(2);
 		//intUartSend(Sensors[0]);
-		//intUartSend(Sensors[2]);
+		//intUartSend(Sensors[3]);
 		//intUartSend(Sensors[3]);
 
 		/*HAL_GetTick()
@@ -248,23 +275,50 @@ void mainMachine() {
 		resetAxis();
 		movimientoFlag = 0;
 		finishFlag = 0;
-		if (!HAL_GPIO_ReadPin(BTN1)) {
+		if (btns[0].flag == 1) {
 			// Set The LED ON!
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			choice = SLOW;
 			velocity = velocityChoice[SLOW];
-			TIM2->CCR3 = 8000;
-			TIM2->CCR4 = 8000;
+			TIM2->CCR3 = baseChoice[SLOW];
+			TIM2->CCR4 = baseChoice[SLOW];
 			KP = KPchoice[SLOW];
 			KD = KDchoice[SLOW];
-			mainState = MAPPING;
+			if (q == 0) {
+				mainState = CALIBRATE;
+				q++;
+			} else {
+				mainState = MAPPING;
+			}
+
 		}
-		if (!HAL_GPIO_ReadPin(BTN2)) {
+		if (btns[1].flag == 1) {
 			// Set The LED ON!
 			mainState = RACING;
 			//directions = ReadRun();
 			//ShowRun();
 		}
+		if (btns[2].flag == 1) {
+			// Set The LED ON!
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			choice = FAST;
+			velocity = velocityChoice[FAST];
+			TIM2->CCR3 = baseChoice[FAST];
+			TIM2->CCR4 = baseChoice[FAST];
+			KP = KPchoice[FAST];
+			KD = KDchoice[FAST];
+			if (q == 0) {
+				mainState = CALIBRATE;
+				q++;
+			} else {
+				mainState = MAPPING;
+			}
+		}
 		//confirmacionCentrado();
+		break;
+	case CALIBRATE:
+		calibrateMachine();
+		//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 		break;
 	case MAPPING:
 		if (finishFlag == 0) {
@@ -312,35 +366,86 @@ void mainMachine() {
 
 }
 
+void calibrateMachine() {
+	switch (calState) {
+	case CENTER:
+		intUartSend(abs(Sensors[1] - Sensors[3]));
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		if (abs(Sensors[1] - Sensors[3]) < 0.5) {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			if (btns[0].flag == 1) {
+				CenterDistanceRight = Sensors[3];
+				CenterDistanceLeft = Sensors[1];
+				calState = LEFT;
+			}
+		}
+		break;
+	case LEFT:
+		intUartSend(abs(Sensors[1]));
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		if (btns[0].flag == 1) {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			MaxLeftDistance = Sensors[1];
+			calState = RIGHT;
+		}
+		break;
+	case RIGHT:
+		intUartSend(abs(Sensors[3]));
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		if (btns[0].flag == 1) {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			MaxRightDistance = Sensors[3];
+			calState = FORWARD;
+		}
+		break;
+	case FORWARD:
+		intUartSend(abs(Sensors[2]));
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		if (btns[0].flag == 1) {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			MaxCenterDistance = Sensors[2];
+			mainState = SETUP;
+			calState = CENTER;
+		}
+		break;
+	}
+}
+
 void robotMachine() {
 	switch (robotState) {
 	case READING:
+		TX_BUFFER[0] = 'X';
+		TX_BUFFER[1] = actual.x + '0';
+		TX_BUFFER[2] = '\n';
+		TX_BUFFER[3] = 'Y';
+		TX_BUFFER[4] = actual.y + '0';
+		TX_BUFFER[5] = '\n';
+		HAL_UART_Transmit(&huart1, TX_BUFFER, 6, 100);
 		Map[actual.x][actual.y].visitado++;
 		if (Map[actual.x][actual.y].visitado == 1) {
 			runMotor(OFF, MOTOR_A);
 			runMotor(OFF, MOTOR_B);
 			CreateNode(actual.x, actual.y);
 			TX_BUFFER[0] = 'D';
-			TX_BUFFER[1] = Sensors[1] + '0';
-			TX_BUFFER[2] = '\n';
-			TX_BUFFER[3] = 'C';
-			TX_BUFFER[4] = Sensors[2] + '0';
-			TX_BUFFER[5] = '\n';
-			TX_BUFFER[6] = 'I';
-			TX_BUFFER[7] = Sensors[3] + '0';
-			TX_BUFFER[8] = '\n';
-			HAL_UART_Transmit(&huart1, TX_BUFFER, 9, 100);
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+			intUartSend(Sensors[1]);
+			TX_BUFFER[0] = 'C';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+			intUartSend(Sensors[2]);
+			TX_BUFFER[0] = 'I';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
+			intUartSend(Sensors[3]);
 			TX_BUFFER[0] = 'D';
-			TX_BUFFER[1] = direcciones[DERECHA] + '0';
+			TX_BUFFER[1] = Map[actual.x][actual.y].Lados[DERECHA] + '0';
 			TX_BUFFER[2] = '\n';
 			TX_BUFFER[3] = 'C';
-			TX_BUFFER[4] = direcciones[ADELANTE] + '0';
+			TX_BUFFER[4] = Map[actual.x][actual.y].Lados[ADELANTE] + '0';
 			TX_BUFFER[5] = '\n';
 			TX_BUFFER[6] = 'I';
-			TX_BUFFER[7] = direcciones[IZQUIERDA] + '0';
+			TX_BUFFER[7] = Map[actual.x][actual.y].Lados[IZQUIERDA] + '0';
 			TX_BUFFER[8] = '\n';
 			TX_BUFFER[9] = 'A';
-			TX_BUFFER[10] = direcciones[ATRAS] + '0';
+			TX_BUFFER[10] = Map[actual.x][actual.y].Lados[ATRAS] + '0';
 			TX_BUFFER[11] = '\n';
 			HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
 		}
@@ -374,25 +479,29 @@ void robotMachine() {
 		TX_BUFFER[2] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 3, 100);
 		if (movimiento == IZQUIERDA) {
-			rotateAxis(IZQUIERDA);
-			if (Map[actual.x][actual.y].Lados[direcciones[ATRAS]] != 1)
+
+			if (Map[actual.x][actual.y].Lados[direcciones[ATRAS]] != 1) {
 				Map[actual.x][actual.y].Lados[direcciones[ATRAS]] = 2;
-			moveNode(IZQUIERDA);
+			}
+			moveNode(direcciones[IZQUIERDA]);
+			rotateAxis(IZQUIERDA);
+
 			counter--;
 		} else if (movimiento == DERECHA) {
-			rotateAxis(DERECHA);
-			if (Map[actual.x][actual.y].Lados[direcciones[ATRAS]] != 1)
+
+			if (Map[actual.x][actual.y].Lados[direcciones[ATRAS]] != 1) {
 				Map[actual.x][actual.y].Lados[direcciones[ATRAS]] = 2;
-			moveNode(DERECHA);
+			}
+			moveNode(direcciones[DERECHA]);
+			rotateAxis(DERECHA);
+
 			counter++;
 		} else if (movimiento == ATRAS) {
 			counter++;
 			counter++;
+			moveNode(direcciones[ATRAS]);
 			rotateAxis(DERECHA);
 			rotateAxis(DERECHA);
-			if (Map[actual.x][actual.y].Lados[direcciones[ATRAS]] != 1)
-				Map[actual.x][actual.y].Lados[direcciones[ATRAS]] = 2;
-			moveNode(ATRAS);
 
 		}
 
@@ -401,13 +510,16 @@ void robotMachine() {
 		TX_BUFFER[2] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 3, 100);
 		movimientoFlag = 0;
+		ticksNow = HAL_GetTick();
 		robotState = MOVING;
 
 		break;
 	case MOVING:
 		//TX_BUFFER[0] = 'M';
 		//HAL_UART_Transmit(&huart1, TX_BUFFER, sizeof(TX_BUFFER), 100);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 		movementMachine(movimiento);
+
 		if (movimientoFlag == 1) {
 			robotState = READING;
 		}
@@ -470,7 +582,7 @@ int ChooseNextNode(int x, int y) {
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
 		}
-		moveNode(ADELANTE);
+		moveNode(direcciones[ADELANTE]);
 		if (Map[x][y].Lados[direcciones[ATRAS]] != 1)
 			Map[x][y].Lados[direcciones[ATRAS]] = 2;
 		TX_BUFFER[0] = 'D';
@@ -533,12 +645,24 @@ int ChooseNextNode(int x, int y) {
 		TX_BUFFER[10] = Map[x][y].Lados[ATRAS] + '0';
 		TX_BUFFER[11] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
-
 		return DERECHA;
 	} else {
 		TX_BUFFER[0] = 'O';
 		TX_BUFFER[1] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 2, 100);
+		TX_BUFFER[0] = 'D';
+		TX_BUFFER[1] = Map[x][y].Lados[DERECHA] + '0';
+		TX_BUFFER[2] = '\n';
+		TX_BUFFER[3] = 'C';
+		TX_BUFFER[4] = Map[x][y].Lados[ADELANTE] + '0';
+		TX_BUFFER[5] = '\n';
+		TX_BUFFER[6] = 'I';
+		TX_BUFFER[7] = Map[x][y].Lados[IZQUIERDA] + '0';
+		TX_BUFFER[8] = '\n';
+		TX_BUFFER[9] = 'A';
+		TX_BUFFER[10] = Map[x][y].Lados[ATRAS] + '0';
+		TX_BUFFER[11] = '\n';
+		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
 		return SearchAvailableNode(x, y);
 	}
 	last.x = x;
@@ -625,10 +749,11 @@ void movementMachine(int move) {
 		}
 		break;
 	case ADELANTE:
-
-		if (calcularDistancia((TIM3->CNT) >> 1) < FORWARD_DISTANCE - offset
-				|| calcularDistancia((TIM4->CNT) >> 1)
-						< FORWARD_DISTANCE - offset || Sensors[2] < 10) {
+		tick = HAL_GetTick();
+		intUartSend(tick);
+		if ((calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice]
+				|| calcularDistancia((TIM4->CNT) >> 1) < forwardChoice[choice])
+				&& Sensors[2] > 5) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
@@ -643,8 +768,9 @@ void movementMachine(int move) {
 		}
 		break;
 	case IZQUIERDA:
-
-		if (calcularDistancia(TIM3->CNT) < 155) {
+		TIM2->CCR3 = baseChoice[choice];
+		TIM2->CCR4 = baseChoice[choice];
+		if (calcularDistancia((TIM3->CNT) >> 1) < LeftChoice[choice]) {
 			runMotor(ATRAS, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
 		} else {
@@ -657,7 +783,9 @@ void movementMachine(int move) {
 		}
 		break;
 	case DERECHA:
-		if (calcularDistancia(TIM4->CNT) < 155) {
+		TIM2->CCR3 = baseChoice[choice];
+		TIM2->CCR4 = baseChoice[choice];
+		if (calcularDistancia((TIM4->CNT) >> 1) < RightChoice[choice]) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -670,7 +798,9 @@ void movementMachine(int move) {
 		}
 		break;
 	case ATRAS:
-		if (calcularDistancia(TIM4->CNT) < 310) {
+		TIM2->CCR3 = baseChoice[choice];
+		TIM2->CCR4 = baseChoice[choice];
+		if (calcularDistancia((TIM4->CNT) >> 1) < RightChoice[choice] * 2) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -773,18 +903,48 @@ int constrain(int x, int a, int b) {
 		return x;
 }
 
+int wallDetector(int n, int d) {
+	switch (d) {
+	case ADELANTE:
+		if (n < MaxCenterDistance) {
+			return 1;
+		} else {
+			return 0;
+		}
+		break;
+
+	case IZQUIERDA:
+		if (n < MaxLeftDistance) {
+			return 1;
+		} else {
+			return 0;
+		}
+		break;
+	case DERECHA:
+		if (n < MaxRightDistance) {
+			return 1;
+		} else {
+			return 0;
+		}
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+
 void moveStraight() {
-	if (Sensors[3] < 16 && Sensors[1] < 16) {
-		intUartSend(0);
+	if (Sensors[3] < MaxLeftDistance && Sensors[1] < MaxRightDistance) {
+		//intUartSend(0);
 		error = Sensors[3] - Sensors[1];
-	} else if (Sensors[3] < 16) {
-		intUartSend(1);
-		error = Sensors[3] - 9;
-	} else if (Sensors[1] < 16) {
-		intUartSend(2);
-		error = 9 - Sensors[1];
+	} else if (Sensors[3] < MaxLeftDistance) {
+		//intUartSend(1);
+		error = Sensors[3] - CenterDistanceLeft;
+	} else if (Sensors[1] < MaxRightDistance) {
+		//intUartSend(2);
+		error = CenterDistanceRight - Sensors[1];
 	} else {
-		intUartSend(3);
+		//intUartSend(3);
 		error = 0;
 	}
 
@@ -802,7 +962,7 @@ void moveStraight() {
 		//intUartSend(0);
 		pid = -velocity;
 	}
-	//intUartSend(abs(pid));
+//intUartSend(abs(pid));
 	motLeft = velocity - pid;
 	motRight = velocity + pid;
 	if (motLeft < 0) {
@@ -816,8 +976,8 @@ void moveStraight() {
 	motRight = constrain(motRight, -1000, 1000);
 	motLeft = constrain(motLeft, -1000, 1000);
 
-	motRight = MAP(motRight, -1000, 1000, 0, 30000);
-	motLeft = MAP(motLeft, -1000, 1000, 0, 30000);
+	motRight = MAP(motRight, -1000, 1000, 0, baseChoice[choice] * 2);
+	motLeft = MAP(motLeft, -1000, 1000, 0, baseChoice[choice] * 2);
 	TIM2->CCR3 = motLeft;
 	TIM2->CCR4 = motRight;
 }
@@ -826,6 +986,39 @@ void runForward() {
 	runMotor(ADELANTE, MOTOR_A);
 	runMotor(ADELANTE, MOTOR_B);
 }
+
+void btnMachine(int index) {
+	switch (btns[index].estado) {
+	case ESPERA:
+		btns[index].flag = 0;
+		lecturaBtn = HAL_GPIO_ReadPin(btns[index].Port, btns[index].pin);
+		if (lecturaBtn == 0) {
+			ticks = HAL_GetTick();
+			btns[index].estado = CONFIRMACION;
+		}
+		break;
+
+	case CONFIRMACION:
+		lecturaBtn = HAL_GPIO_ReadPin(btns[index].Port, btns[index].pin);
+		if (lecturaBtn == 0 && HAL_GetTick() >= ticks + TICKS_BTN) {
+			btns[index].estado = LIBERACION;
+		}
+
+		if (lecturaBtn == 1 && ticks < TICKS_BTN) {
+			btns[index].estado = ESPERA;
+		}
+		break;
+
+	case LIBERACION:
+		lecturaBtn = HAL_GPIO_ReadPin(btns[index].Port, btns[index].pin);
+		if (lecturaBtn == 1) {
+			btns[index].flag = 1;
+			btns[index].estado = ESPERA;
+		}
+		break;
+	}
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -857,3 +1050,4 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+

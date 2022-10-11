@@ -14,5 +14,5 @@ uint32_t* readSensor(uint32_t *value);
 float lecturaSensor(int direccion, float *values);
 float lecSensor(int n, uint32_t *values);
 int lecturaCNY70(int n, uint32_t values[10]);
-int wallDetector(int n, int d);
+
 #endif /* INC_SHARP_H_ */

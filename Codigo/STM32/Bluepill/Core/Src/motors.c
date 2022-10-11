@@ -10,7 +10,7 @@
 int counterD, counterI;
 
 float calcularDistancia(int counter) {
-  return ((counter) * 2.51 / 10);
+  return ((counter) * 8.43938 / 10);
 }
 
 void runBackwards() {
