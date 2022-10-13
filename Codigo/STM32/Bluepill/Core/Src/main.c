@@ -91,6 +91,9 @@ int baseChoice[2] = { 10000, 15000 }; //150
 int forwardChoice[2] = { 310, 290 };
 int RightChoice[2] = { 155, 155 };
 int LeftChoice[2] = { 155, 155 };
+int TimerForward[2] = { 400, 200 };
+int TimerRight[2] = { 200, 200 };
+int TimerLeft[2] = { 200, 200 };
 int choice;
 int c, m, directionsSize, movimiento;
 int finishFlag, movimientoFlag;
@@ -754,11 +757,9 @@ void moveNode(int lado) {
  }
  break;
  case ADELANTE:
- /*tick = HAL_GetTick();
+ tick = HAL_GetTick();
  intUartSend(tick);
- if (/*(calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice]
- || calcularDistancia((TIM4->CNT) >> 1) < forwardChoice[choice])
- &&btns[0].flag == 0) {
+ if (ticksNow + TimerForward[choice] > tick) {
  moveStraight();
  runMotor(ADELANTE, MOTOR_A);
  runMotor(ADELANTE, MOTOR_B);
@@ -773,13 +774,15 @@ void moveNode(int lado) {
  }
  break;
  case IZQUIERDA:
+ tick = HAL_GetTick();
  TIM2->CCR3 = baseChoice[choice];
  TIM2->CCR4 = baseChoice[choice];
- if (btns[0].flag == 1) {
- /*runMotor(ATRAS, MOTOR_A);
+ if (ticksNow + TimerLeft[choice] > tick) {
+ runMotor(ATRAS, MOTOR_A);
  runMotor(ADELANTE, MOTOR_B);
  } else {
  movementState = ADELANTE;
+ ticksNow = HAL_GetTick();
  runMotor(OFF, MOTOR_A);
  runMotor(OFF, MOTOR_B);
  TIM3->CNT = 0;
@@ -788,13 +791,15 @@ void moveNode(int lado) {
  }
  break;
  case DERECHA:
+ tick = HAL_GetTick();
  TIM2->CCR3 = baseChoice[choice];
  TIM2->CCR4 = baseChoice[choice];
- if (btns[0].flag == 1) {
- /*runMotor(ADELANTE, MOTOR_A);
+ if (ticksNow + TimerRight[choice] > tick) {
+ runMotor(ADELANTE, MOTOR_A);
  runMotor(ATRAS, MOTOR_B);
  } else {
  movementState = ADELANTE;
+ ticksNow = HAL_GetTick();
  runMotor(OFF, MOTOR_A);
  runMotor(OFF, MOTOR_B);
  TIM3->CNT = 0;
@@ -803,12 +808,14 @@ void moveNode(int lado) {
  }
  break;
  case ATRAS:
+ tick = HAL_GetTick();
  TIM2->CCR3 = baseChoice[choice];
  TIM2->CCR4 = baseChoice[choice];
- if (btns[0].flag == 1) {
- /*runMotor(ADELANTE, MOTOR_A);
+ if (ticksNow + TimerRight[choice] * 2 > tick) {
+ runMotor(ADELANTE, MOTOR_A);
  runMotor(ATRAS, MOTOR_B);
  } else {
+ ticksNow = HAL_GetTick();
  movementState = ADELANTE;
  runMotor(OFF, MOTOR_A);
  runMotor(OFF, MOTOR_B);
@@ -831,7 +838,7 @@ void movementMachine(int move) {
 		}
 		break;
 	case ADELANTE:
-		intUartSend((int) calcularDistancia(TIM3->CNT) >> 1);
+		intUartSend((int) calcularDistancia(TIM3->CNT));
 		if ((calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice])) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
@@ -1121,4 +1128,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
