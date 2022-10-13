@@ -81,6 +81,9 @@ uint8_t TX_BUFFER[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 float KP, KD, tiempoDelay;
 float velocity;
 long ticksNow;
+int RightTick = 500;
+int LeftTick = 500;
+int ForwardTick = 400;
 float KPchoice[2] = { 180, 500 }; //17                           //Elección de constante proporcional del PID
 float KDchoice[2] = { 5, 5 }; //0.5                          //Elección de constante derivada del PID
 float velocityChoice[2] = { 1000, 1000 };
@@ -179,6 +182,7 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		mainMachine();
+		intUartSend((int) calcularDistancia(TIM3->CNT) >> 1);
 		btnMachine(0);
 		btnMachine(1);
 		btnMachine(2);
@@ -338,7 +342,7 @@ void mainMachine() {
 			//visual.y = 0;
 			finishFlag = 0;
 			resetAxis();
-			//PrintMap();
+			PrintMap();
 			mainState = RESOLUTION;
 		}
 		break;
@@ -470,7 +474,7 @@ void robotMachine() {
 			Map[actual.x][actual.y].final = 0;
 			robotState = CHOOSING;
 		}
-		HAL_Delay(1000);
+		PrintMap();
 		break;
 	case CHOOSING:
 		movimiento = ChooseNextNode(actual.x, actual.y);
@@ -737,6 +741,84 @@ void moveNode(int lado) {
 		break;
 	}
 }
+
+/*void movementMachine(int move) {
+ switch (movementState) {
+ case OFF:
+ runMotor(OFF, MOTOR_A);
+ runMotor(OFF, MOTOR_B);
+ if (move != OFF) {
+ movementState = move;
+ TIM3->CNT = 0;
+ TIM4->CNT = 0;
+ }
+ break;
+ case ADELANTE:
+ /*tick = HAL_GetTick();
+ intUartSend(tick);
+ if (/*(calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice]
+ || calcularDistancia((TIM4->CNT) >> 1) < forwardChoice[choice])
+ &&btns[0].flag == 0) {
+ moveStraight();
+ runMotor(ADELANTE, MOTOR_A);
+ runMotor(ADELANTE, MOTOR_B);
+ } else {
+ movimientoFlag = 1;
+ movementState = OFF;
+ runMotor(OFF, MOTOR_A);
+ runMotor(OFF, MOTOR_B);
+ TIM3->CNT = 0;
+ TIM4->CNT = 0;
+ offset = 0;
+ }
+ break;
+ case IZQUIERDA:
+ TIM2->CCR3 = baseChoice[choice];
+ TIM2->CCR4 = baseChoice[choice];
+ if (btns[0].flag == 1) {
+ /*runMotor(ATRAS, MOTOR_A);
+ runMotor(ADELANTE, MOTOR_B);
+ } else {
+ movementState = ADELANTE;
+ runMotor(OFF, MOTOR_A);
+ runMotor(OFF, MOTOR_B);
+ TIM3->CNT = 0;
+ TIM4->CNT = 0;
+ offset = 30;
+ }
+ break;
+ case DERECHA:
+ TIM2->CCR3 = baseChoice[choice];
+ TIM2->CCR4 = baseChoice[choice];
+ if (btns[0].flag == 1) {
+ /*runMotor(ADELANTE, MOTOR_A);
+ runMotor(ATRAS, MOTOR_B);
+ } else {
+ movementState = ADELANTE;
+ runMotor(OFF, MOTOR_A);
+ runMotor(OFF, MOTOR_B);
+ TIM3->CNT = 0;
+ TIM4->CNT = 0;
+ offset = 30;
+ }
+ break;
+ case ATRAS:
+ TIM2->CCR3 = baseChoice[choice];
+ TIM2->CCR4 = baseChoice[choice];
+ if (btns[0].flag == 1) {
+ /*runMotor(ADELANTE, MOTOR_A);
+ runMotor(ATRAS, MOTOR_B);
+ } else {
+ movementState = ADELANTE;
+ runMotor(OFF, MOTOR_A);
+ runMotor(OFF, MOTOR_B);
+ TIM3->CNT = 0;
+ TIM4->CNT = 0;
+ offset = 30;
+ }
+ break;
+ }
+ }*/
 void movementMachine(int move) {
 	switch (movementState) {
 	case OFF:
@@ -749,11 +831,8 @@ void movementMachine(int move) {
 		}
 		break;
 	case ADELANTE:
-		tick = HAL_GetTick();
-		intUartSend(tick);
-		if ((calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice]
-				|| calcularDistancia((TIM4->CNT) >> 1) < forwardChoice[choice])
-				&& Sensors[2] > 5) {
+		intUartSend((int) calcularDistancia(TIM3->CNT) >> 1);
+		if ((calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice])) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
@@ -785,7 +864,7 @@ void movementMachine(int move) {
 	case DERECHA:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM4->CNT) >> 1) < RightChoice[choice]) {
+		if (calcularDistancia((TIM3->CNT) >> 1) < RightChoice[choice]) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -800,7 +879,7 @@ void movementMachine(int move) {
 	case ATRAS:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM4->CNT) >> 1) < RightChoice[choice] * 2) {
+		if (calcularDistancia((TIM3->CNT) >> 1) < RightChoice[choice] * 2) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -812,19 +891,7 @@ void movementMachine(int move) {
 			offset = 30;
 		}
 		break;
-		/*case SUPER:
-		 int X = directions[m] - '0';
-		 if (calcularDistancia(counterD) < FORWARD_DISTANCE * X
-		 && calcularDistancia(counterI) < FORWARD_DISTANCE * X) {
-		 estabilizacion();
-		 powerA = 200;
-		 powerB = 200;
-		 runForward(powerA, powerB);
-		 } else {
-		 movimientoFlag = 1;
-		 movementState = OFF;
-		 }
-		 break;*/
+
 	}
 }
 
@@ -868,8 +935,12 @@ void PrintMap() {
 		for (int j = 0; j < ancho; j++) {
 			//SerialBT.print(Map[i][j].visitado);
 			//SerialBT.print(" ");
+			TX_BUFFER[0] = Map[i][j].visitado + '0';
+			TX_BUFFER[1] = ' ';
+			HAL_UART_Transmit(&huart1, TX_BUFFER, 2, 100);
 		}
-		//SerialBT.println();
+		TX_BUFFER[0] = '\n';
+		HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
 	}
 }
 

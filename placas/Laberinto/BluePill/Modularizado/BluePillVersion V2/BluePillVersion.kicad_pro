@@ -35,7 +35,7 @@
         "pads": {
           "drill": 1.2,
           "height": 2.0,
-          "width": 1.5
+          "width": 2.2
         },
         "silk_line_width": 0.15,
         "silk_text_italic": false,
@@ -110,7 +110,7 @@
         "min_microvia_diameter": 0.19999999999999998,
         "min_microvia_drill": 0.09999999999999999,
         "min_silk_clearance": 0.0,
-        "min_through_hole_diameter": 0.3,
+        "min_through_hole_diameter": 1.2,
         "min_track_width": 0.19999999999999998,
         "min_via_annular_width": 0.049999999999999996,
         "min_via_diameter": 0.39999999999999997,
@@ -435,14 +435,6 @@
     [
       "e63e39d7-6ac0-4ffd-8aa3-1841a4541b55",
       ""
-    ],
-    [
-      "8a93025d-ae0b-4637-828e-5f9162c8274c",
-      "Placa Motores"
-    ],
-    [
-      "33d524d2-d8f3-42c6-8947-93d1af53651e",
-      "Controlador"
     ]
   ],
   "text_variables": {}

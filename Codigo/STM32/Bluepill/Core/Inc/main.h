@@ -88,6 +88,7 @@ void runDirections(char moves[25]);
 void btnMachine(int index);
 void calibrateMachine();
 int wallDetector(int n, int d);
+void PrintMap();
 
 /* USER CODE END EFP */
 
