@@ -84,11 +84,11 @@ long ticksNow;
 int RightTick = 500;
 int LeftTick = 500;
 int ForwardTick = 400;
-float KPchoice[2] = { 180, 500 }; //17                           //Elección de constante proporcional del PID
-float KDchoice[2] = { 5, 5 }; //0.5                          //Elección de constante derivada del PID
+float KPchoice[2] = { 80, 500 }; //17                           //Elección de constante proporcional del PID
+float KDchoice[2] = { 4, 5 }; //0.5                          //Elección de constante derivada del PID
 float velocityChoice[2] = { 1000, 1000 };
 int baseChoice[2] = { 10000, 15000 }; //150
-int forwardChoice[2] = { 310, 290 };
+int forwardChoice[2] = { 260, 290 };
 int RightChoice[2] = { 155, 155 };
 int LeftChoice[2] = { 155, 155 };
 int TimerForward[2] = { 400, 200 };
@@ -185,12 +185,14 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		mainMachine();
-		intUartSend((int) calcularDistancia(TIM3->CNT) >> 1);
+		/*intUartSend((int) calcularDistancia(TIM3->CNT) >> 1);
+		 runMotor(ADELANTE, MOTOR_A);
+		 runMotor(ATRAS, MOTOR_B);*/
 		btnMachine(0);
 		btnMachine(1);
 		btnMachine(2);
-		//intUartSend(Sensors[0]);
-		//intUartSend(Sensors[3]);
+		intUartSend(Sensors[0]);
+		//intUartSend(Sensors[1]);
 		//intUartSend(Sensors[3]);
 
 		/*HAL_GetTick()
@@ -282,6 +284,11 @@ void mainMachine() {
 		resetAxis();
 		movimientoFlag = 0;
 		finishFlag = 0;
+		if (abs(Sensors[1] - Sensors[3]) < 0.5) {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+		} else {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		}
 		if (btns[0].flag == 1) {
 			// Set The LED ON!
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
@@ -388,20 +395,20 @@ void calibrateMachine() {
 		}
 		break;
 	case LEFT:
-		intUartSend(abs(Sensors[1]));
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-		if (btns[0].flag == 1) {
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-			MaxLeftDistance = Sensors[1];
-			calState = RIGHT;
-		}
-		break;
-	case RIGHT:
 		intUartSend(abs(Sensors[3]));
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		if (btns[0].flag == 1) {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-			MaxRightDistance = Sensors[3];
+			MaxLeftDistance = Sensors[3] + 2;
+			calState = RIGHT;
+		}
+		break;
+	case RIGHT:
+		intUartSend(abs(Sensors[1]));
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		if (btns[0].flag == 1) {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			MaxRightDistance = Sensors[1] + 2;
 			calState = FORWARD;
 		}
 		break;
@@ -410,7 +417,7 @@ void calibrateMachine() {
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		if (btns[0].flag == 1) {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-			MaxCenterDistance = Sensors[2];
+			MaxCenterDistance = Sensors[2] + 2;
 			mainState = SETUP;
 			calState = CENTER;
 		}
@@ -421,6 +428,7 @@ void calibrateMachine() {
 void robotMachine() {
 	switch (robotState) {
 	case READING:
+		HAL_Delay(100);
 		TX_BUFFER[0] = 'X';
 		TX_BUFFER[1] = actual.x + '0';
 		TX_BUFFER[2] = '\n';
@@ -477,7 +485,8 @@ void robotMachine() {
 			Map[actual.x][actual.y].final = 0;
 			robotState = CHOOSING;
 		}
-		PrintMap();
+		//PrintMap();
+		//HAL_Delay(1000);
 		break;
 	case CHOOSING:
 		movimiento = ChooseNextNode(actual.x, actual.y);
@@ -835,11 +844,14 @@ void movementMachine(int move) {
 			movementState = move;
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
+			if (move == IZQUIERDA) {
+				TIM3->CNT = 580 + 100;
+			}
 		}
 		break;
 	case ADELANTE:
-		intUartSend((int) calcularDistancia(TIM3->CNT));
-		if ((calcularDistancia((TIM3->CNT) >> 1) < forwardChoice[choice])) {
+		//intUartSend((int) calcularDistancia(TIM3->CNT));
+		if ((calcularDistancia((TIM3->CNT >> 1)) < forwardChoice[choice]) && Sensors[2] > 5) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
@@ -856,9 +868,10 @@ void movementMachine(int move) {
 	case IZQUIERDA:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM3->CNT) >> 1) < LeftChoice[choice]) {
-			runMotor(ATRAS, MOTOR_A);
-			runMotor(ADELANTE, MOTOR_B);
+		//intUartSend((TIM3->CNT));
+		if ((TIM3->CNT) > 100) {
+			runMotor(ADELANTE, MOTOR_A);
+			runMotor(ATRAS, MOTOR_B);
 		} else {
 			movementState = ADELANTE;
 			runMotor(OFF, MOTOR_A);
@@ -871,9 +884,9 @@ void movementMachine(int move) {
 	case DERECHA:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM3->CNT) >> 1) < RightChoice[choice]) {
-			runMotor(ADELANTE, MOTOR_A);
-			runMotor(ATRAS, MOTOR_B);
+		if (calcularDistancia((TIM3->CNT)) < RightChoice[choice]) {
+			runMotor(ATRAS, MOTOR_A);
+			runMotor(ADELANTE, MOTOR_B);
 		} else {
 			movementState = ADELANTE;
 			runMotor(OFF, MOTOR_A);
@@ -886,9 +899,9 @@ void movementMachine(int move) {
 	case ATRAS:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM3->CNT) >> 1) < RightChoice[choice] * 2) {
-			runMotor(ADELANTE, MOTOR_A);
-			runMotor(ATRAS, MOTOR_B);
+		if (calcularDistancia((TIM3->CNT)) < RightChoice[choice] * 2) {
+			runMotor(ATRAS, MOTOR_A);
+			runMotor(ADELANTE, MOTOR_B);
 		} else {
 			movementState = ADELANTE;
 			runMotor(OFF, MOTOR_A);
@@ -1012,13 +1025,13 @@ int wallDetector(int n, int d) {
 }
 
 void moveStraight() {
-	if (Sensors[3] < MaxLeftDistance && Sensors[1] < MaxRightDistance) {
+	if (Sensors[3] < MaxLeftDistance && Sensors[1] < MaxRightDistance - 2) {
 		//intUartSend(0);
 		error = Sensors[3] - Sensors[1];
-	} else if (Sensors[3] < MaxLeftDistance) {
+	} else if (Sensors[3] < MaxLeftDistance - 2) {
 		//intUartSend(1);
 		error = Sensors[3] - CenterDistanceLeft;
-	} else if (Sensors[1] < MaxRightDistance) {
+	} else if (Sensors[1] < MaxRightDistance - 2) {
 		//intUartSend(2);
 		error = CenterDistanceRight - Sensors[1];
 	} else {
@@ -1040,7 +1053,7 @@ void moveStraight() {
 		//intUartSend(0);
 		pid = -velocity;
 	}
-//intUartSend(abs(pid));
+	//intUartSend(abs(pid));
 	motLeft = velocity - pid;
 	motRight = velocity + pid;
 	if (motLeft < 0) {
@@ -1056,8 +1069,8 @@ void moveStraight() {
 
 	motRight = MAP(motRight, -1000, 1000, 0, baseChoice[choice] * 2);
 	motLeft = MAP(motLeft, -1000, 1000, 0, baseChoice[choice] * 2);
-	TIM2->CCR3 = motLeft;
-	TIM2->CCR4 = motRight;
+	TIM2->CCR4 = motLeft;
+	TIM2->CCR3 = motRight;
 }
 
 void runForward() {
