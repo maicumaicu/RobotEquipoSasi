@@ -84,12 +84,12 @@ long ticksNow;
 int RightTick = 500;
 int LeftTick = 500;
 int ForwardTick = 400;
-float KPchoice[2] = { 80, 500 }; //17                           //Elección de constante proporcional del PID
+float KPchoice[2] = { 70, 500 }; //17                           //Elección de constante proporcional del PID
 float KDchoice[2] = { 4, 5 }; //0.5                          //Elección de constante derivada del PID
 float velocityChoice[2] = { 1000, 1000 };
-int baseChoice[2] = { 10000, 15000 }; //150
+int baseChoice[2] = { 25000, 15000 }; //150
 int forwardChoice[2] = { 260, 290 };
-int RightChoice[2] = { 155, 155 };
+int RightChoice[2] = { 160, 155 };
 int LeftChoice[2] = { 155, 155 };
 int TimerForward[2] = { 400, 200 };
 int TimerRight[2] = { 200, 200 };
@@ -191,7 +191,7 @@ int main(void) {
 		btnMachine(0);
 		btnMachine(1);
 		btnMachine(2);
-		intUartSend(Sensors[0]);
+		//intUartSend(Sensors[0]);
 		//intUartSend(Sensors[1]);
 		//intUartSend(Sensors[3]);
 
@@ -428,7 +428,7 @@ void calibrateMachine() {
 void robotMachine() {
 	switch (robotState) {
 	case READING:
-		HAL_Delay(100);
+		HAL_Delay(10);
 		TX_BUFFER[0] = 'X';
 		TX_BUFFER[1] = actual.x + '0';
 		TX_BUFFER[2] = '\n';
@@ -441,30 +441,11 @@ void robotMachine() {
 			runMotor(OFF, MOTOR_A);
 			runMotor(OFF, MOTOR_B);
 			CreateNode(actual.x, actual.y);
-			TX_BUFFER[0] = 'D';
-			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
-			intUartSend(Sensors[1]);
-			TX_BUFFER[0] = 'C';
-			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
-			intUartSend(Sensors[2]);
-			TX_BUFFER[0] = 'I';
-			HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
-			intUartSend(Sensors[3]);
-			TX_BUFFER[0] = 'D';
-			TX_BUFFER[1] = Map[actual.x][actual.y].Lados[DERECHA] + '0';
-			TX_BUFFER[2] = '\n';
-			TX_BUFFER[3] = 'C';
-			TX_BUFFER[4] = Map[actual.x][actual.y].Lados[ADELANTE] + '0';
-			TX_BUFFER[5] = '\n';
-			TX_BUFFER[6] = 'I';
-			TX_BUFFER[7] = Map[actual.x][actual.y].Lados[IZQUIERDA] + '0';
-			TX_BUFFER[8] = '\n';
-			TX_BUFFER[9] = 'A';
-			TX_BUFFER[10] = Map[actual.x][actual.y].Lados[ATRAS] + '0';
-			TX_BUFFER[11] = '\n';
-			HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
 		}
-		TX_BUFFER[0] = 'D';
+		intUartSend(Map[actual.x][actual.y].Lados[DERECHA]);
+		intUartSend(Map[actual.x][actual.y].Lados[ADELANTE]);
+		intUartSend(Map[actual.x][actual.y].Lados[IZQUIERDA]);
+		/*TX_BUFFER[0] = 'D';
 		TX_BUFFER[1] = Map[actual.x][actual.y].Lados[DERECHA] + '0';
 		TX_BUFFER[2] = '\n';
 		TX_BUFFER[3] = 'C';
@@ -477,6 +458,7 @@ void robotMachine() {
 		TX_BUFFER[10] = Map[actual.x][actual.y].Lados[ATRAS] + '0';
 		TX_BUFFER[11] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
+		*/
 		valueCNY = Sensors[0];
 		if (valueCNY == BLANCO) {
 			Map[actual.x][actual.y].final = 1;
@@ -494,33 +476,20 @@ void robotMachine() {
 		TX_BUFFER[1] = movimiento + '0';
 		TX_BUFFER[2] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 3, 100);
+		last.x = actual.x;
+		last.y = actual.y;
 		if (movimiento == IZQUIERDA) {
-
-			if (Map[actual.x][actual.y].Lados[direcciones[ATRAS]] != 1) {
-				Map[actual.x][actual.y].Lados[direcciones[ATRAS]] = 2;
-			}
-			moveNode(direcciones[IZQUIERDA]);
-			rotateAxis(IZQUIERDA);
 
 			counter--;
 		} else if (movimiento == DERECHA) {
-
-			if (Map[actual.x][actual.y].Lados[direcciones[ATRAS]] != 1) {
-				Map[actual.x][actual.y].Lados[direcciones[ATRAS]] = 2;
-			}
-			moveNode(direcciones[DERECHA]);
-			rotateAxis(DERECHA);
 
 			counter++;
 		} else if (movimiento == ATRAS) {
 			counter++;
 			counter++;
-			moveNode(direcciones[ATRAS]);
-			rotateAxis(DERECHA);
-			rotateAxis(DERECHA);
 
 		}
-
+		intUartSend(counter);
 		TX_BUFFER[0] = '*';
 		TX_BUFFER[1] = '*';
 		TX_BUFFER[2] = '\n';
@@ -597,48 +566,26 @@ int ChooseNextNode(int x, int y) {
 		Map[x][y].Lados[direcciones[ADELANTE]] = 2;
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
+			intUartSend(5000);
 		}
-		moveNode(direcciones[ADELANTE]);
 		if (Map[x][y].Lados[direcciones[ATRAS]] != 1)
 			Map[x][y].Lados[direcciones[ATRAS]] = 2;
-		TX_BUFFER[0] = 'D';
-		TX_BUFFER[1] = Map[x][y].Lados[DERECHA] + '0';
-		TX_BUFFER[2] = '\n';
-		TX_BUFFER[3] = 'C';
-		TX_BUFFER[4] = Map[x][y].Lados[ADELANTE] + '0';
-		TX_BUFFER[5] = '\n';
-		TX_BUFFER[6] = 'I';
-		TX_BUFFER[7] = Map[x][y].Lados[IZQUIERDA] + '0';
-		TX_BUFFER[8] = '\n';
-		TX_BUFFER[9] = 'A';
-		TX_BUFFER[10] = Map[x][y].Lados[ATRAS] + '0';
-		TX_BUFFER[11] = '\n';
-		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
-
+		moveNode(direcciones[ADELANTE]);
 		return ADELANTE;
 	} else if (Map[x][y].Lados[direcciones[IZQUIERDA]] == 0) {
 		TX_BUFFER[0] = 'I';
 		TX_BUFFER[1] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 2, 100);
 		Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
-
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
+			intUartSend(5000);
 		}
-		TX_BUFFER[0] = 'D';
-		TX_BUFFER[1] = Map[x][y].Lados[DERECHA] + '0';
-		TX_BUFFER[2] = '\n';
-		TX_BUFFER[3] = 'C';
-		TX_BUFFER[4] = Map[x][y].Lados[ADELANTE] + '0';
-		TX_BUFFER[5] = '\n';
-		TX_BUFFER[6] = 'I';
-		TX_BUFFER[7] = Map[x][y].Lados[IZQUIERDA] + '0';
-		TX_BUFFER[8] = '\n';
-		TX_BUFFER[9] = 'A';
-		TX_BUFFER[10] = Map[x][y].Lados[ATRAS] + '0';
-		TX_BUFFER[11] = '\n';
-		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
-
+		moveNode(direcciones[IZQUIERDA]);
+		rotateAxis(IZQUIERDA);
+		if (Map[actual.x + 1][actual.y].Lados[direcciones[ATRAS]] != 1) {
+			Map[actual.x][actual.y].Lados[direcciones[ATRAS]] = 2;
+		}
 		return IZQUIERDA;
 	} else if (Map[x][y].Lados[direcciones[DERECHA]] == 0) {
 		TX_BUFFER[0] = 'D';
@@ -647,44 +594,22 @@ int ChooseNextNode(int x, int y) {
 		Map[x][y].Lados[direcciones[DERECHA]] = 2;
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
+			intUartSend(5000);
 		}
-		TX_BUFFER[0] = 'D';
-		TX_BUFFER[1] = Map[x][y].Lados[DERECHA] + '0';
-		TX_BUFFER[2] = '\n';
-		TX_BUFFER[3] = 'C';
-		TX_BUFFER[4] = Map[x][y].Lados[ADELANTE] + '0';
-		TX_BUFFER[5] = '\n';
-		TX_BUFFER[6] = 'I';
-		TX_BUFFER[7] = Map[x][y].Lados[IZQUIERDA] + '0';
-		TX_BUFFER[8] = '\n';
-		TX_BUFFER[9] = 'A';
-		TX_BUFFER[10] = Map[x][y].Lados[ATRAS] + '0';
-		TX_BUFFER[11] = '\n';
-		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
+		moveNode(direcciones[DERECHA]);
+		rotateAxis(DERECHA);
+		if (Map[actual.x - 1][actual.y].Lados[direcciones[ATRAS]] != 1) {
+			Map[actual.x][actual.y].Lados[direcciones[ATRAS]] = 2;
+		}
 		return DERECHA;
 	} else {
 		TX_BUFFER[0] = 'O';
 		TX_BUFFER[1] = '\n';
 		HAL_UART_Transmit(&huart1, TX_BUFFER, 2, 100);
-		TX_BUFFER[0] = 'D';
-		TX_BUFFER[1] = Map[x][y].Lados[DERECHA] + '0';
-		TX_BUFFER[2] = '\n';
-		TX_BUFFER[3] = 'C';
-		TX_BUFFER[4] = Map[x][y].Lados[ADELANTE] + '0';
-		TX_BUFFER[5] = '\n';
-		TX_BUFFER[6] = 'I';
-		TX_BUFFER[7] = Map[x][y].Lados[IZQUIERDA] + '0';
-		TX_BUFFER[8] = '\n';
-		TX_BUFFER[9] = 'A';
-		TX_BUFFER[10] = Map[x][y].Lados[ATRAS] + '0';
-		TX_BUFFER[11] = '\n';
-		HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
 		return SearchAvailableNode(x, y);
 	}
-	last.x = x;
-	last.y = y;
-}
 
+}
 void EliminateNode(int x, int y) {
 //Serial.println("Borro");
 	Map[x][y].Lados[direcciones[ATRAS]] = 1;
@@ -694,32 +619,37 @@ void EliminateNode(int x, int y) {
 int SearchAvailableNode(int x, int y) {
 	if (Map[x][y].Lados[direcciones[ADELANTE]] != 1) {
 		//Serial.println("Adelante1");
-		Map[x][y].Lados[direcciones[ADELANTE]] = 2;
-		moveNode(ADELANTE);
+
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
+			intUartSend(4000);
 		}
+		moveNode(direcciones[ADELANTE]);
 		return ADELANTE;
 	} else if (Map[x][y].Lados[direcciones[IZQUIERDA]] != 1) {
-		//Serial.println("IZQUIERDA1");
-		Map[x][y].Lados[direcciones[IZQUIERDA]] = 2;
-		moveNode(IZQUIERDA);
+		//Serial.println("IZQUIERDA1");l
+		//moveNode(IZQUIERDA);
 		//rotateAxis(IZQUIERDA);
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
+			intUartSend(4000);
 		}
+		moveNode(direcciones[IZQUIERDA]);
+		rotateAxis(IZQUIERDA);
 		return IZQUIERDA;
 	} else if (Map[x][y].Lados[direcciones[DERECHA]] != 1) {
 		//Serial.println("DERECHA1");
-		Map[x][y].Lados[direcciones[DERECHA]] = 2;
-		moveNode(DERECHA);
 		if (Map[x][y].visitado > 1) {
 			EliminateNode(x, y);
+			intUartSend(4000);
 		}
-		//rotateAxis(DERECHA);
+		moveNode(direcciones[DERECHA]);
+		rotateAxis(DERECHA);
 		return DERECHA;
 	} else if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
-		//Serial.println("atras1");
+		moveNode(direcciones[ATRAS]);
+		rotateAxis(DERECHA);
+		rotateAxis(DERECHA);
 		return ATRAS;
 	}
 	return 0;
@@ -845,13 +775,14 @@ void movementMachine(int move) {
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
 			if (move == IZQUIERDA) {
-				TIM3->CNT = 580 + 100;
+				TIM3->CNT = 500 + 100;
 			}
+			//intUartSend(TIM3->CNT);
 		}
 		break;
 	case ADELANTE:
 		//intUartSend((int) calcularDistancia(TIM3->CNT));
-		if ((calcularDistancia((TIM3->CNT >> 1)) < forwardChoice[choice]) && Sensors[2] > 5) {
+		if ((calcularDistancia((TIM3->CNT >> 1)) < forwardChoice[choice]) || (calcularDistancia((TIM4->CNT >> 1)) < forwardChoice[choice]) /*&& Sensors[2] > 5*/) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
@@ -863,13 +794,14 @@ void movementMachine(int move) {
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
 			offset = 0;
+			//intUartSend(10);
 		}
 		break;
 	case IZQUIERDA:
 		TIM2->CCR3 = baseChoice[choice];
 		TIM2->CCR4 = baseChoice[choice];
 		//intUartSend((TIM3->CNT));
-		if ((TIM3->CNT) > 100) {
+		if (calcularDistancia((TIM4->CNT)) < LeftChoice[choice]) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -879,6 +811,7 @@ void movementMachine(int move) {
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
 			offset = 30;
+			//intUartSend(9);
 		}
 		break;
 	case DERECHA:
@@ -894,6 +827,7 @@ void movementMachine(int move) {
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
 			offset = 30;
+			//intUartSend(8);
 		}
 		break;
 	case ATRAS:
@@ -909,6 +843,7 @@ void movementMachine(int move) {
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
 			offset = 30;
+			//intUartSend(7);
 		}
 		break;
 
@@ -1054,13 +989,14 @@ void moveStraight() {
 		pid = -velocity;
 	}
 	//intUartSend(abs(pid));
+	HAL_Delay(10);
 	motLeft = velocity - pid;
 	motRight = velocity + pid;
-	if (motLeft < 0) {
-		motLeft = 0;
+	if (motLeft < -1000) {
+		motLeft = -1000;
 	}
-	if (motRight < 0) {
-		motRight = 0;
+	if (motRight < -1000) {
+		motRight = -1000;
 	}
 
 	previousError = error;
