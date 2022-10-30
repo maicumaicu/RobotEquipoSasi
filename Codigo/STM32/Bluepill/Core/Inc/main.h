@@ -89,6 +89,8 @@ void btnMachine(int index);
 void calibrateMachine();
 int wallDetector(int n, int d);
 void PrintMap();
+void save_to_flash(uint8_t *data, uint32_t address);
+void read_flash(uint8_t* data,uint32_t address);
 
 /* USER CODE END EFP */
 
