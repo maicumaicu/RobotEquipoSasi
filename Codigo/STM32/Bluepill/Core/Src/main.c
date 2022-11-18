@@ -94,9 +94,9 @@ float KPchoice[2] = { 70, 80 }; //17                           //Elección de co
 float KDchoice[2] = { 4, 4 }; //0.5                          //Elección de constante derivada del PID
 float velocityChoice[2] = { 1000, 1000 };
 int baseChoice[2] = { 15000, 20000 }; //150
-int forwardChoice[2] = { 260, 290 };
-int RightChoice[2] = { 160, 155 };
-int LeftChoice[2] = { 155, 155 };
+int forwardChoice[2] = { 280, 320 };
+int RightChoice[2] = { 160, 360 };
+int LeftChoice[2] = { 155, 360 };
 int TimerForward[2] = { 400, 200 };
 int TimerRight[2] = { 200, 200 };
 int TimerLeft[2] = { 200, 200 };
@@ -128,39 +128,40 @@ int q;
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
-int main(void) {
-	/* USER CODE BEGIN 1 */
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-	/* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_DMA_Init();
-	MX_TIM4_Init();
-	MX_TIM3_Init();
-	MX_ADC1_Init();
-	MX_USART1_UART_Init();
-	MX_TIM2_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_TIM4_Init();
+  MX_TIM3_Init();
+  MX_ADC1_Init();
+  MX_USART1_UART_Init();
+  MX_TIM2_Init();
+  /* USER CODE BEGIN 2 */
 	btns[0].Port = BTN1_GPIO_Port;
 	btns[0].pin = BTN1_Pin;
 	btns[0].estado = ESPERA;
@@ -184,14 +185,14 @@ int main(void) {
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 0);
 	TIM3->CNT = 0;
 	TIM4->CNT = 0;
-	/* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	while (1) {
-		/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
 		mainMachine();
 		//intUartSend((int) calcularDistancia(TIM3->CNT) >> 1);
 		/*runMotor(ADELANTE, MOTOR_A);
@@ -200,8 +201,9 @@ int main(void) {
 		btnMachine(0);
 		btnMachine(1);
 		btnMachine(2);
+
 		//intUartSend(Sensors[0]);
-		//intUartSend(Sensors[1]);
+		intUartSend(Sensors[1]);
 		//intUartSend(Sensors[3]);
 
 		/*HAL_GetTick()
@@ -217,49 +219,53 @@ int main(void) {
 		//sprintf(MSG, TIM4->CNT);
 		//runForward();
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
-void SystemClock_Config(void) {
-	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
-	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
-	RCC_PeriphCLKInitTypeDef PeriphClkInit = { 0 };
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-	/** Initializes the RCC Oscillators according to the specified parameters
-	 * in the RCC_OscInitTypeDef structure.
-	 */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
-		Error_Handler();
-	}
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-	/** Initializes the CPU, AHB and APB buses clocks
-	 */
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
-		Error_Handler();
-	}
-	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-	PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
-	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
-		Error_Handler();
-	}
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /* USER CODE BEGIN 4 */
@@ -326,24 +332,22 @@ void mainMachine() {
 			mainState = RACING;
 			Flash_Read_Data(0x0801FC00, Rx_Data, 2);
 			Convert_To_Str(Rx_Data, string);
+			//offset = 100;
 			//directions = ReadRun();
 			//ShowRun();
 		}
 		if (btns[2].flag == 1) {
 			// Set The LED ON!
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-			choice = FAST;
-			velocity = velocityChoice[FAST];
-			TIM2->CCR3 = baseChoice[FAST];
-			TIM2->CCR4 = baseChoice[FAST];
-			KP = KPchoice[FAST];
-			KD = KDchoice[FAST];
-			if (q == 0) {
-				mainState = CALIBRATE;
-				q++;
-			} else {
-				mainState = MAPPING;
-			}
+			choice = SLOW;
+			velocity = velocityChoice[SLOW];
+			TIM2->CCR3 = baseChoice[SLOW];
+			TIM2->CCR4 = baseChoice[SLOW];
+			KP = KPchoice[SLOW];
+			KD = KDchoice[SLOW];
+			mainState = RACING;
+			Flash_Read_Data(0x0801FC00, Rx_Data, 2);
+			Convert_To_Str(Rx_Data, string);
 		}
 		//confirmacionCentrado();
 		break;
@@ -526,15 +530,26 @@ void runDirections(char moves[100]) {
 		movementMachine(DERECHA);
 	} else if (moves[m] == 'i') {
 		movementMachine(IZQUIERDA);
-	} else if (moves[m] == 'o') {
-		movementMachine(OFF);
 	} else {
 		movementMachine(SUPER);
 	}
 	TX_BUFFER[0] = moves[m];
 	HAL_UART_Transmit(&huart1, TX_BUFFER, 1, 100);
 	if (movimientoFlag == 1) {
+		/*if (string[m + 2] == 'd' || string[m + 2] == 'i') {
+		 if (string[m] == 'a') {
+		 offset = 200;
+		 } else {
+		 offset = 240;
+		 }
+		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+
+		 } else {
+		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		 offset = 0;
+		 }*/
 		m++;
+
 		movimientoFlag = 0;
 	}
 }
@@ -828,16 +843,15 @@ void movementMachine(int move) {
 			movementState = move;
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
-			if (move == IZQUIERDA) {
-				TIM3->CNT = 500 + 100;
-			}
 			//intUartSend(TIM3->CNT);
 		}
 		break;
 	case ADELANTE:
 		//intUartSend((int) calcularDistancia(TIM3->CNT));
-		if ((calcularDistancia((TIM3->CNT >> 1)) < forwardChoice[choice])
-				|| (calcularDistancia((TIM4->CNT >> 1)) < forwardChoice[choice]) /*&& Sensors[2] > 5*/) {
+		if ((calcularDistancia((TIM3->CNT >> 1))
+				< (forwardChoice[choice] - offset))
+				|| (calcularDistancia((TIM4->CNT >> 1))
+						< (forwardChoice[choice] - offset)) /*&& Sensors[2] > 5*/) {
 			moveStraight();
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
@@ -848,41 +862,118 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
-			offset = 0;
+			if (choice == SLOW) {
+				offset = 0;
+			} else {
+				if (string[m + 2] == 'd' || string[m + 2] == 'i') {
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+					offset = 100;
+				} else {
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+					offset = 0;
+				}
+			}
+
 			//intUartSend(10);
 		}
 		break;
 	case IZQUIERDA:
-		TIM2->CCR3 = baseChoice[choice];
-		TIM2->CCR4 = baseChoice[choice];
-		//intUartSend((TIM3->CNT));
-		if (calcularDistancia((TIM4->CNT)) < LeftChoice[choice]) {
-			runMotor(ADELANTE, MOTOR_A);
-			runMotor(ATRAS, MOTOR_B);
+		if (choice == SLOW) {
+			TIM2->CCR3 = baseChoice[choice];
+			TIM2->CCR4 = baseChoice[choice];
+			//intUartSend((TIM3->CNT));
+			if (calcularDistancia((TIM4->CNT)) < LeftChoice[choice]) {
+				runMotor(ADELANTE, MOTOR_A);
+				runMotor(ATRAS, MOTOR_B);
+			} else {
+				movementState = ADELANTE;
+				runMotor(OFF, MOTOR_A);
+				runMotor(OFF, MOTOR_B);
+				TIM3->CNT = 0;
+				TIM4->CNT = 0;
+				offset = 0;
+				//intUartSend(9);
+			}
 		} else {
-			movementState = ADELANTE;
-			runMotor(OFF, MOTOR_A);
-			runMotor(OFF, MOTOR_B);
-			TIM3->CNT = 0;
-			TIM4->CNT = 0;
-			offset = 30;
-			//intUartSend(9);
+			TIM2->CCR3 = baseChoice[choice] + 15000;
+			TIM2->CCR4 = baseChoice[choice] - 10000;
+			//intUartSend((TIM3->CNT));
+			if (calcularDistancia((TIM4->CNT)) < LeftChoice[choice]) {
+				runMotor(ADELANTE, MOTOR_A);
+				runMotor(ADELANTE, MOTOR_B);
+			} else {
+				movementState = ADELANTE;
+				runMotor(OFF, MOTOR_A);
+				runMotor(OFF, MOTOR_B);
+				TIM3->CNT = 0;
+				TIM4->CNT = 0;
+
+				/*if (string[m + 2] == 'd' || string[m + 2] == 'i') {
+					if (string[m] == 'a') {
+						offset = 240;
+					} else {
+						offset = 240;
+					}
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+				} else {
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+					offset = 0;
+				}*/
+				offset = 180;
+
+				//intUartSend(9);
+			}
 		}
 		break;
 	case DERECHA:
-		TIM2->CCR3 = baseChoice[choice];
-		TIM2->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM3->CNT)) < RightChoice[choice]) {
-			runMotor(ATRAS, MOTOR_A);
-			runMotor(ADELANTE, MOTOR_B);
+		if (choice == SLOW) {
+			TIM2->CCR3 = baseChoice[choice];
+			TIM2->CCR4 = baseChoice[choice];
+			if (calcularDistancia((TIM3->CNT)) < RightChoice[choice]) {
+				runMotor(ATRAS, MOTOR_A);
+				runMotor(ADELANTE, MOTOR_B);
+			} else {
+				movementState = ADELANTE;
+				runMotor(OFF, MOTOR_A);
+				runMotor(OFF, MOTOR_B);
+				TIM3->CNT = 0;
+				TIM4->CNT = 0;
+			}
 		} else {
-			movementState = ADELANTE;
-			runMotor(OFF, MOTOR_A);
-			runMotor(OFF, MOTOR_B);
-			TIM3->CNT = 0;
-			TIM4->CNT = 0;
-			offset = 30;
-			//intUartSend(8);
+			TIM2->CCR3 = baseChoice[choice] - 10000;
+			TIM2->CCR4 = baseChoice[choice] + 15000;
+			//intUartSend((TIM3->CNT));
+			if (calcularDistancia((TIM3->CNT)) < RightChoice[choice]) {
+				runMotor(ADELANTE, MOTOR_A);
+				runMotor(ADELANTE, MOTOR_B);
+			} else {
+				movementState = ADELANTE;
+				runMotor(OFF, MOTOR_A);
+				runMotor(OFF, MOTOR_B);
+				TIM3->CNT = 0;
+				TIM4->CNT = 0;
+				/*if (string[m + 2] == 'd' || string[m + 2] == 'i') {
+					if (string[m] == 'a') {
+						offset = 240;
+					} else {
+						offset = 240;
+					}
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+
+				} else {
+					HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+					offset = 0;
+				}*/
+				offset = 180;
+				/*if (string[m + 1] == 'd' || string[m + 1] == 'i') {
+				 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+				 offset = 140;
+				 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+				 } else {
+				 offset = 0;
+				 }*/
+				//intUartSend(9);
+			}
 		}
 		break;
 	case ATRAS:
@@ -897,11 +988,10 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
 			TIM4->CNT = 0;
-			offset = 30;
+			offset = 0;
 			//intUartSend(7);
 		}
 		break;
-
 	}
 }
 
@@ -1104,16 +1194,17 @@ void btnMachine(int index) {
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
-void Error_Handler(void) {
-	/* USER CODE BEGIN Error_Handler_Debug */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
 	}
-	/* USER CODE END Error_Handler_Debug */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
