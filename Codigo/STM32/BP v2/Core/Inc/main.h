@@ -31,12 +31,29 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "motors.h"
+#include "sharp.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+typedef struct {
+	int Lados[4];
+	int visitado;
+	int final;
+} Node;
 
+typedef struct {
+	int x;
+	int y;
+} Position;
+
+typedef struct {
+	GPIO_TypeDef *Port;
+	uint16_t pin;
+	int estado;
+	int flag;
+} button;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -53,7 +70,26 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+int ChooseNextNode(int x, int y);
+void EliminateNode(int x, int y);
+void CreateNode(int x, int y);
+int SearchAvailableNode(int x, int y);
+void mainMachine();
+void robotMachine();
+void moveNode(int lado);
+void rotateAxis(int direccion);
+void resetAxis();
+void movementMachine(int move);
+void moveStraight();
+void addDirection(int x, int y);
+void intUartSend(int entero);
+void runDirections(char moves[25]);
+void btnMachine(int index);
+void calibrateMachine();
+int wallDetector(int n, int d);
+void PrintMap();
+void save_to_flash(uint8_t *data, uint32_t address);
+void read_flash(uint8_t* data,uint32_t address);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -84,7 +120,70 @@ void Error_Handler(void);
 #define AIN2_Pin GPIO_PIN_5
 #define AIN2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+#define BIN2 BIN2_GPIO_Port,BIN2_Pin
+#define BIN1 BIN1_GPIO_Port,BIN1_Pin
+#define STBY STBY_GPIO_Port,STBY_Pin
+#define AIN1 AIN1_GPIO_Port,AIN1_Pin
+#define AIN2 AIN2_GPIO_Port,AIN2_Pin
+#define BTN1 BTN1_GPIO_Port,BTN1_Pin
+#define BTN2 BTN2_GPIO_Port,BTN2_Pin
+#define BTN3 BTN3_GPIO_Port , BTN3_Pin
+#define LED LED_GPIO_Port, LED_Pin
 
+#define CANT_BTN 3
+#define ESPERA 0
+#define CONFIRMACION 1
+#define LIBERACION 2
+#define TICKS_BTN  25
+
+#define MOTOR_A 0
+#define MOTOR_B 1
+
+#define SLOW 0
+#define FAST 1
+
+#define ADELANTE 0
+#define IZQUIERDA 1
+#define ATRAS 2
+#define DERECHA 3
+#define SUPER 4
+#define OFF 5
+
+#define CENTER 0
+#define LEFT 1
+#define RIGHT 2
+#define FORWARD 3
+
+#define FORWARD_DISTANCE 230
+#define LEFT_ANGLE_MIN 90
+#define LEFT_ANGLE_MAX 96
+#define FORWARD_VELOCITY_I 40
+#define FORWARD_VELOCITY_D 47
+#define TURN_VELOCITY_D 50
+#define TURN_VELOCITY_I 50
+
+#define ALTO 8
+#define ANCHO 8
+#define ancho ANCHO * 2
+#define alto ALTO * 2
+
+#define READING 0
+#define CHOOSING 1
+#define MOVING 2
+
+#define SETUP 0
+#define MAPPING 1
+#define RESOLUTION 2
+#define RACING 3
+#define CALIBRATE 4
+
+#define NEGRO 1
+#define BLANCO 0
+
+#define PARED 1
+#define LIBRE 0
+
+#define SETPOINT 8
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

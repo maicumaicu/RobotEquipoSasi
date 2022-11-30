@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "propios")(type "KiCad")(uri "${KIPRJMOD}/propios.pretty")(options "")(descr ""))
+  (lib (name "Mini360_step-down")(type "KiCad")(uri "${KIPRJMOD}/KiCad-master/Mini360_step_down_converter/Mini360_step-down.pretty")(options "")(descr ""))
+)
