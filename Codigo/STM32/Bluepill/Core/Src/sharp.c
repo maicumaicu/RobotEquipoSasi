@@ -51,9 +51,12 @@ int lecturaCNY70(int n, uint32_t values[10]) {
 		suma = suma + values[i];
 	}
 	int adc = (suma / n);
-	if (adc < 1000) {
+
+	if (adc < 1500) {
+
 		return BLANCO;
 	} else {
+
 		return NEGRO;
 	}
 }
