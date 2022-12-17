@@ -82,7 +82,7 @@ void resetAxis();
 void movementMachine(int move);
 void moveStraight();
 void addDirection(int x, int y);
-void intUartSend(int entero);
+void intUartSend(float entero);
 void runDirections(char moves[25]);
 void btnMachine(int index);
 void calibrateMachine();

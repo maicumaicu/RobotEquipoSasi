@@ -61,12 +61,11 @@
 
 /* USER CODE BEGIN PV */
 //MPU6050_t MPU6050;
-
 uint32_t adc_buf[ADC_BUF_LEN];
-uint32_t CNY70[10];
-uint32_t SHARP_1[10];
-uint32_t SHARP_2[10];
-uint32_t SHARP_3[10];
+uint32_t CNY70[ADC_BUF_LEN/4];
+uint32_t SHARP_1[ADC_BUF_LEN/4];
+uint32_t SHARP_2[ADC_BUF_LEN/4];
+uint32_t SHARP_3[ADC_BUF_LEN/4];
 static float Sensors[4];
 int direcciones[4];
 uint8_t serialBuf[100];
@@ -134,41 +133,40 @@ int t;
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
-  /* USER CODE BEGIN 1 */
+ * @brief  The application entry point.
+ * @retval int
+ */
+int main(void) {
+	/* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
+	/* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  /* USER CODE BEGIN Init */
+	/* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+	/* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+	/* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_ADC1_Init();
-  MX_TIM1_Init();
-  MX_TIM3_Init();
-  MX_TIM4_Init();
-  MX_USART3_UART_Init();
-  MX_I2C1_Init();
-  /* USER CODE BEGIN 2 */
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_DMA_Init();
+	MX_ADC1_Init();
+	MX_TIM1_Init();
+	MX_TIM3_Init();
+	MX_TIM4_Init();
+	MX_USART3_UART_Init();
+	MX_I2C1_Init();
+	/* USER CODE BEGIN 2 */
 	btns[0].Port = BTN1_GPIO_Port;
 	btns[0].pin = BTN1_Pin;
 	btns[0].estado = ESPERA;
@@ -186,113 +184,135 @@ int main(void)
 	HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 	HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
-	TIM4->CCR3 = 15000/2;
+	TIM4->CCR3 = 15000;
 	TIM4->CCR4 = 15000;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
 	TIM3->CNT = 0;
 	TIM1->CNT = 0;
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
-	I2Cdev_init(&hi2c1);
-	HMC5883L_initialize();
-	while(HMC5883L_testConnection() == 0){
+	/*I2Cdev_init(&hi2c1);
+	 HMC5883L_initialize();
+	 while(HMC5883L_testConnection() == 0){
 
-	}
+	 }*/
 
-  /* USER CODE END 2 */
+	/* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
 	while (1) {
-    /* USER CODE END WHILE */
+		/* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
-		//mainMachine();
-		if(ticksNow + 20 < HAL_GetTick()){
-			intUartSend(HMC5883L_getHeadingZ());
-			ticksNow = HAL_GetTick();
-		}
-
-		/*runMotor(ADELANTE, MOTOR_A);
-		runMotor(ADELANTE, MOTOR_B);*/
+		/* USER CODE BEGIN 3 */
+		mainMachine();
+		/*if(ticksNow + 100 < HAL_GetTick()){
+		 intUartSend(HMC5883L_getHeadingZ());
+		 ticksNow = HAL_GetTick();
+		 }*/
+		//intUartSend(TIM1->CNT);
+		/*runMotor(ATRAS, MOTOR_A);
+		 runMotor(ATRAS, MOTOR_B);*/
 		btnMachine(0);
 		btnMachine(1);
 		btnMachine(2);
 	}
-  /* USER CODE END 3 */
+	/* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+ * @brief System Clock Configuration
+ * @retval None
+ */
+void SystemClock_Config(void) {
+	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+	RCC_PeriphCLKInitTypeDef PeriphClkInit = { 0 };
 
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
+	/** Initializes the RCC Oscillators according to the specified parameters
+	 * in the RCC_OscInitTypeDef structure.
+	 */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+		Error_Handler();
+	}
 
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+	/** Initializes the CPU, AHB and APB buses clocks
+	 */
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-  {
-    Error_Handler();
-  }
+	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
+		Error_Handler();
+	}
+	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+	PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
+	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
+		Error_Handler();
+	}
 }
 
 /* USER CODE BEGIN 4 */
 
-
-
-
-
-
-void intUartSend(int entero) {
+void intUartSend(float entero) {
 
 	int m;
 	int c;
 	int d;
 	int u;
+	int de1;
+	int de2;
 
-	m = entero / 1000;
-	c = entero / 100 - m * 10;
-	d = entero / 10 - (m * 100 + c * 10);
-	u = entero - (m * 1000 + c * 100 + d * 10);
+	m = abs(entero / 1000);
+	c = abs(entero / 100) - m * 10;
+	d = abs(entero / 10) - (m * 100 + c * 10);
+	u = abs(entero) - (m * 1000 + c * 100 + d * 10);
+	if (entero > 0) {
+		de1 = (entero - (m * 1000 + c * 100 + d * 10 + u)) * 10;
+		de2 = (entero - (m * 1000 + c * 100 + d * 10 + u + de1 * 0.1)) * 100;
+		TX_BUFFER[0] = m + '0';
+		TX_BUFFER[1] = c + '0';
+		TX_BUFFER[2] = d + '0';
+		TX_BUFFER[3] = u + '0';
+		TX_BUFFER[4] = ',';
+		TX_BUFFER[5] = de1 + '0';
+		TX_BUFFER[6] = de2 + '0';
+		TX_BUFFER[7] = '\n';
+		HAL_UART_Transmit(&huart3, TX_BUFFER, 8, 100);
+	} else {
+		de1 = ((-(entero)) - (m * 1000 + c * 100 + d * 10 + u)) * 10;
+		de2 = ((-(entero)) - (m * 1000 + c * 100 + d * 10 + u + de1 * 0.1))* 100;
+		TX_BUFFER[1] = '-';
+		TX_BUFFER[1] = m + '0';
+		TX_BUFFER[2] = c + '0';
+		TX_BUFFER[3] = d + '0';
+		TX_BUFFER[4] = u + '0';
+		TX_BUFFER[5] = ',';
+		TX_BUFFER[6] = de1 + '0';
+		TX_BUFFER[7] = de2 + '0';
+		TX_BUFFER[8] = '\n';
+		HAL_UART_Transmit(&huart3, TX_BUFFER, 9, 100);
+	}
 
 	TX_BUFFER[0] = m + '0';
 	TX_BUFFER[1] = c + '0';
 	TX_BUFFER[2] = d + '0';
 	TX_BUFFER[3] = u + '0';
-	TX_BUFFER[4] = '\n';
-	HAL_UART_Transmit(&huart3, TX_BUFFER, 5, 100);
+	TX_BUFFER[4] = ',';
+	TX_BUFFER[5] = de1 + '0';
+	TX_BUFFER[6] = de2 + '0';
+	TX_BUFFER[7] = '\n';
+	HAL_UART_Transmit(&huart3, TX_BUFFER, 8, 100);
 }
 
 void mainMachine() {
@@ -305,7 +325,7 @@ void mainMachine() {
 		resetAxis();
 		movimientoFlag = 0;
 		finishFlag = 0;
-		if (abs(Sensors[1] - Sensors[3]) < 0.5) {
+		if (Sensors[1] - Sensors[3] < 0.5 && Sensors[1] - Sensors[3] > -0.5) {
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
 		} else {
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);
@@ -414,9 +434,9 @@ void mainMachine() {
 void calibrateMachine() {
 	switch (calState) {
 	case CENTER:
-		intUartSend(abs(Sensors[1] - Sensors[3]));
+		intUartSend(Sensors[1] - Sensors[3]);
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-		if (abs(Sensors[1] - Sensors[3]) < 0.5) {
+		if (Sensors[1] - Sensors[3] < 0.5 && Sensors[1] - Sensors[3] > -0.5) {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 			if (btns[0].flag == 1) {
 				CenterDistanceRight = Sensors[3];
@@ -426,7 +446,7 @@ void calibrateMachine() {
 		}
 		break;
 	case LEFT:
-		intUartSend(abs(Sensors[3]));
+		intUartSend((Sensors[3]));
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		if (btns[0].flag == 1) {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
@@ -435,7 +455,7 @@ void calibrateMachine() {
 		}
 		break;
 	case RIGHT:
-		intUartSend(abs(Sensors[1]));
+		intUartSend((Sensors[1]));
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		if (btns[0].flag == 1) {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
@@ -444,7 +464,7 @@ void calibrateMachine() {
 		}
 		break;
 	case FORWARD:
-		intUartSend(abs(Sensors[2]));
+		intUartSend((Sensors[2]));
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		if (btns[0].flag == 1) {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
@@ -491,7 +511,7 @@ void robotMachine() {
 		 TX_BUFFER[11] = '\n';
 		 HAL_UART_Transmit(&huart1, TX_BUFFER, 12, 100);
 		 */
-		valueCNY = NEGRO;//Sensors[0];
+		valueCNY = NEGRO;			//Sensors[0];
 		if (valueCNY == BLANCO) {
 			Map[actual.x][actual.y].final = 1;
 			finishFlag = 1;
@@ -841,8 +861,8 @@ void movementMachine(int move) {
 			TIM3->CNT = 0;
 			TIM1->CNT = 0;
 			/*if (move == IZQUIERDA) {
-				TIM3->CNT = 500 + 100;
-			}*/
+			 TIM3->CNT = 500 + 100;
+			 }*/
 			//intUartSend(TIM3->CNT);
 		}
 		break;
@@ -859,16 +879,16 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_A);
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
-			TIM4->CNT = 0;
+			TIM1->CNT = 0;
 			offset = 0;
 			//intUartSend(10);
 		}
 		break;
 	case IZQUIERDA:
-		TIM4->CCR3 = baseChoice[choice]/2;
+		TIM4->CCR3 = baseChoice[choice];
 		TIM4->CCR4 = baseChoice[choice];
 		//intUartSend((TIM3->CNT));
-		if (calcularDistancia((TIM1->CNT)) < LeftChoice[choice]) {
+		if (calcularDistancia((TIM3->CNT)) < LeftChoice[choice]) {
 			runMotor(ADELANTE, MOTOR_A);
 			runMotor(ATRAS, MOTOR_B);
 		} else {
@@ -876,31 +896,32 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_A);
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
-			TIM4->CNT = 0;
+			TIM1->CNT = 0;
 			offset = 30;
 			//intUartSend(9);
 		}
 		break;
 	case DERECHA:
-		TIM4->CCR3 = baseChoice[choice]/2;
+		TIM4->CCR3 = baseChoice[choice];
 		TIM4->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM3->CNT)) < RightChoice[choice]) {
+		if (calcularDistancia((TIM1->CNT)) < RightChoice[choice]) {
 			runMotor(ATRAS, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
+			//intUartSend("HOLA");
 		} else {
 			movementState = ADELANTE;
 			runMotor(OFF, MOTOR_A);
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
-			TIM4->CNT = 0;
+			TIM1->CNT = 0;
 			offset = 30;
 			//intUartSend(8);
 		}
 		break;
 	case ATRAS:
-		TIM4->CCR3 = baseChoice[choice]/2;
+		TIM4->CCR3 = baseChoice[choice];
 		TIM4->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM3->CNT)) < RightChoice[choice] * 2) {
+		if (calcularDistancia((TIM1->CNT)) < RightChoice[choice] * 2) {
 			runMotor(ATRAS, MOTOR_A);
 			runMotor(ADELANTE, MOTOR_B);
 		} else {
@@ -908,7 +929,7 @@ void movementMachine(int move) {
 			runMotor(OFF, MOTOR_A);
 			runMotor(OFF, MOTOR_B);
 			TIM3->CNT = 0;
-			TIM4->CNT = 0;
+			TIM1->CNT = 0;
 			offset = 30;
 			//intUartSend(7);
 		}
@@ -968,16 +989,16 @@ void PrintMap() {
 
 // Called when buffer is completely filled
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 100; i++) {
 		CNY70[i] = adc_buf[i * 4];
 		SHARP_1[i] = adc_buf[i * 4 + 1];
 		SHARP_2[i] = adc_buf[i * 4 + 2];
 		SHARP_3[i] = adc_buf[i * 4 + 3];
 	}
-	Sensors[0] = lecturaCNY70(10, CNY70);
-	Sensors[1] = lecSensor(10, SHARP_1);
-	Sensors[2] = lecSensor(10, SHARP_2);
-	Sensors[3] = lecSensor(10, SHARP_3);
+	Sensors[0] = lecturaCNY70(100, CNY70);
+	Sensors[1] = lecSensor(100, SHARP_1);
+	Sensors[2] = lecSensor(100, SHARP_2);
+	Sensors[3] = lecSensor(100, SHARP_3);
 
 }
 
@@ -1070,7 +1091,7 @@ void moveStraight() {
 	motRight = constrain(motRight, -1000, 1000);
 	motLeft = constrain(motLeft, -1000, 1000);
 
-	motRight = MAP(motRight, -1000, 1000, 0, baseChoice[choice]/2 * 2);
+	motRight = MAP(motRight, -1000, 1000, 0, baseChoice[choice] * 2);
 	motLeft = MAP(motLeft, -1000, 1000, 0, baseChoice[choice] * 2);
 	TIM4->CCR4 = motLeft;
 	TIM4->CCR3 = motRight;
@@ -1116,17 +1137,16 @@ void btnMachine(int index) {
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
+void Error_Handler(void) {
+	/* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
 	}
-  /* USER CODE END Error_Handler_Debug */
+	/* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT

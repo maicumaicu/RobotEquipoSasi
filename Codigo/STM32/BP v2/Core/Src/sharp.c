@@ -40,7 +40,6 @@ float lecSensor(int n, uint32_t values[10]) {
 	volts = pow(volts - 0.3, 0.25);/*convertimos a cm con un aproximacion grafica*/
 	volts = 27.5 / volts; /*no preguntar por los valores*/
 	volts -= 18;
-
 	return volts;
 
 }

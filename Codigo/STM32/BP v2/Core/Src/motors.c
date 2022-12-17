@@ -46,8 +46,8 @@ void runMotor(int dir, int motor) {
 	switch (dir) {
 	case ADELANTE:
 		if (motor == MOTOR_A) {
-			HAL_GPIO_WritePin(AIN1, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(AIN2, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(AIN1, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(AIN2, GPIO_PIN_RESET);
 		} else {
 			HAL_GPIO_WritePin(BIN1, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(BIN2, GPIO_PIN_RESET);
@@ -55,11 +55,11 @@ void runMotor(int dir, int motor) {
 		break;
 	case ATRAS:
 		if (motor == MOTOR_A) {
-			HAL_GPIO_WritePin(AIN1, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(AIN2, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(AIN1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(AIN2, GPIO_PIN_SET);
 		} else {
-			HAL_GPIO_WritePin(BIN1, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(BIN2, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(BIN1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(BIN2, GPIO_PIN_SET);
 		}
 		break;
 	case OFF:
