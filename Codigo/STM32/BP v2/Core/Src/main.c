@@ -18,12 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
-#include "dma.h"
-#include "i2c.h"
-#include "tim.h"
-#include "usart.h"
-#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -58,14 +52,24 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
+
+I2C_HandleTypeDef hi2c1;
+
+TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
+
+UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 //MPU6050_t MPU6050;
 uint32_t adc_buf[ADC_BUF_LEN];
-uint32_t CNY70[ADC_BUF_LEN/4];
-uint32_t SHARP_1[ADC_BUF_LEN/4];
-uint32_t SHARP_2[ADC_BUF_LEN/4];
-uint32_t SHARP_3[ADC_BUF_LEN/4];
+uint32_t CNY70[ADC_BUF_LEN / 4];
+uint32_t SHARP_1[ADC_BUF_LEN / 4];
+uint32_t SHARP_2[ADC_BUF_LEN / 4];
+uint32_t SHARP_3[ADC_BUF_LEN / 4];
 static float Sensors[4];
 int direcciones[4];
 uint8_t serialBuf[100];
@@ -73,6 +77,14 @@ uint8_t serialBuf[100];
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_TIM1_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_TIM4_Init(void);
+static void MX_USART3_UART_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -95,12 +107,12 @@ long ticksNow;
 int RightTick = 500;
 int LeftTick = 500;
 int ForwardTick = 400;
-float KPchoice[2] = { 70, 80 }; //17                           //Elección de constante proporcional del PID
-float KDchoice[2] = { 4, 4 }; //0.5                          //Elección de constante derivada del PID
+float KPchoice[2] = { 20, 80 }; //17                           //Elección de constante proporcional del PID
+float KDchoice[2] = { 2, 4 }; //0.5                          //Elección de constante derivada del PID
 float velocityChoice[2] = { 1000, 1000 };
-int baseChoice[2] = { 15000, 20000 }; //150
+int baseChoice[2] = { 20000, 20000 }; //150
 int forwardChoice[2] = { 260, 290 };
-int RightChoice[2] = { 160, 155 };
+int RightChoice[2] = { 155, 155 };
 int LeftChoice[2] = { 155, 155 };
 int TimerForward[2] = { 400, 200 };
 int TimerRight[2] = { 200, 200 };
@@ -127,7 +139,7 @@ Position last;
 Node Map[alto][ancho];
 float error, pid, previousError, elapsedTime, timeNow, timePrev, pidP, pidD;
 int motLeft, motRight;
-int t;
+int t, StraightFlag, xSpeed;
 /*Position visual;
  Node VisualMap[ALTO][ANCHO];*/
 /* USER CODE END 0 */
@@ -186,6 +198,7 @@ int main(void) {
 	HAL_GPIO_WritePin(STBY, GPIO_PIN_SET);
 	TIM4->CCR3 = 15000;
 	TIM4->CCR4 = 15000;
+	xSpeed = 15000;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
 	TIM3->CNT = 0;
@@ -206,13 +219,22 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		mainMachine();
+		//intUartSend(calcularDistancia(TIM1->CNT)-calcularDistancia(TIM3->CNT));
+		/*intUartSend(motLeft);
+		 choice = SLOW;
+		 velocity = velocityChoice[SLOW];
+		 TIM2->CCR3 = baseChoice[SLOW];
+		 TIM2->CCR4 = baseChoice[SLOW];
+		 KP = KPchoice[SLOW];
+		 KD = KDchoice[SLOW];*/
+		//moveStraight();
 		/*if(ticksNow + 100 < HAL_GetTick()){
 		 intUartSend(HMC5883L_getHeadingZ());
 		 ticksNow = HAL_GetTick();
 		 }*/
 		//intUartSend(TIM1->CNT);
-		/*runMotor(ATRAS, MOTOR_A);
-		 runMotor(ATRAS, MOTOR_B);*/
+		/*runMotor(ADELANTE, MOTOR_A);
+		 runMotor(ADELANTE, MOTOR_B);*/
 		btnMachine(0);
 		btnMachine(1);
 		btnMachine(2);
@@ -262,6 +284,351 @@ void SystemClock_Config(void) {
 	}
 }
 
+/**
+ * @brief ADC1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_ADC1_Init(void) {
+
+	/* USER CODE BEGIN ADC1_Init 0 */
+
+	/* USER CODE END ADC1_Init 0 */
+
+	ADC_ChannelConfTypeDef sConfig = { 0 };
+
+	/* USER CODE BEGIN ADC1_Init 1 */
+
+	/* USER CODE END ADC1_Init 1 */
+
+	/** Common config
+	 */
+	hadc1.Instance = ADC1;
+	hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+	hadc1.Init.ContinuousConvMode = ENABLE;
+	hadc1.Init.DiscontinuousConvMode = DISABLE;
+	hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	hadc1.Init.NbrOfConversion = 4;
+	if (HAL_ADC_Init(&hadc1) != HAL_OK) {
+		Error_Handler();
+	}
+
+	/** Configure Regular Channel
+	 */
+	sConfig.Channel = ADC_CHANNEL_0;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+
+	/** Configure Regular Channel
+	 */
+	sConfig.Channel = ADC_CHANNEL_1;
+	sConfig.Rank = ADC_REGULAR_RANK_2;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+
+	/** Configure Regular Channel
+	 */
+	sConfig.Channel = ADC_CHANNEL_2;
+	sConfig.Rank = ADC_REGULAR_RANK_3;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+
+	/** Configure Regular Channel
+	 */
+	sConfig.Channel = ADC_CHANNEL_3;
+	sConfig.Rank = ADC_REGULAR_RANK_4;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN ADC1_Init 2 */
+
+	/* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
+ * @brief I2C1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_I2C1_Init(void) {
+
+	/* USER CODE BEGIN I2C1_Init 0 */
+
+	/* USER CODE END I2C1_Init 0 */
+
+	/* USER CODE BEGIN I2C1_Init 1 */
+
+	/* USER CODE END I2C1_Init 1 */
+	hi2c1.Instance = I2C1;
+	hi2c1.Init.ClockSpeed = 100000;
+	hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+	hi2c1.Init.OwnAddress1 = 0;
+	hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+	hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+	hi2c1.Init.OwnAddress2 = 0;
+	hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+	hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+	if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN I2C1_Init 2 */
+
+	/* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+ * @brief TIM1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM1_Init(void) {
+
+	/* USER CODE BEGIN TIM1_Init 0 */
+
+	/* USER CODE END TIM1_Init 0 */
+
+	TIM_Encoder_InitTypeDef sConfig = { 0 };
+	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+
+	/* USER CODE BEGIN TIM1_Init 1 */
+
+	/* USER CODE END TIM1_Init 1 */
+	htim1.Instance = TIM1;
+	htim1.Init.Prescaler = 0;
+	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim1.Init.Period = 65535;
+	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim1.Init.RepetitionCounter = 0;
+	htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+	sConfig.IC1Filter = 10;
+	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+	sConfig.IC2Filter = 0;
+	if (HAL_TIM_Encoder_Init(&htim1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN TIM1_Init 2 */
+
+	/* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
+ * @brief TIM3 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM3_Init(void) {
+
+	/* USER CODE BEGIN TIM3_Init 0 */
+
+	/* USER CODE END TIM3_Init 0 */
+
+	TIM_Encoder_InitTypeDef sConfig = { 0 };
+	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+
+	/* USER CODE BEGIN TIM3_Init 1 */
+
+	/* USER CODE END TIM3_Init 1 */
+	htim3.Instance = TIM3;
+	htim3.Init.Prescaler = 0;
+	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim3.Init.Period = 65535;
+	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+	sConfig.IC1Filter = 10;
+	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+	sConfig.IC2Filter = 0;
+	if (HAL_TIM_Encoder_Init(&htim3, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN TIM3_Init 2 */
+
+	/* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+ * @brief TIM4 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM4_Init(void) {
+
+	/* USER CODE BEGIN TIM4_Init 0 */
+
+	/* USER CODE END TIM4_Init 0 */
+
+	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+	TIM_OC_InitTypeDef sConfigOC = { 0 };
+
+	/* USER CODE BEGIN TIM4_Init 1 */
+
+	/* USER CODE END TIM4_Init 1 */
+	htim4.Instance = TIM4;
+	htim4.Init.Prescaler = 0;
+	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim4.Init.Period = 65535;
+	htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_PWM_Init(&htim4) != HAL_OK) {
+		Error_Handler();
+	}
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	sConfigOC.Pulse = 0;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_3)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN TIM4_Init 2 */
+
+	/* USER CODE END TIM4_Init 2 */
+	HAL_TIM_MspPostInit(&htim4);
+
+}
+
+/**
+ * @brief USART3 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_USART3_UART_Init(void) {
+
+	/* USER CODE BEGIN USART3_Init 0 */
+
+	/* USER CODE END USART3_Init 0 */
+
+	/* USER CODE BEGIN USART3_Init 1 */
+
+	/* USER CODE END USART3_Init 1 */
+	huart3.Instance = USART3;
+	huart3.Init.BaudRate = 9600;
+	huart3.Init.WordLength = UART_WORDLENGTH_8B;
+	huart3.Init.StopBits = UART_STOPBITS_1;
+	huart3.Init.Parity = UART_PARITY_NONE;
+	huart3.Init.Mode = UART_MODE_TX_RX;
+	huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+	if (HAL_UART_Init(&huart3) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN USART3_Init 2 */
+
+	/* USER CODE END USART3_Init 2 */
+
+}
+
+/**
+ * Enable DMA controller clock
+ */
+static void MX_DMA_Init(void) {
+
+	/* DMA controller clock enable */
+	__HAL_RCC_DMA1_CLK_ENABLE();
+
+	/* DMA interrupt init */
+	/* DMA1_Channel1_IRQn interrupt configuration */
+	HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+}
+
+/**
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_GPIO_Init(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOB, LED_Pin | STBY_Pin | AIN1_Pin | AIN2_Pin,
+			GPIO_PIN_RESET);
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin | BIN1_Pin, GPIO_PIN_RESET);
+
+	/*Configure GPIO pin : PC13 */
+	GPIO_InitStruct.Pin = GPIO_PIN_13;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : BTN1_Pin BTN2_Pin BTN3_Pin */
+	GPIO_InitStruct.Pin = BTN1_Pin | BTN2_Pin | BTN3_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : LED_Pin STBY_Pin AIN1_Pin AIN2_Pin */
+	GPIO_InitStruct.Pin = LED_Pin | STBY_Pin | AIN1_Pin | AIN2_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : BIN2_Pin BIN1_Pin */
+	GPIO_InitStruct.Pin = BIN2_Pin | BIN1_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+}
+
 /* USER CODE BEGIN 4 */
 
 void intUartSend(float entero) {
@@ -291,8 +658,9 @@ void intUartSend(float entero) {
 		HAL_UART_Transmit(&huart3, TX_BUFFER, 8, 100);
 	} else {
 		de1 = ((-(entero)) - (m * 1000 + c * 100 + d * 10 + u)) * 10;
-		de2 = ((-(entero)) - (m * 1000 + c * 100 + d * 10 + u + de1 * 0.1))* 100;
-		TX_BUFFER[1] = '-';
+		de2 = ((-(entero)) - (m * 1000 + c * 100 + d * 10 + u + de1 * 0.1))
+				* 100;
+		TX_BUFFER[0] = '-';
 		TX_BUFFER[1] = m + '0';
 		TX_BUFFER[2] = c + '0';
 		TX_BUFFER[3] = d + '0';
@@ -304,15 +672,15 @@ void intUartSend(float entero) {
 		HAL_UART_Transmit(&huart3, TX_BUFFER, 9, 100);
 	}
 
-	TX_BUFFER[0] = m + '0';
-	TX_BUFFER[1] = c + '0';
-	TX_BUFFER[2] = d + '0';
-	TX_BUFFER[3] = u + '0';
-	TX_BUFFER[4] = ',';
-	TX_BUFFER[5] = de1 + '0';
-	TX_BUFFER[6] = de2 + '0';
-	TX_BUFFER[7] = '\n';
-	HAL_UART_Transmit(&huart3, TX_BUFFER, 8, 100);
+	/*TX_BUFFER[0] = m + '0';
+	 TX_BUFFER[1] = c + '0';
+	 TX_BUFFER[2] = d + '0';
+	 TX_BUFFER[3] = u + '0';
+	 TX_BUFFER[4] = ',';
+	 TX_BUFFER[5] = de1 + '0';
+	 TX_BUFFER[6] = de2 + '0';
+	 TX_BUFFER[7] = '\n';
+	 HAL_UART_Transmit(&huart3, TX_BUFFER, 8, 100);*/
 }
 
 void mainMachine() {
@@ -325,11 +693,11 @@ void mainMachine() {
 		resetAxis();
 		movimientoFlag = 0;
 		finishFlag = 0;
-		if (Sensors[1] - Sensors[3] < 0.5 && Sensors[1] - Sensors[3] > -0.5) {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
-		} else {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);
-		}
+		/*if (Sensors[1] - Sensors[3] < 0.5 && Sensors[1] - Sensors[3] > -0.5) {
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
+		 } else {
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);
+		 }*/
 		if (btns[0].flag == 1) {
 			// Set The LED ON!
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
@@ -444,6 +812,9 @@ void calibrateMachine() {
 				calState = LEFT;
 			}
 		}
+		/*runMotor(ADELANTE, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
+		StraightFlag = 1;*/
 		break;
 	case LEFT:
 		intUartSend((Sensors[3]));
@@ -858,82 +1229,120 @@ void movementMachine(int move) {
 		runMotor(OFF, MOTOR_B);
 		if (move != OFF) {
 			movementState = move;
-			TIM3->CNT = 0;
-			TIM1->CNT = 0;
-			/*if (move == IZQUIERDA) {
-			 TIM3->CNT = 500 + 100;
-			 }*/
-			//intUartSend(TIM3->CNT);
-		}
-		break;
-	case ADELANTE:
-		//intUartSend((int) calcularDistancia(TIM3->CNT));
-		if ((calcularDistancia((TIM3->CNT >> 1)) < forwardChoice[choice])
-				|| (calcularDistancia((TIM1->CNT >> 1)) < forwardChoice[choice]) /*&& Sensors[2] > 5*/) {
-			moveStraight();
-			runMotor(ADELANTE, MOTOR_A);
-			runMotor(ADELANTE, MOTOR_B);
-		} else {
-			movimientoFlag = 1;
-			movementState = OFF;
-			runMotor(OFF, MOTOR_A);
-			runMotor(OFF, MOTOR_B);
-			TIM3->CNT = 0;
-			TIM1->CNT = 0;
-			offset = 0;
-			//intUartSend(10);
-		}
-		break;
-	case IZQUIERDA:
-		TIM4->CCR3 = baseChoice[choice];
-		TIM4->CCR4 = baseChoice[choice];
-		//intUartSend((TIM3->CNT));
-		if (calcularDistancia((TIM3->CNT)) < LeftChoice[choice]) {
-			runMotor(ADELANTE, MOTOR_A);
-			runMotor(ATRAS, MOTOR_B);
-		} else {
-			movementState = ADELANTE;
-			runMotor(OFF, MOTOR_A);
-			runMotor(OFF, MOTOR_B);
-			TIM3->CNT = 0;
-			TIM1->CNT = 0;
-			offset = 30;
-			//intUartSend(9);
-		}
-		break;
-	case DERECHA:
-		TIM4->CCR3 = baseChoice[choice];
-		TIM4->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM1->CNT)) < RightChoice[choice]) {
-			runMotor(ATRAS, MOTOR_A);
-			runMotor(ADELANTE, MOTOR_B);
-			//intUartSend("HOLA");
-		} else {
-			movementState = ADELANTE;
-			runMotor(OFF, MOTOR_A);
-			runMotor(OFF, MOTOR_B);
-			TIM3->CNT = 0;
-			TIM1->CNT = 0;
-			offset = 30;
-			//intUartSend(8);
-		}
-		break;
-	case ATRAS:
-		TIM4->CCR3 = baseChoice[choice];
-		TIM4->CCR4 = baseChoice[choice];
-		if (calcularDistancia((TIM1->CNT)) < RightChoice[choice] * 2) {
-			runMotor(ATRAS, MOTOR_A);
-			runMotor(ADELANTE, MOTOR_B);
-		} else {
-			movementState = ADELANTE;
-			runMotor(OFF, MOTOR_A);
-			runMotor(OFF, MOTOR_B);
-			TIM3->CNT = 0;
-			TIM1->CNT = 0;
-			offset = 30;
-			//intUartSend(7);
-		}
-		break;
+			if (move != ADELANTE) {
+				TIM3->CNT = 0;
+				TIM1->CNT = 0;
+			}
+		//intUartSend(TIM3->CNT);
+	}
+	break;
+case ADELANTE:
+	//TIM4->CCR3 = xSpeed;
+	//TIM4->CCR4 = xSpeed;
+	//intUartSend(calcularDistancia((TIM1->CNT)));
+	intUartSend(TIM3->CNT);
+	if ((calcularDistancia((TIM3->CNT)) < forwardChoice[choice] / 5 + offset)
+			|| (calcularDistancia((TIM1->CNT))
+					< forwardChoice[choice] / 5 + offset) /*&& Sensors[2] > 5*/) {
+		//moveStraight();
+		StraightFlag = 1;
+		intUartSend(1);
+		xSpeed = (calcularDistancia(TIM3->CNT) - offset)
+				* (((baseChoice[choice])- ((baseChoice[choice]) / 3))
+						/ (forwardChoice[choice] / 5)) + (baseChoice[choice]) / 3;
+		runMotor(ADELANTE, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
+	} else if ((calcularDistancia((TIM3->CNT))
+			< forwardChoice[choice] * (4 / 5) + offset)
+			|| (calcularDistancia((TIM1->CNT))
+					< forwardChoice[choice] * (4 / 5) + offset)) {
+		xSpeed = baseChoice[choice];
+		runMotor(ADELANTE, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
+		intUartSend(2);
+	} else if ((calcularDistancia((TIM3->CNT)) < forwardChoice[choice] + offset)
+			|| (calcularDistancia((TIM1->CNT)) < forwardChoice[choice] + offset)) {
+		xSpeed = baseChoice[choice]
+				- ((calcularDistancia((TIM1->CNT)) - offset)
+						* (baseChoice[choice] / forwardChoice[choice])
+						- baseChoice[choice] / 1.8);
+		runMotor(ADELANTE, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
+		intUartSend(3);
+	} else {
+		StraightFlag = 0;
+		movimientoFlag = 1;
+		movementState = OFF;
+		runMotor(OFF, MOTOR_A);
+		runMotor(OFF, MOTOR_B);
+		/*TIM3->CNT = 0;
+		 TIM1->CNT = 0;*/
+		offset = calcularDistancia((TIM3->CNT));
+		//intUartSend(10);
+	}
+	break;
+case IZQUIERDA:
+	TIM4->CCR3 = baseChoice[choice]
+			- (calcularDistancia((TIM3->CNT))
+					* (baseChoice[choice] / LeftChoice[choice])
+					- baseChoice[choice] / 1.8);
+	TIM4->CCR4 = baseChoice[choice]
+			- (calcularDistancia((TIM3->CNT))
+					* (baseChoice[choice] / LeftChoice[choice])
+					- baseChoice[choice] / 1.8);
+	//intUartSend((TIM3->CNT));
+	if (calcularDistancia((TIM3->CNT)) < LeftChoice[choice]) {
+		runMotor(ADELANTE, MOTOR_A);
+		runMotor(ATRAS, MOTOR_B);
+	} else {
+		movementState = ADELANTE;
+		runMotor(OFF, MOTOR_A);
+		runMotor(OFF, MOTOR_B);
+		TIM3->CNT = 0;
+		TIM1->CNT = 0;
+		offset = 0;
+		//intUartSend(9);
+	}
+	break;
+case DERECHA:
+	TIM4->CCR3 = baseChoice[choice]
+			- (calcularDistancia((TIM1->CNT))
+					* (baseChoice[choice] / RightChoice[choice])
+					- baseChoice[choice] / 1.8);
+	TIM4->CCR4 = baseChoice[choice]
+			- (calcularDistancia((TIM1->CNT))
+					* (baseChoice[choice] / RightChoice[choice])
+					- baseChoice[choice] / 1.8);
+	if (calcularDistancia((TIM1->CNT)) < RightChoice[choice]) {
+		runMotor(ATRAS, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
+		//intUartSend("HOLA");
+	} else {
+		movementState = ADELANTE;
+		runMotor(OFF, MOTOR_A);
+		runMotor(OFF, MOTOR_B);
+		TIM3->CNT = 0;
+		TIM1->CNT = 0;
+		offset = 0;
+		//intUartSend(8);
+	}
+	break;
+case ATRAS:
+	TIM4->CCR3 = baseChoice[choice];
+	TIM4->CCR4 = baseChoice[choice];
+	if (calcularDistancia((TIM1->CNT)) < RightChoice[choice] * 2) {
+		runMotor(ATRAS, MOTOR_A);
+		runMotor(ADELANTE, MOTOR_B);
+	} else {
+		movementState = ADELANTE;
+		runMotor(OFF, MOTOR_A);
+		runMotor(OFF, MOTOR_B);
+		TIM3->CNT = 0;
+		TIM1->CNT = 0;
+		offset = 0;
+		//intUartSend(7);
+	}
+	break;
 
 	}
 }
@@ -1048,20 +1457,17 @@ int wallDetector(int n, int d) {
 }
 
 void moveStraight() {
-	if (Sensors[3] < MaxLeftDistance - 2 && Sensors[1] < MaxRightDistance - 2) {
-		//intUartSend(0);
-		error = Sensors[3] - Sensors[1];
-	} else if (Sensors[3] < MaxLeftDistance - 2) {
-		//intUartSend(1);
-		error = Sensors[3] - CenterDistanceLeft;
-	} else if (Sensors[1] < MaxRightDistance - 2) {
-		//intUartSend(2);
-		error = CenterDistanceRight - Sensors[1];
-	} else {
-		//intUartSend(3);
-		error = 0;
-	}
-
+	/*if (Sensors[3] > CenterDistanceLeft  && Sensors[1] < CenterDistanceRight ) {
+	 //intUartSend(0);
+	 error = CenterDistanceLeft - Sensors[3];
+	 } else if (Sensors[3] < CenterDistanceLeft && Sensors[1] > CenterDistanceRight ) {
+	 //intUartSend(1);
+	 error = Sensors[1] - CenterDistanceRight;
+	 } else {
+	 //intUartSend(3);
+	 error = 0;
+	 }*/
+	error = calcularDistancia(TIM1->CNT) - calcularDistancia(TIM3->CNT);
 	timePrev = timeNow;
 	timeNow = HAL_GetTick();
 	elapsedTime = (timeNow - timePrev) / 1000;
@@ -1076,8 +1482,13 @@ void moveStraight() {
 		//intUartSend(0);
 		pid = -velocity;
 	}
-	//intUartSend(abs(pid));
-	HAL_Delay(10);
+	//intUartSend(pid);
+	//HAL_Delay(10);
+	if (pid < 0) {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
+	} else {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+	}
 	motLeft = velocity - pid;
 	motRight = velocity + pid;
 	if (motLeft < -1000) {
@@ -1091,8 +1502,8 @@ void moveStraight() {
 	motRight = constrain(motRight, -1000, 1000);
 	motLeft = constrain(motLeft, -1000, 1000);
 
-	motRight = MAP(motRight, -1000, 1000, 0, baseChoice[choice] * 2);
-	motLeft = MAP(motLeft, -1000, 1000, 0, baseChoice[choice] * 2);
+	motRight = MAP(motRight, -1000, 1000, 0, xSpeed * 2);
+	motLeft = MAP(motLeft, -1000, 1000, 0, xSpeed * 2);
 	TIM4->CCR4 = motLeft;
 	TIM4->CCR3 = motRight;
 }
@@ -1132,6 +1543,19 @@ void btnMachine(int index) {
 		}
 		break;
 	}
+}
+
+void SysTick_Handler(void) {
+	/* USER CODE BEGIN SysTick_IRQn 0 */
+	if (StraightFlag == 1) {
+		moveStraight();
+	}
+	//moveStraight();
+	/* USER CODE END SysTick_IRQn 0 */
+	HAL_IncTick();
+	/* USER CODE BEGIN SysTick_IRQn 1 */
+
+	/* USER CODE END SysTick_IRQn 1 */
 }
 
 /* USER CODE END 4 */
