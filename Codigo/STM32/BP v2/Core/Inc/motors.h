@@ -10,8 +10,6 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
-
-
 void setPowerMotor(int power, int motor);
 void runMotor(int dir, int motor);
 float calcularDistancia(int counter);

@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_it.h"
+#include "velocityControl.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -180,7 +181,23 @@ void PendSV_Handler(void)
 /**
   * @brief This function handles System tick timer.
   */
+void SysTick_Handler(void)
+{
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+	if (StraightFlag == 1) {
+		aproximationPID(ADELANTE);
+		//angularPID();
+		moveStraight();
+	}else if(StraightFlag == 2){
+		aproximationPID(ATRAS);
+	}
+	//moveStraight();
+  /* USER CODE END SysTick_IRQn 0 */
+  HAL_IncTick();
+  /* USER CODE BEGIN SysTick_IRQn 1 */
 
+  /* USER CODE END SysTick_IRQn 1 */
+}
 
 /******************************************************************************/
 /* STM32F1xx Peripheral Interrupt Handlers                                    */

@@ -31,8 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "motors.h"
-#include "sharp.h"
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -41,6 +40,7 @@ typedef struct {
 	int Lados[4];
 	int visitado;
 	int final;
+	int distance;
 } Node;
 
 typedef struct {
@@ -72,26 +72,52 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+
+extern float KPTchoice[];
+extern float KDTchoice[];
+extern float KPAchoice[];
+extern float KDAchoice[];
+extern float KPPchoice[];
+extern float KDPchoice[];
+extern float velocityChoice[];
+extern int baseChoice[];
+extern int forwardChoice[];
+extern int RightChoice[];
+extern int LeftChoice[];
+extern float Sensors[];
+extern float offset;
+extern int movementState;
+extern int movimientoFlag;
+extern int StraightFlag;
+extern int xSpeed;
+extern int objectiveDistance;
+extern float tiempoDelay;
+extern float KPT, KDT, KPA, KDA, KPP, KDP;
+extern float velocity;
+extern int choice;
+extern float CenterDistanceRight, CenterDistanceLeft, MaxRightDistance,
+MaxLeftDistance, MaxCenterDistance;
+extern int objectiveDistance,direction;
+
 int ChooseNextNode(int x, int y);
-void EliminateNode(int x, int y);
-void CreateNode(int x, int y);
 int SearchAvailableNode(int x, int y);
 void mainMachine();
 void robotMachine();
-void moveNode(int lado);
-void rotateAxis(int direccion);
-void resetAxis();
-void movementMachine(int move);
+/*void rotateAxis(int direccion);
+void resetAxis();*/
+//void movementMachine(int move);
 void moveStraight();
 void addDirection(int x, int y);
 void intUartSend(float entero);
 void runDirections(char moves[25]);
 void btnMachine(int index);
 void calibrateMachine();
-int wallDetector(int n, int d);
 void PrintMap();
 void save_to_flash(uint8_t *data, uint32_t address);
-void read_flash(uint8_t* data,uint32_t address);
+void read_flash(uint8_t* data,uint32_t address);//Elección de constante proporcional del PID
+uint32_t MAP(uint32_t au32_IN, uint32_t au32_INmin, uint32_t au32_INmax,
+		uint32_t au32_OUTmin, uint32_t au32_OUTmax);
+int constrain(int x, int a, int b);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

@@ -6,7 +6,6 @@
  */
 #include "motors.h"
 
-
 int counterD, counterI;
 
 float calcularDistancia(int counter) {

@@ -1,0 +1,3 @@
+../Core/Src/nodeControl.c:10:6:moveNode	16	static
+../Core/Src/nodeControl.c:40:6:CreateNode	32	static
+../Core/Src/nodeControl.c:47:6:EliminateNode	24	static

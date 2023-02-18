@@ -27,9 +27,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/motors.h ../Core/Inc/main.h ../Core/Inc/sharp.h \
- ../Core/Inc/sharp.h ../Core/Inc/motors.h ../Core/Inc/FLASH_PAGE_F1.h \
- ../Core/Inc/HMC5883L.h ../Core/Inc/I2Cdev.h
+ ../Core/Inc/sharp.h ../Core/Inc/main.h ../Core/Inc/motors.h \
+ ../Core/Inc/FLASH_PAGE_F1.h ../Core/Inc/HMC5883L.h ../Core/Inc/I2Cdev.h \
+ ../Core/Inc/nodeControl.h ../Core/Inc/movementControl.h \
+ ../Core/Inc/sharp.h ../Core/Inc/motors.h ../Core/Inc/nodeControl.h \
+ ../Core/Inc/velocityControl.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -59,11 +61,15 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
-../Core/Inc/motors.h:
+../Core/Inc/sharp.h:
 ../Core/Inc/main.h:
-../Core/Inc/sharp.h:
-../Core/Inc/sharp.h:
 ../Core/Inc/motors.h:
 ../Core/Inc/FLASH_PAGE_F1.h:
 ../Core/Inc/HMC5883L.h:
 ../Core/Inc/I2Cdev.h:
+../Core/Inc/nodeControl.h:
+../Core/Inc/movementControl.h:
+../Core/Inc/sharp.h:
+../Core/Inc/motors.h:
+../Core/Inc/nodeControl.h:
+../Core/Inc/velocityControl.h:

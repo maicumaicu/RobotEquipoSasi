@@ -1,7 +1,0 @@
-../Core/Src/motors.c:12:7:calcularDistancia	16	static
-../Core/Src/motors.c:16:6:runBackwards	8	static
-../Core/Src/motors.c:21:6:runRight	8	static
-../Core/Src/motors.c:26:6:runLeft	8	static
-../Core/Src/motors.c:31:6:runOff	8	static
-../Core/Src/motors.c:36:6:setPowerMotor	16	static
-../Core/Src/motors.c:45:6:runMotor	16	static

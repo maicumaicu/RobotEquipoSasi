@@ -1,0 +1,137 @@
+/*
+ * velocityControl.c
+ *
+ *  Created on: 15 ene. 2023
+ *      Author: jore
+ */
+#include "velocityControl.h"
+#include "movementControl.h"
+#include "main.h"
+
+float pid, elapsedTime, pidP, pidD;
+float errorT, errorA, errorP, previousErrorT, previousErrorA, previousErrorP;
+float timeNowT, timePrevT, timeNowA, timePrevA, timeNowP, timePrevP;
+int motLeft, motRight;
+int pLeft = 100;
+int pRight = 100;
+
+void aproximationPID(int sentido) {
+	if (sentido == ADELANTE) {
+		errorP = objectiveDistance
+				- (calcularDistancia((TIM1->CNT) >> 1)
+						+ calcularDistancia((TIM3->CNT) >> 1)) / 2;
+	} else if (sentido == IZQUIERDA) {
+		errorP =   objectiveDistance - calcularDistancia((TIM3->CNT) >> 1);
+	} else {
+		errorP =  objectiveDistance - calcularDistancia((TIM1->CNT) >> 1) ;
+	}
+	timePrevP = timeNowT;
+	timeNowP = HAL_GetTick();
+	elapsedTime = (timeNowP - timePrevP) / 1000;
+	pidD = KDP * ((errorP - previousErrorP) / elapsedTime);
+	pidP = KPP * errorP;
+	pid = pidP + pidD;
+	if (pid > velocity) {
+		//intUartSend(1);
+		pid = velocity;
+	}
+	if (pid < -velocity) {
+		//intUartSend(0);
+		pid = -velocity;
+	}
+	xSpeed = pid;
+	if (xSpeed < -1000) {
+		xSpeed = -1000;
+	}
+
+	previousErrorT = errorT;
+	xSpeed = constrain(xSpeed, -1000, 1000);
+	xSpeed = MAP(xSpeed, -1000, 1000, -baseChoice[choice], baseChoice[choice]);
+	if (xSpeed >= 0) {
+		direction = ADELANTE;
+	} else {
+		xSpeed = -xSpeed;
+		direction = ATRAS;
+	}
+	if (xSpeed < 10000 && xSpeed > 0) {
+		xSpeed = 10000;
+	}
+}
+
+void angularPID() {
+	if (Sensors[3] > CenterDistanceLeft && Sensors[1] < CenterDistanceRight) {
+		//intUartSend(0);
+		errorA = CenterDistanceLeft - Sensors[3];
+	} else if (Sensors[3] < CenterDistanceLeft
+			&& Sensors[1] > CenterDistanceRight) {
+		//intUartSend(1);
+		errorA = Sensors[1] - CenterDistanceRight;
+	} else {
+		//intUartSend(3);
+		errorA = 0;
+	}
+	timePrevA = timeNowA;
+	timeNowA = HAL_GetTick();
+	elapsedTime = (timeNowA - timePrevA) / 1000;
+	pidD = KDA * ((errorA - previousErrorA) / elapsedTime);
+	pidP = KPA * errorA;
+	pid = pidP + pidD;
+
+	if (pid > 100) {
+		//intUartSend(1);
+		pid = 100;
+	}
+	if (pid < -100) {
+		//intUartSend(0);
+		pid = -100;
+	}
+	pLeft = 100 - pid;
+	pRight = 100 + pid;
+	previousErrorA = errorA;
+}
+
+void moveStraight() {
+	if (StraightFlag == 1) {
+		errorT = calcularDistancia((TIM1->CNT) >> 1) * pLeft
+				- calcularDistancia((TIM3->CNT) >> 1) * pRight;
+	}else{
+		errorT = calcularDistancia((TIM1->CNT) >> 1)
+						- calcularDistancia((TIM3->CNT) >> 1);
+	}
+
+	timePrevT = timeNowT;
+	timeNowT = HAL_GetTick();
+	elapsedTime = (timeNowT - timePrevT) / 1000;
+	pidD = KDT * ((errorT - previousErrorT) / elapsedTime);
+	pidP = KPT * errorT;
+	pid = pidP + pidD;
+	if (pid > velocity) {
+		//intUartSend(1);
+		pid = velocity;
+	}
+	if (pid < -velocity) {
+		//intUartSend(0);
+		pid = -velocity;
+	}
+	//intUartSend(pid);
+	//HAL_Delay(10);
+
+	motLeft = velocity - pid;
+	motRight = velocity + pid;
+	if (motLeft < -1000) {
+		motLeft = -1000;
+	}
+	if (motRight < -1000) {
+		motRight = -1000;
+	}
+
+	previousErrorT = errorT;
+	motRight = constrain(motRight, -1000, 1000);
+	motLeft = constrain(motLeft, -1000, 1000);
+
+	motRight = MAP(motRight, -1000, 1000, 0, xSpeed * 2);
+	motLeft = MAP(motLeft, -1000, 1000, 0, xSpeed * 2);
+	TIM4->CCR4 = motLeft;
+	TIM4->CCR3 = motRight;
+}
+

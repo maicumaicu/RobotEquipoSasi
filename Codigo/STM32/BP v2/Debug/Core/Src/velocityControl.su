@@ -1,0 +1,3 @@
+../Core/Src/velocityControl.c:18:6:aproximationPID	32	static
+../Core/Src/velocityControl.c:61:6:angularPID	8	static
+../Core/Src/velocityControl.c:93:6:moveStraight	24	static
