@@ -186,10 +186,11 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 	if (StraightFlag == 1) {
 		aproximationPID(ADELANTE);
-		//angularPID();
+		angularPID();
 		moveStraight();
 	}else if(StraightFlag == 2){
 		aproximationPID(ATRAS);
+		//moveStraight();
 	}
 	//moveStraight();
   /* USER CODE END SysTick_IRQn 0 */

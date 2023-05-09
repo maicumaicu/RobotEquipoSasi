@@ -85,6 +85,7 @@ extern int forwardChoice[];
 extern int RightChoice[];
 extern int LeftChoice[];
 extern float Sensors[];
+extern float maxDistance[];
 extern float offset;
 extern int movementState;
 extern int movimientoFlag;
@@ -97,7 +98,7 @@ extern float velocity;
 extern int choice;
 extern float CenterDistanceRight, CenterDistanceLeft, MaxRightDistance,
 MaxLeftDistance, MaxCenterDistance;
-extern int objectiveDistance,direction;
+extern int objectiveDistance,acelerationObjective,aceleration,direction;
 
 int ChooseNextNode(int x, int y);
 int SearchAvailableNode(int x, int y);
@@ -169,6 +170,7 @@ int constrain(int x, int a, int b);
 
 #define SLOW 0
 #define FAST 1
+#define TURN_90 2
 
 #define ADELANTE 0
 #define IZQUIERDA 1

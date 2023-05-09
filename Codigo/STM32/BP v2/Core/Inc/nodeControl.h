@@ -9,7 +9,7 @@
 #define INC_NODECONTROL_H_
 #include "main.h"
 
-void CreateNode(Node* m, float Sensors[4], int direcciones[4], int maxDistance[3]);
+void CreateNode(Node* m, float Sensors[4], int direcciones[4], float maxDistance[3]);
 void moveNode(int lado, Position *a);
 void EliminateNode(Node *m, Node* l, int d);
 

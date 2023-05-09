@@ -9,7 +9,7 @@
 #include <math.h>
 
 
-int wallDetector(int n, int d, int maxDis[3]) {
+int wallDetector(int n, int d, float maxDis[3]) {
 	switch (d) {
 	case ADELANTE:
 		if (n < maxDis[0]) {
@@ -41,7 +41,7 @@ int wallDetector(int n, int d, int maxDis[3]) {
 	}
 }
 
-float lecturaSensor(int direccion, float values[4], int maxDis[3]) {
+float lecturaSensor(int direccion, float values[4], float maxDis[3]) {
 	switch (direccion) {
 	case ADELANTE:
 		return wallDetector(values[2], direccion, maxDis);
@@ -72,6 +72,17 @@ float lecSensor(int n, uint32_t values[10]) {
 	volts = pow(volts - 0.3, 0.5);/*convertimos a cm con un aproximacion grafica*/
 	volts = 27.5 / volts; /*no preguntar por los valores*/
 	volts -= 18;
+
+	if(volts < -10){
+			volts = 100;
+	}
+
+	if (volts < 0){
+		volts = 0;
+	}
+
+
+
 	return volts;
 
 }

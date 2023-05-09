@@ -37,7 +37,7 @@ void moveNode(int lado, Position *a) {
 	}
 }
 
-void CreateNode(Node* m, float Sensors[4], int direcciones[4], int maxDistance[3]) {
+void CreateNode(Node* m, float Sensors[4], int direcciones[4], float maxDistance[3]) {
 	m->Lados[direcciones[ADELANTE]] = lecturaSensor(ADELANTE, Sensors, maxDistance);
 	m->Lados[direcciones[IZQUIERDA]] = lecturaSensor(IZQUIERDA, Sensors,  maxDistance);
 	m->Lados[direcciones[DERECHA]] = lecturaSensor(DERECHA, Sensors, maxDistance);
