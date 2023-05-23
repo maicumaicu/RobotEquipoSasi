@@ -48,7 +48,13 @@
           "min_clearance": 0.508
         }
       },
-      "diff_pair_dimensions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
       "drc_exclusions": [],
       "meta": {
         "version": 2
@@ -112,8 +118,16 @@
         "solder_mask_min_width": 0.0,
         "use_height_for_length_calcs": true
       },
-      "track_widths": [],
-      "via_dimensions": [],
+      "track_widths": [
+        0.0,
+        1.0
+      ],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false,
       "zones_use_no_outline": true
     },
@@ -333,7 +347,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "THT.kicad_pro",
+    "filename": "Piso.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -412,7 +426,7 @@
   },
   "sheets": [
     [
-      "8bbf5f24-e508-4d59-a66d-b4f2c94c1e83",
+      "66b5cfb7-98ba-4fee-bc51-5ee7d330c281",
       ""
     ]
   ],
