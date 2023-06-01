@@ -103,7 +103,7 @@ float KPPchoice[] = { 2, 80, 40, 10 }; //17
 float KDPchoice[] = { 0, 4, 0.5, 1, 0.5 }; //0.5
 float velocityChoice[] = { 1000, 1000 };
 int baseChoice[] = { 20000, 20000 }; //150
-int forwardChoice[] = { 275, 290 };
+int forwardChoice[] = { 230, 250 };
 int RightChoice[] = { 90, 155 };
 int LeftChoice[] = { 90, 155 };
 int choice;
@@ -1032,9 +1032,9 @@ int ChooseNextNode(int x, int y) {
 		 direcciones[ATRAS]);
 		 intUartSend(5000);
 		 }*/
-		/*if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
+		if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
 		 Map[x][y].Lados[direcciones[ATRAS]] = 2;
-		 }*/
+		 }
 		last.x = actual.x;
 		last.y = actual.y;
 		intUartSend(Map[x][y].Lados[DERECHA]);
@@ -1055,10 +1055,10 @@ int ChooseNextNode(int x, int y) {
 		 intUartSend(5000);
 		 }*/
 		Map[x][y].Lados[direcciones[DERECHA]] = 2;
-		/*if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
+		if (Map[x][y].Lados[direcciones[ATRAS]] != 1) {
 		 intUartSend(Map[x][y].Lados[direcciones[ATRAS]]);
 		 Map[x][y].Lados[direcciones[ATRAS]] = 2;
-		 }*/
+		 }
 		last.x = actual.x;
 		last.y = actual.y;
 		intUartSend(Map[actual.x][actual.y].Lados[DERECHA]);
