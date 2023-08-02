@@ -665,7 +665,7 @@
     )
   )
 
-  (gr_rect (start 52.07 28.956) (end 80.772 62.992) (layer "Edge.Cuts") (width 0.2) (fill none) (tstamp 6c62635f-bc65-44b3-b937-aaec7e866449))
+  (gr_rect (start 51.308 28.6512) (end 81.3308 63.4492) (layer "Edge.Cuts") (width 0.2) (fill none) (tstamp 6c62635f-bc65-44b3-b937-aaec7e866449))
   (gr_text "D\n" (at 72.39 42.672 180) (layer "F.SilkS") (tstamp 0b3aacaa-6738-47ec-bd80-4d0de585489d)
     (effects (font (size 1 1) (thickness 0.25)) (justify mirror))
   )

@@ -22,8 +22,13 @@ void aproximationPID(int sentido) {
 									+ calcularDistancia((TIM3->CNT) >> 1)) / 2;
 	} else if (sentido == IZQUIERDA) {
 		errorP =   objectiveDistance - calcularDistancia((TIM3->CNT) >> 1);
-	} else {
+	} else if (sentido == ATRAS) {
 		errorP =  objectiveDistance - calcularDistancia((TIM1->CNT) >> 1) ;
+		/*if(calcularDistancia((TIM1->CNT) >> 1) < 90){
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
+		}else{
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+		}*/
 	}
 
 	timePrevP = timeNowT;
@@ -55,40 +60,47 @@ void aproximationPID(int sentido) {
 		xSpeed = -xSpeed;
 		direction = ATRAS;
 	}
-	if (xSpeed < 10000) {
+	if (xSpeed < 10000 && sentido == ADELANTE) {
 		xSpeed = 10000;
+	}else if (xSpeed < 13000 && sentido == ATRAS ){
+		xSpeed = 13000;
 	}
 
-	if (xSpeed == baseChoice[choice]){
+	/*if (xSpeed == baseChoice[choice]){
 		aceleration = ATRAS;
-	}
+	}*/
 }
 
 void angularPID() {
 	 if (Sensors[3] > maxDistance[1] && Sensors[1] < maxDistance[2]) {
 		//intUartSend(0);
 		errorA = Sensors[1] - CenterDistanceRight;
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
+		//HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
 	} else if (Sensors[3] < maxDistance[1]
 			&& Sensors[1] > maxDistance[2]) {
 		//intUartSend(1);
 
 		errorA = CenterDistanceLeft - Sensors[3];
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
+		//HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
 	} else if (Sensors[1] > maxDistance[2]  && Sensors[3] > maxDistance[1]){
 		//intUartSend(3);
 
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+		//HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
 		errorA = 0;
 	} else if(Sensors[3] > CenterDistanceLeft){
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+		//HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+
 		errorA = Sensors[1] - CenterDistanceRight;
 	}else {
 
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+		//HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
 		errorA = CenterDistanceLeft - Sensors[3];
-
 	}
+	/* if (Sensors[2] < maxDistance[0]){
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 1);
+	 }else{
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, 0);
+	 }*/
 	timePrevA = timeNowA;
 	timeNowA = HAL_GetTick();
 	elapsedTime = (timeNowA - timePrevA) / 1000;

@@ -365,8 +365,6 @@
   )
 
 
-  (no_connect (at 123.444 52.578) (uuid 34931597-4bf2-494d-86ea-c17d2ca85fc0))
-
   (wire (pts (xy 55.372 47.498) (xy 58.674 47.498))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 435d644c-3da0-43c1-abe3-d17a0ad72a6d)
@@ -427,6 +425,10 @@
   (label "data3" (at 41.91 26.416 270)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 247e20e6-3e76-46ed-ac87-8c23d346d5ae)
+  )
+  (label "38Kh" (at 123.444 52.578 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 24b3a28e-67e6-4190-8d38-367699d41c19)
   )
   (label "data4" (at 123.444 50.038 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))

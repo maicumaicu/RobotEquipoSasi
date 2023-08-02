@@ -13,7 +13,6 @@ int wallDetector(int n, int d, float maxDis[3]) {
 	switch (d) {
 	case ADELANTE:
 		if (n < maxDis[0]) {
-
 			return 1;
 		} else {
 
