@@ -137,12 +137,7 @@ void moveStraight() {
 
 	motLeft = velocity - pid;
 	motRight = velocity + pid;
-	if (motLeft < -1000) {
-		motLeft = -1000;
-	}
-	if (motRight < -1000) {
-		motRight = -1000;
-	}
+
 
 	previousErrorT = errorT;
 	motRight = constrain(motRight, -1000, 1000);

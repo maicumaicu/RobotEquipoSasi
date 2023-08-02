@@ -1,0 +1,4 @@
+../Core/Src/motors.c:9:6:runMotor	16	static
+../Core/Src/motors.c:25:6:setPowerMotor	16	static
+../Core/Src/motors.c:34:6:enableMotor	8	static
+../Core/Src/motors.c:37:6:disableMotor	8	static

@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "defines.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -55,12 +55,100 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+//void btnMachine(int index);
+void mainMachine();
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define P1_Pin GPIO_PIN_1
+#define P1_GPIO_Port GPIOA
+#define P2_Pin GPIO_PIN_2
+#define P2_GPIO_Port GPIOA
+#define P3_Pin GPIO_PIN_3
+#define P3_GPIO_Port GPIOA
+#define P4_Pin GPIO_PIN_4
+#define P4_GPIO_Port GPIOA
+#define EN1_Pin GPIO_PIN_5
+#define EN1_GPIO_Port GPIOA
+#define INB1_Pin GPIO_PIN_6
+#define INB1_GPIO_Port GPIOA
+#define INA2_Pin GPIO_PIN_7
+#define INA2_GPIO_Port GPIOA
+#define EN2_Pin GPIO_PIN_0
+#define EN2_GPIO_Port GPIOB
+#define INB2_Pin GPIO_PIN_10
+#define INB2_GPIO_Port GPIOB
+#define INA1_Pin GPIO_PIN_11
+#define INA1_GPIO_Port GPIOB
+#define S4_Pin GPIO_PIN_12
+#define S4_GPIO_Port GPIOB
+#define S3_Pin GPIO_PIN_13
+#define S3_GPIO_Port GPIOB
+#define S2_Pin GPIO_PIN_14
+#define S2_GPIO_Port GPIOB
+#define S1_Pin GPIO_PIN_15
+#define S1_GPIO_Port GPIOB
+#define S38kh_Pin GPIO_PIN_8
+#define S38kh_GPIO_Port GPIOA
+#define S5_Pin GPIO_PIN_9
+#define S5_GPIO_Port GPIOA
+#define S6_Pin GPIO_PIN_10
+#define S6_GPIO_Port GPIOA
+#define S7_Pin GPIO_PIN_11
+#define S7_GPIO_Port GPIOA
+#define S8_Pin GPIO_PIN_12
+#define S8_GPIO_Port GPIOA
+#define B4_Pin GPIO_PIN_15
+#define B4_GPIO_Port GPIOA
+#define B3_Pin GPIO_PIN_3
+#define B3_GPIO_Port GPIOB
+#define B2_Pin GPIO_PIN_4
+#define B2_GPIO_Port GPIOB
+#define B1_Pin GPIO_PIN_5
+#define B1_GPIO_Port GPIOB
+#define L4_Pin GPIO_PIN_6
+#define L4_GPIO_Port GPIOB
+#define L3_Pin GPIO_PIN_7
+#define L3_GPIO_Port GPIOB
+#define L2_Pin GPIO_PIN_8
+#define L2_GPIO_Port GPIOB
+#define L1_Pin GPIO_PIN_9
+#define L1_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+//PINES
+#define L1 L1_GPIO_Port, L1_Pin
+#define L2 L2_GPIO_Port, L2_Pin
+#define L3 L3_GPIO_Port, L3_Pin
+#define L4 L4_GPIO_Port, L4_Pin
 
+#define B1 B1_GPIO_Port, B1_Pin
+#define B2 B2_GPIO_Port, B2_Pin
+#define B3 B3_GPIO_Port, B3_Pin
+#define B4 B4_GPIO_Port, B4_Pin
+
+#define S1 S1_GPIO_Port, S1_Pin
+#define S2 S2_GPIO_Port, S2_Pin
+#define S3 S3_GPIO_Port, S3_Pin
+#define S4 S4_GPIO_Port, S4_Pin
+#define S5 S5_GPIO_Port, S5_Pin
+#define S6 S6_GPIO_Port, S6_Pin
+#define S7 S7_GPIO_Port, S7_Pin
+#define S8 S8_GPIO_Port, S8_Pin
+
+#define EN1 EN1_GPIO_Port, EN1_Pin
+#define EN2 EN2_GPIO_Port, EN2_Pin
+#define INB1 INB1_GPIO_Port, INB1_Pin
+#define INB2 INB2_GPIO_Port, INB2_Pin
+#define INA1 INA1_GPIO_Port, INA1_Pin
+#define INA2 INA2_GPIO_Port, INA2_Pin
+
+extern pin pinS[];
+extern int Sensors[];
+extern int inicio;
+
+
+
+#define S38kh S38kh_GPIO_Port, S38kh_Pin
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
