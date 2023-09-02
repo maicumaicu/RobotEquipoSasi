@@ -51,7 +51,7 @@ typedef struct {
 #define DERECHA 0
 #define IZQUIERDA 1
 
-#define ADC_BUF_LEN 40
+#define ADC_BUF_LEN 100
 
 #define BLANCO 0
 #define NEGRO 1

@@ -184,7 +184,7 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-	if (inicio != 1) {
+	/*if (inicio != 1) {
 		int posicionLinea = linePosition(Sensors);
 		int *mediciones = readSensorsArray(pinS, 7);
 		int posicionObjetivo = targetPosition(mediciones);
@@ -193,7 +193,7 @@ void SysTick_Handler(void)
 		} else {
 			lineTracking(posicionLinea);
 		}
-	}
+	}*/
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();

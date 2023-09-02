@@ -48,7 +48,6 @@ ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 TIM_HandleTypeDef htim1;
-TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
@@ -60,19 +59,18 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_TIM1_Init(void);
-static void MX_TIM2_Init(void);
-static void MX_TIM3_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-pin pinS[] = { { S1_GPIO_Port, S1_Pin }, { S2_GPIO_Port, S2_Pin }, {
-S3_GPIO_Port, S3_Pin }, { S6_GPIO_Port, S6_Pin }, { S7_GPIO_Port, S7_Pin }, {
-S5_GPIO_Port, S5_Pin }, { S8_GPIO_Port,
-S8_Pin } };
+/*pin pinS[] = { { S1_GPIO_Port, S1_Pin }, { S2_GPIO_Port, S2_Pin }, {
+ S3_GPIO_Port, S3_Pin }, { S6_GPIO_Port, S6_Pin }, { S7_GPIO_Port, S7_Pin }, {
+ S5_GPIO_Port, S5_Pin }, { S8_GPIO_Port,
+ S8_Pin } };*/
 int Sensors[] = { 0, 0, 0, 0 };
 int inicio = 0;
 uint32_t adc_buf[ADC_BUF_LEN];
@@ -121,42 +119,40 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM1_Init();
-  MX_TIM2_Init();
-  MX_TIM3_Init();
   MX_ADC1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 	btns[0].PIN.Port = B1_GPIO_Port;
-	btns[0].PIN.pin = B1_Pin;
-	btns[0].estado = ESPERA;
-	btns[0].flag = 0;
-	btns[1].PIN.Port = B2_GPIO_Port;
-	btns[1].PIN.pin = B2_Pin;
-	btns[1].estado = ESPERA;
-	btns[1].flag = 0;
-	btns[2].PIN.Port = B3_GPIO_Port;
-	btns[2].PIN.pin = B3_Pin;
-	btns[2].estado = ESPERA;
-	btns[2].flag = 0;
-	btns[3].PIN.Port = B4_GPIO_Port;
-	btns[3].PIN.pin = B4_Pin;
-	btns[3].estado = ESPERA;
-	btns[3].flag = 0;
-	Motors[0].IN1.Port = INA1_GPIO_Port;
-	Motors[0].IN2.Port = INA2_GPIO_Port;
-	Motors[0].IN1.pin = INA1_Pin;
-	Motors[0].IN2.pin = INA2_Pin;
-	Motors[1].IN1.Port = INB1_GPIO_Port;
-	Motors[1].IN2.Port = INB2_GPIO_Port;
-	Motors[1].IN1.pin = INB1_Pin;
-	Motors[1].IN2.pin = INB2_Pin;
+	 btns[0].PIN.pin = B1_Pin;
+	 btns[0].estado = ESPERA;
+	 btns[0].flag = 0;
+	 btns[1].PIN.Port = B2_GPIO_Port;
+	 btns[1].PIN.pin = B2_Pin;
+	 btns[1].estado = ESPERA;
+	 btns[1].flag = 0;
+	 btns[2].PIN.Port = B3_GPIO_Port;
+	 btns[2].PIN.pin = B3_Pin;
+	 btns[2].estado = ESPERA;
+	 btns[2].flag = 0;
+	 btns[3].PIN.Port = B4_GPIO_Port;
+	 btns[3].PIN.pin = B4_Pin;
+	 btns[3].estado = ESPERA;
+	 btns[3].flag = 0;
+	 mainState = INIT;
+	 Motors[0].IN1.Port = INA1_GPIO_Port;
+	 Motors[0].IN2.Port = INA2_GPIO_Port;
+	 Motors[0].IN1.pin = INA1_Pin;
+	 Motors[0].IN2.pin = INA2_Pin;
+	 Motors[1].IN1.Port = INB1_GPIO_Port;
+	 Motors[1].IN2.Port = INB2_GPIO_Port;
+	 Motors[1].IN1.pin = INB1_Pin;
+	 Motors[1].IN2.pin = INB2_Pin;
 
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
-	TIM3->CCR4 = 65535;
-	TIM2->CCR1 = 65535;
-	TIM1->CCR1 = 50000;
+
 
   /* USER CODE END 2 */
 
@@ -166,15 +162,28 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
+		TIM1->CCR2 = 150;
+		TIM3->CCR1 = 60000;
+		TIM3->CCR4 = 60000;
 		btnMachine(&btns[0]);
-		btnMachine(&btns[1]);
-		btnMachine(&btns[2]);
-		btnMachine(&btns[3]);
-		/*HAL_GPIO_WritePin(INA1, GPIO_PIN_SET);
-		 HAL_GPIO_WritePin(INA2, GPIO_PIN_RESET);*/
-		mainMachine();
-		 showModeNumber(Sensors[3]);
+		 btnMachine(&btns[1]);
+		 btnMachine(&btns[2]);
+		 btnMachine(&btns[3]);
+		 HAL_GPIO_WritePin(EN1, GPIO_PIN_SET);
+		 HAL_GPIO_WritePin(INB1, GPIO_PIN_SET);
+		 HAL_GPIO_WritePin(INB2, GPIO_PIN_RESET);
+
+		//mainMachine();
+		if (Sensors[0] == 0) {
+			HAL_GPIO_WritePin(L3, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(L3, GPIO_PIN_RESET);
+		}
+		if (HAL_GPIO_ReadPin(S2) == 0) {
+			HAL_GPIO_WritePin(L2, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(L2, GPIO_PIN_RESET);
+		}
 	}
   /* USER CODE END 3 */
 }
@@ -246,12 +255,12 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 4;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -259,9 +268,36 @@ static void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_2;
+  sConfig.Rank = ADC_REGULAR_RANK_3;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = ADC_REGULAR_RANK_4;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -295,10 +331,10 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 1895;
+  htim1.Init.Period = 1892;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
@@ -325,7 +361,7 @@ static void MX_TIM1_Init(void)
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -344,65 +380,6 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 2 */
   HAL_TIM_MspPostInit(&htim1);
-
-}
-
-/**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM2_Init(void)
-{
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 65535;
-  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM2_Init 2 */
-
-  /* USER CODE END TIM2_Init 2 */
-  HAL_TIM_MspPostInit(&htim2);
 
 }
 
@@ -430,7 +407,7 @@ static void MX_TIM3_Init(void)
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
@@ -454,6 +431,10 @@ static void MX_TIM3_Init(void)
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();
@@ -500,11 +481,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, EN1_Pin|INB1_Pin|INA2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, EN1_Pin|INB1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, EN2_Pin|INB2_Pin|INA1_Pin|L4_Pin
-                          |L3_Pin|L2_Pin|L1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, INA2_Pin|INB2_Pin|INA1_Pin|L1_Pin
+                          |L2_Pin|L3_Pin|L4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -513,33 +494,33 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : EN1_Pin INB1_Pin INA2_Pin */
-  GPIO_InitStruct.Pin = EN1_Pin|INB1_Pin|INA2_Pin;
+  /*Configure GPIO pins : EN1_Pin INB1_Pin */
+  GPIO_InitStruct.Pin = EN1_Pin|INB1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : EN2_Pin INB2_Pin INA1_Pin L4_Pin
-                           L3_Pin L2_Pin L1_Pin */
-  GPIO_InitStruct.Pin = EN2_Pin|INB2_Pin|INA1_Pin|L4_Pin
-                          |L3_Pin|L2_Pin|L1_Pin;
+  /*Configure GPIO pins : INA2_Pin INB2_Pin INA1_Pin L1_Pin
+                           L2_Pin L3_Pin L4_Pin */
+  GPIO_InitStruct.Pin = INA2_Pin|INB2_Pin|INA1_Pin|L1_Pin
+                          |L2_Pin|L3_Pin|L4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : S4_Pin S3_Pin S2_Pin S1_Pin
+  /*Configure GPIO pins : PB12 PB13 PB14 PB15
                            B3_Pin B2_Pin B1_Pin */
-  GPIO_InitStruct.Pin = S4_Pin|S3_Pin|S2_Pin|S1_Pin
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15
                           |B3_Pin|B2_Pin|B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : S5_Pin S6_Pin S7_Pin S8_Pin
+  /*Configure GPIO pins : PA8 S1_Pin S2_Pin PA12
                            B4_Pin */
-  GPIO_InitStruct.Pin = S5_Pin|S6_Pin|S7_Pin|S8_Pin
+  GPIO_InitStruct.Pin = GPIO_PIN_8|S1_Pin|S2_Pin|GPIO_PIN_12
                           |B4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -555,7 +536,7 @@ void mainMachine() {
 			count--;
 		}
 
-		if (btns[2].flag == 1) {
+		if (btns[0].flag == 1) {
 			count++;
 		}
 
@@ -568,7 +549,7 @@ void mainMachine() {
 		}
 		showModeNumber(count);
 
-		if (btns[0].flag == 1) {
+		if (btns[2].flag == 1) {
 			mainState = SECUENCIA_INICIO;
 			showModeNumber(0);
 			HAL_Delay(5000);
@@ -602,19 +583,19 @@ void mainMachine() {
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	for (int i = 0; i < 10; i++) {
-		CNY70_1[i] = adc_buf[i * 4];
-		CNY70_2[i] = adc_buf[i * 4 + 1];
-		CNY70_3[i] = adc_buf[i * 4 + 2];
-		CNY70_4[i] = adc_buf[i * 4 + 3];
-	}
-	Sensors[0] = lecturaCNY70(10, CNY70_1);
-	Sensors[1] = lecturaCNY70(10, CNY70_2);
-	Sensors[2] = lecturaCNY70(10, CNY70_3);
-	Sensors[3] = lecturaCNY70(10, CNY70_4);
-	showModeNumber(8);
+ for (int i = 0; i < 10; i++) {
+ CNY70_1[i] = adc_buf[i * 4];
+ CNY70_2[i] = adc_buf[i * 4 + 1];
+ CNY70_3[i] = adc_buf[i * 4 + 2];
+ CNY70_4[i] = adc_buf[i * 4 + 3];
+ }
+ Sensors[0] = lecturaCNY70(10, CNY70_1);
+ Sensors[1] = lecturaCNY70(10, CNY70_2);
+ Sensors[2] = lecturaCNY70(10, CNY70_3);
+ Sensors[3] = lecturaCNY70(10, CNY70_4);
+ //showModeNumber(8);
 
-}
+ }
 
 /* USER CODE END 4 */
 
