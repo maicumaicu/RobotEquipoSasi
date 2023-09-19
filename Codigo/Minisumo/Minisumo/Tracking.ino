@@ -6,7 +6,7 @@ float KDT = 1;
 float KPL = 1;
 float KDL = 1;
 int xSpeed;
-
+/*
 int targetPosition(int *mediciones) {
   return (mediciones[0] + mediciones[1] + mediciones[2]) != 0 ?
          ((-1000 * mediciones[0] + 0 * mediciones[1] + 1000 * mediciones[2])
@@ -122,4 +122,4 @@ void lineTracking(int position) {
     setPowerMotor(motLeft, 200);
   }
 
-}
+}*/

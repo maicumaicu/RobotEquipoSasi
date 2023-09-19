@@ -1,3 +1,0 @@
-../Core/Src/sensor.c:12:5:readSensor	16	static
-../Core/Src/sensor.c:16:6:readSensorsArray	32	static
-../Core/Src/sensor.c:24:5:lecturaCNY70	32	static

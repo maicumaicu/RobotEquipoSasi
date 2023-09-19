@@ -35,8 +35,8 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(analogRead(A0));
   //showModeNumber(sensores[0]*1+sensores[2]*2);
+  //Serial.println(sensores[2]);
   btnMachine(&btns[0]);
   btnMachine(&btns[1]);
   sensores[0] = lecturaSharp(1, S2_Pin);

@@ -23,7 +23,7 @@
 #define BLANCO 0
 #define NEGRO 1
 
-#define TIEMPO_VUELTA 1000
+#define TIEMPO_VUELTA 100
 
 #define B1_Pin 4
 #define B2_Pin 5
@@ -34,8 +34,8 @@
 #define S3_Pin A2
 #define P1_Pin A1
 #define P2_Pin A0
-#define EN2_Pin 11
-#define EN1_Pin 10
+#define EN2_Pin 10
+#define EN1_Pin 11
 #define INA1_Pin 9
 #define INA2_Pin 8
 #define INB1_Pin 7

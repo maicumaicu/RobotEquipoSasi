@@ -10,7 +10,7 @@
 
 
 int readSensor(pin sensor) {
-	return HAL_GPIO_ReadPin(sensor.Port, sensor.pin);
+	return !HAL_GPIO_ReadPin(sensor.Port, sensor.pin);
 }
 
 int* readSensorsArray(pin *sensors, int cuantity) {

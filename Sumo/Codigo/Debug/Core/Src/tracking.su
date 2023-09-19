@@ -1,4 +1,0 @@
-../Core/Src/tracking.c:21:5:targetPosition	16	static
-../Core/Src/tracking.c:31:5:linePosition	16	static
-../Core/Src/tracking.c:39:6:targetTracking	24	static
-../Core/Src/tracking.c:87:6:lineTracking	24	static

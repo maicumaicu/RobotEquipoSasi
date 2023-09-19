@@ -123,36 +123,35 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 	btns[0].PIN.Port = B1_GPIO_Port;
-	 btns[0].PIN.pin = B1_Pin;
-	 btns[0].estado = ESPERA;
-	 btns[0].flag = 0;
-	 btns[1].PIN.Port = B2_GPIO_Port;
-	 btns[1].PIN.pin = B2_Pin;
-	 btns[1].estado = ESPERA;
-	 btns[1].flag = 0;
-	 btns[2].PIN.Port = B3_GPIO_Port;
-	 btns[2].PIN.pin = B3_Pin;
-	 btns[2].estado = ESPERA;
-	 btns[2].flag = 0;
-	 btns[3].PIN.Port = B4_GPIO_Port;
-	 btns[3].PIN.pin = B4_Pin;
-	 btns[3].estado = ESPERA;
-	 btns[3].flag = 0;
-	 mainState = INIT;
-	 Motors[0].IN1.Port = INA1_GPIO_Port;
-	 Motors[0].IN2.Port = INA2_GPIO_Port;
-	 Motors[0].IN1.pin = INA1_Pin;
-	 Motors[0].IN2.pin = INA2_Pin;
-	 Motors[1].IN1.Port = INB1_GPIO_Port;
-	 Motors[1].IN2.Port = INB2_GPIO_Port;
-	 Motors[1].IN1.pin = INB1_Pin;
-	 Motors[1].IN2.pin = INB2_Pin;
+	btns[0].PIN.pin = B1_Pin;
+	btns[0].estado = ESPERA;
+	btns[0].flag = 0;
+	btns[1].PIN.Port = B2_GPIO_Port;
+	btns[1].PIN.pin = B2_Pin;
+	btns[1].estado = ESPERA;
+	btns[1].flag = 0;
+	btns[2].PIN.Port = B3_GPIO_Port;
+	btns[2].PIN.pin = B3_Pin;
+	btns[2].estado = ESPERA;
+	btns[2].flag = 0;
+	btns[3].PIN.Port = B4_GPIO_Port;
+	btns[3].PIN.pin = B4_Pin;
+	btns[3].estado = ESPERA;
+	btns[3].flag = 0;
+	mainState = INIT;
+	Motors[0].IN1.Port = INA1_GPIO_Port;
+	Motors[0].IN2.Port = INA2_GPIO_Port;
+	Motors[0].IN1.pin = INA1_Pin;
+	Motors[0].IN2.pin = INA2_Pin;
+	Motors[1].IN1.Port = INB1_GPIO_Port;
+	Motors[1].IN2.Port = INB2_GPIO_Port;
+	Motors[1].IN1.pin = INB1_Pin;
+	Motors[1].IN2.pin = INB2_Pin;
 
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	//HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adc_buf, ADC_BUF_LEN);
-
 
   /* USER CODE END 2 */
 
@@ -162,28 +161,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		TIM1->CCR2 = 150;
-		TIM3->CCR1 = 60000;
-		TIM3->CCR4 = 60000;
+		//TIM1->CCR2 = 150;
 		btnMachine(&btns[0]);
-		 btnMachine(&btns[1]);
-		 btnMachine(&btns[2]);
-		 btnMachine(&btns[3]);
-		 HAL_GPIO_WritePin(EN1, GPIO_PIN_SET);
-		 HAL_GPIO_WritePin(INB1, GPIO_PIN_SET);
-		 HAL_GPIO_WritePin(INB2, GPIO_PIN_RESET);
-
-		//mainMachine();
-		if (Sensors[0] == 0) {
-			HAL_GPIO_WritePin(L3, GPIO_PIN_SET);
-		} else {
-			HAL_GPIO_WritePin(L3, GPIO_PIN_RESET);
-		}
-		if (HAL_GPIO_ReadPin(S2) == 0) {
-			HAL_GPIO_WritePin(L2, GPIO_PIN_SET);
-		} else {
-			HAL_GPIO_WritePin(L2, GPIO_PIN_RESET);
-		}
+		btnMachine(&btns[1]);
+		btnMachine(&btns[2]);
+		btnMachine(&btns[3]);
+		mainMachine();
 	}
   /* USER CODE END 3 */
 }
@@ -322,8 +305,6 @@ static void MX_TIM1_Init(void)
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
   /* USER CODE BEGIN TIM1_Init 1 */
 
@@ -344,42 +325,15 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM1_Init 2 */
 
   /* USER CODE END TIM1_Init 2 */
-  HAL_TIM_MspPostInit(&htim1);
 
 }
 
@@ -518,9 +472,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA8 S1_Pin S2_Pin PA12
+  /*Configure GPIO pins : PA8 PA9 S1_Pin S2_Pin
                            B4_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_8|S1_Pin|S2_Pin|GPIO_PIN_12
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|S1_Pin|S2_Pin
                           |B4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -532,6 +486,10 @@ static void MX_GPIO_Init(void)
 void mainMachine() {
 	switch (mainState) {
 	case INIT:
+		mainState = SECUENCIA_INICIO;
+		showModeNumber(0);
+		HAL_Delay(5000);
+		showModeNumber(15);
 		if (btns[1].flag == 1) {
 			count--;
 		}
@@ -557,45 +515,62 @@ void mainMachine() {
 		}
 		break;
 	case SECUENCIA_INICIO:
-		angulo = (360 / 16) * count;
+		HAL_GPIO_WritePin(EN1, GPIO_PIN_SET);
+		TIM3->CCR1 = 60000;
+					TIM3->CCR4 = 60000;
+		/*angulo = (360 / 16) * count;
 		if (angulo <= 180 && angulo > 0) {
-			runMotor(ATRAS, Motors[DERECHA]);
-			runMotor(ADELANTE, Motors[IZQUIERDA]);
+			HAL_GPIO_WritePin(Motors[1].IN1.Port, Motors[1].IN1.pin,
+					GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(Motors[1].IN2.Port, Motors[1].IN2.pin,
+					GPIO_PIN_SET);
+			HAL_GPIO_WritePin(Motors[0].IN1.Port, Motors[0].IN1.pin,
+					GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(Motors[0].IN2.Port, Motors[0].IN2.pin,
+					GPIO_PIN_SET);
+			HAL_GPIO_WritePin(EN1, GPIO_PIN_SET);
+			TIM3->CCR1 = 60000;
+			TIM3->CCR4 = 60000;
 			HAL_Delay(count * TIEMPO_VUELTA);
 		} else {
 			runMotor(ADELANTE, Motors[DERECHA]);
 			runMotor(ATRAS, Motors[IZQUIERDA]);
+			TIM3->CCR1 = 60000;
+			TIM3->CCR4 = 60000;
 			HAL_Delay((-count + 17) * TIEMPO_VUELTA);
-		}
+		}*/
+		showModeNumber(1);
 		mainState = MAIN;
 		break;
 	case MAIN:
 		inicio = 1;
 		if (linePosition(Sensors) != 0) {
+			showModeNumber(7);
+			runMotor(ATRAS, Motors[DERECHA]);
+			runMotor(ATRAS), Motors[IZQUIERDA]);
+		} else {
+			showModeNumber(3);
 			runMotor(ADELANTE, Motors[DERECHA]);
 			runMotor(ADELANTE, Motors[IZQUIERDA]);
-		} else {
-			runMotor(ATRAS, Motors[DERECHA]);
-			runMotor(ATRAS, Motors[IZQUIERDA]);
 		}
 		break;
 	}
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
- for (int i = 0; i < 10; i++) {
- CNY70_1[i] = adc_buf[i * 4];
- CNY70_2[i] = adc_buf[i * 4 + 1];
- CNY70_3[i] = adc_buf[i * 4 + 2];
- CNY70_4[i] = adc_buf[i * 4 + 3];
- }
- Sensors[0] = lecturaCNY70(10, CNY70_1);
- Sensors[1] = lecturaCNY70(10, CNY70_2);
- Sensors[2] = lecturaCNY70(10, CNY70_3);
- Sensors[3] = lecturaCNY70(10, CNY70_4);
- //showModeNumber(8);
+	for (int i = 0; i < 10; i++) {
+		CNY70_1[i] = adc_buf[i * 4];
+		CNY70_2[i] = adc_buf[i * 4 + 1];
+		CNY70_3[i] = adc_buf[i * 4 + 2];
+		CNY70_4[i] = adc_buf[i * 4 + 3];
+	}
+	Sensors[0] = lecturaCNY70(10, CNY70_1);
+	Sensors[1] = lecturaCNY70(10, CNY70_2);
+	Sensors[2] = lecturaCNY70(10, CNY70_3);
+	Sensors[3] = lecturaCNY70(10, CNY70_4);
+	//showModeNumber(8);
 
- }
+}
 
 /* USER CODE END 4 */
 
