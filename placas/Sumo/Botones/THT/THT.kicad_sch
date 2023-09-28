@@ -547,7 +547,7 @@
     (property "Datasheet" "" (at 60.452 41.91 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 282974fe-b174-408c-9e38-1a53189dc3f1))
+    (pin "1" (uuid b3f15ec7-80f7-4e2e-8757-49a4c2665ef6))
     (instances
       (project "THT"
         (path "/8bbf5f24-e508-4d59-a66d-b4f2c94c1e83"
