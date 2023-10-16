@@ -8,17 +8,17 @@ float KDL = 1;
 int xSpeed;
 
 int targetPosition(int *mediciones) {
-  return (mediciones[0] + mediciones[1] + mediciones[2]) != 0 ?
-         ((-1000 * mediciones[0] + 0 * mediciones[1] + 1000 * mediciones[2])
-          / (mediciones[0] + mediciones[1] + mediciones[2]
+  return (mediciones[0] + mediciones[1] + mediciones[2]+ mediciones[3]+ mediciones[4]) != 0 ?
+         ((-2000 * mediciones[0] + -1000 * mediciones[1] + 0 * mediciones[2] + 1000 * mediciones[3] + 2000 * mediciones[4])
+          / (mediciones[0] + mediciones[1] + mediciones[2] + mediciones[3] + mediciones[4]
             )) :
          -1;
 }
 
 int linePosition(int *mediciones) {
-  return (mediciones[0] + mediciones[1])
+  return (mediciones[0] + mediciones[1]+ mediciones[2]+ mediciones[3]+ mediciones[4])
          != 0 ?
-         ((-1000 * mediciones[0] + 1000 * mediciones[1])) :
+         ((-2000 * mediciones[0]  -1000 * mediciones[1] + 0 * mediciones[2] + 1000 * mediciones[3] + 2000 * mediciones[4])) :
          -1;
 }
 
@@ -64,12 +64,10 @@ void targetTracking(int position) {
     motLeft = MINVELOCITY;
   }
   if (position != -1) {
-    //setPowerMotor(motRight, DERECHA);
-    analogWrite(EN2_Pin,motRight);
+    setPowerMotor(motRight, DERECHA);
     setPowerMotor(motLeft, IZQUIERDA);
   } else {
-    //setPowerMotor(motRight, 130);
-    analogWrite(EN2_Pin,130);
+    setPowerMotor(motRight, 130);
     setPowerMotor(motLeft, 100);
   }
 }
@@ -114,11 +112,10 @@ void lineTracking(int position) {
     motLeft = MINVELOCITY;
   }
   if (position != 0) {
-    
-    analogWrite(EN2_Pin,motRight);
+    setPowerMotor(motRight, DERECHA);
     setPowerMotor(motLeft, IZQUIERDA);
   } else {
-    analogWrite(EN2_Pin,230);
+    setPowerMotor(motRight, 230);
     setPowerMotor(motLeft, 200);
   }
 

@@ -9,7 +9,7 @@ void mainMachine() {
       if (btns[0].flag == 1) {
         count++;
       }
-      if (count >= 4 || count <= 0) {
+      if (count >= 16 || count <= 0) {
         count = 0;
       }
       showModeNumber(count);
@@ -25,7 +25,7 @@ void mainMachine() {
       showModeNumber(1);
       angulo = (180 / 4) * count;
       runMotor(ADELANTE, Motors[DERECHA]);
-      runMotor(ADELANTE, Motors[IZQUIERDA]);
+      runMotor(ATRAS, Motors[IZQUIERDA]);
       setPowerMotor(200, DERECHA);
       setPowerMotor(200, IZQUIERDA);
       delay(count * TIEMPO_VUELTA);
@@ -61,65 +61,84 @@ void mainMachine() {
         runMotor(ATRAS, Motors[IZQUIERDA]);
         lineTracking(posicionLinea);
         }*/
-      if (piso[0] == NEGRO && piso[1] == NEGRO) {
-         //showModeNumber(0);
-        if (sensores[1] == 1) {
-          showModeNumber(1);
-          digitalWrite(8, HIGH);
-          digitalWrite(9, LOW);
-          runMotor(ADELANTE, Motors[IZQUIERDA]);
-          setPowerMotor(250, IZQUIERDA);
-          setPowerMotor(250, DERECHA);
-        }
-        else if (sensores[2] == 1) {
-          showModeNumber(3); 
-          digitalWrite(8, HIGH);
-          digitalWrite(9, LOW);
-          runMotor(ATRAS, Motors[IZQUIERDA]);
-          setPowerMotor(250, IZQUIERDA);
-          setPowerMotor(40, DERECHA);
-        } else if  (sensores[0] == 1) {
-          showModeNumber(2);
-          digitalWrite(8, LOW);
-          digitalWrite(9, HIGH);
-          runMotor(ADELANTE, Motors[IZQUIERDA]);
-          setPowerMotor(40, IZQUIERDA);
-          setPowerMotor(250, DERECHA);
-        }else{
-           showModeNumber(0);
-           digitalWrite(8, HIGH);
-          digitalWrite(9, LOW);
-          runMotor(ADELANTE, Motors[IZQUIERDA]);
-          setPowerMotor(120, IZQUIERDA);
-          setPowerMotor(120, DERECHA);
-        }
+      if (piso[0] == BLANCO && piso[1] == BLANCO) {
+        showModeNumber(12);
+        //showModeNumber(0);
+        runMotor(ATRAS, Motors[DERECHA]);
+        runMotor(ATRAS, Motors[IZQUIERDA]);
+        setPowerMotor(40, IZQUIERDA);
+        setPowerMotor(250, DERECHA);
+        delay(400);
       } else if (piso[1] == BLANCO) {
-         
-        digitalWrite(8, LOW);
-        digitalWrite(9, HIGH);
+        showModeNumber(11);
+        runMotor(ADELANTE, Motors[DERECHA]);
         runMotor(ATRAS, Motors[IZQUIERDA]);
         setPowerMotor(250, IZQUIERDA);
         setPowerMotor(40, DERECHA);
         delay(400);
       }
       else if (piso[0] == BLANCO) {
-         
-         digitalWrite(8, LOW);
-        digitalWrite(9, HIGH);
-        runMotor(ATRAS, Motors[IZQUIERDA]);
+        showModeNumber(10);
+        runMotor(ATRAS, Motors[DERECHA]);
+        runMotor(ADELANTE, Motors[IZQUIERDA]);
         setPowerMotor(40, IZQUIERDA);
         setPowerMotor(250, DERECHA);
         delay(400);
-      }/*else{
-         
-        digitalWrite(8, LOW);
-        digitalWrite(9, HIGH);
-        runMotor(ATRAS, Motors[IZQUIERDA]);
-        setPowerMotor(40, IZQUIERDA);
-        setPowerMotor(250, DERECHA);
-        delay(400);
-        
-      }*/
+      } else {
+        if (sensores[1] == 1) {
+          if (sensores[2] == 0 && sensores[0] == 0) {
+            showModeNumber(1);
+            runMotor(ADELANTE, Motors[DERECHA]);
+            runMotor(ADELANTE, Motors[IZQUIERDA]);
+            setPowerMotor(250, IZQUIERDA);
+            setPowerMotor(250, DERECHA);
+          } else if  (sensores[2] == 1) {
+            showModeNumber(2);
+            runMotor(ADELANTE, Motors[DERECHA]);
+            runMotor(ADELANTE, Motors[IZQUIERDA]);
+            setPowerMotor(40, IZQUIERDA);
+            setPowerMotor(250, DERECHA);
+          } else {
+            showModeNumber(3);
+            runMotor(ADELANTE, Motors[DERECHA]);
+            runMotor(ADELANTE, Motors[IZQUIERDA]);
+            setPowerMotor(250, IZQUIERDA);
+            setPowerMotor(40, DERECHA);
+
+
+          }
+        }
+        else if (sensores[2] == 1) {
+          showModeNumber(4);
+          runMotor(ADELANTE, Motors[DERECHA]);
+          runMotor(ATRAS, Motors[IZQUIERDA]);
+          setPowerMotor(40, IZQUIERDA);
+          setPowerMotor(250, DERECHA);
+        } else if  (sensores[0] == 1) {
+          showModeNumber(5);
+          runMotor(ATRAS, Motors[DERECHA]);
+          runMotor(ADELANTE, Motors[IZQUIERDA]);
+          setPowerMotor(250, IZQUIERDA);
+          setPowerMotor(40, DERECHA);
+        } else {
+          if (moveTime + MOVE_TICKS < millis()) {
+            moveTime = millis();
+            showModeNumber(0);
+            runMotor(ADELANTE, Motors[DERECHA]);
+            runMotor(ADELANTE, Motors[IZQUIERDA]);
+            setPowerMotor(120, IZQUIERDA);
+            setPowerMotor(120, DERECHA);
+            mode = 1;
+          } else if (moveTime + F_TICKS < millis() && mode == 1) {
+            moveTime = millis();
+            runMotor(OFF, Motors[DERECHA]);
+            runMotor(OFF, Motors[IZQUIERDA]);
+            setPowerMotor(0, IZQUIERDA);
+            setPowerMotor(0, DERECHA);
+            mode = 0;
+          }
+        }
+      }
       break;
   }
 }

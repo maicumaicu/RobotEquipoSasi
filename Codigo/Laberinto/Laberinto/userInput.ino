@@ -1,13 +1,9 @@
 int lecturaBtn,ticks;
 
 void showModeNumber(int number) {
-  digitalWrite(L1_Pin,number % 2);
+  digitalWrite(2,number % 2);
   number /= 2;
-  digitalWrite(L2_Pin,number % 2);
-  number /= 2; 
-  digitalWrite(L3_Pin,number % 2);
-  number /= 2; 
-  digitalWrite(L4_Pin,number % 2);
+  digitalWrite(3,number % 2);
   number /= 2; 
 }
 
@@ -44,7 +40,4 @@ void btnMachine(button* btn) {
     break;
   }
 }
-
-void tick() {
-  ticks++;
-}
+ 

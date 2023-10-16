@@ -30,27 +30,25 @@ void setup() {
   btns[1].PIN = B2_Pin;
   btns[1].estado = ESPERA;
   btns[1].flag = 0;
-  Motors[0].IN1 = INA1_Pin;
-  Motors[0].IN2 = INA2_Pin;
-  Motors[0].EN = EN1_Pin;
-  Motors[1].IN1 = INB1_Pin;
-  Motors[1].IN2 = INB2_Pin;
-  Motors[1].EN = EN2_Pin;
+  Motors[1].IN1 = INA2_Pin;
+  Motors[1].IN2 = INA1_Pin;
+  Motors[1].EN = EN1_Pin;
+  Motors[0].IN1 = INB1_Pin;
+  Motors[0].IN2 = INB2_Pin;
+  Motors[0].EN = EN2_Pin;
 }
 
 void loop() {
-  //showModeNumber(piso[0]*1+piso[1]*2+sensores[2]*4);
+  //showModeNumber(sensores[0]*1+sensores[1]*2+sensores[2]*4);
   //Serial.println(sensores[2]);
   btnMachine(&btns[0]);
   btnMachine(&btns[1]);
-  sensores[0] = lecturaSharp(1, S2_Pin);
-  sensores[1] = lecturaSharp(1, S3_Pin);
+  sensores[0] = lecturaSharp(1, S3_Pin);
+  sensores[1] = lecturaSharp(1, S2_Pin);
   sensores[2] = lecturaSharp(1, S1_Pin);
-  piso[0] = lecturaCNY70(1, P1_Pin);
-  piso[1] = lecturaCNY70(1, P2_Pin);
   mainMachine();
   
-  //runMotor(ATRAS, Motors[DERECHA]);
+  //runMotor(ATRAS, Motors[IZQUIERDA]);
   //setPowerMotor(200, DERECHA);
   //setPowerMotor(200, IZQUIERDA);
 }
