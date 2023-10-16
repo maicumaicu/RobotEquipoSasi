@@ -454,7 +454,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "placa central.step",
+      "step": "placa sifones .step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
