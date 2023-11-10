@@ -45,7 +45,6 @@
         "silk_text_thickness": 0.15,
         "silk_text_upright": false,
         "zones": {
-          "45_degree_only": false,
           "min_clearance": 0.5
         }
       },
@@ -111,8 +110,6 @@
         "zones_intersect": "error"
       },
       "rules": {
-        "allow_blind_buried_vias": false,
-        "allow_microvias": false,
         "max_error": 0.005,
         "min_clearance": 0.0,
         "min_connection": 0.0,
@@ -126,7 +123,7 @@
         "min_text_height": 0.7999999999999999,
         "min_text_thickness": 0.08,
         "min_through_hole_diameter": 0.3,
-        "min_track_width": 0.19999999999999998,
+        "min_track_width": 0.0,
         "min_via_annular_width": 0.09999999999999999,
         "min_via_diameter": 0.5,
         "solder_mask_clearance": 0.0,
@@ -178,9 +175,7 @@
         0.0,
         0.5,
         0.8,
-        1.0,
-        1.2,
-        1.5
+        1.0
       ],
       "via_dimensions": [
         {
@@ -192,8 +187,7 @@
           "drill": 1.0
         }
       ],
-      "zones_allow_external_fillets": false,
-      "zones_use_no_outline": true
+      "zones_allow_external_fillets": false
     },
     "layer_presets": [],
     "viewports": []
@@ -418,7 +412,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "MISA NANO.kicad_pro",
+    "filename": "el macho.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -454,7 +448,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "el macho.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
@@ -495,7 +489,7 @@
   },
   "sheets": [
     [
-      "5bd055f2-75a0-4086-92f8-5d11aa4614d6",
+      "50926a65-6951-4f80-8f7e-c6ec264337e5",
       ""
     ]
   ],
