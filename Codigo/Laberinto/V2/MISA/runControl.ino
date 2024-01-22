@@ -37,7 +37,7 @@ void runMachine(int lado) {
           runMotor(OFF, &Motors[MOT_IZQ]);
           runMotor(OFF, &Motors[MOT_DER]);
           analogWrite(9, 0);
-          analogWrite(11,0);
+          analogWrite(11, 0);
         }
       } else {
         /*if(sensores[IZQUIERDA] == PARED){
@@ -50,15 +50,21 @@ void runMachine(int lado) {
         angularPID(IZQUIERDA, pd[0]);
 
       }
-    }else{
+    } else {
       showModeNumber(3);
+      runMotor(ATRAS, &Motors[MOT_IZQ]);
+      runMotor(ADELANTE, &Motors[MOT_DER]);
+      analogWrite(9, 100);
+      analogWrite(11, 100);
+      delay(500);
       runMotor(OFF, &Motors[MOT_IZQ]);
-          runMotor(OFF, &Motors[MOT_DER]);
-          analogWrite(9, 0);
-          analogWrite(11, 0);
+      runMotor(OFF, &Motors[MOT_DER]);
+      analogWrite(9, 0);
+      analogWrite(11, 0);
+      delay(2000);
     }
-  }else{
-        if (piso[0] == NEGRO) {
+  } else {
+    if (piso[0] == NEGRO) {
       if (sensores[CENTRO] == PARED) {
         if (sensores[DERECHA] == LIBRE) {
           showModeNumber(1);
@@ -72,7 +78,7 @@ void runMachine(int lado) {
           analogWrite(9, 0);
           analogWrite(11, 0);
         }
-         else if (sensores[IZQUIERDA] == LIBRE) {
+        else if (sensores[IZQUIERDA] == LIBRE) {
           //izquierda 90
           showModeNumber(0);
           runMotor(ATRAS, &Motors[MOT_IZQ]);
@@ -96,7 +102,7 @@ void runMachine(int lado) {
           runMotor(OFF, &Motors[MOT_IZQ]);
           runMotor(OFF, &Motors[MOT_DER]);
           analogWrite(9, 0);
-          analogWrite(11,0);
+          analogWrite(11, 0);
         }
       } else {
         /*if(sensores[IZQUIERDA] == PARED){
@@ -109,12 +115,18 @@ void runMachine(int lado) {
         angularPID(DERECHA, pd[0]);
 
       }
-    }else{
+    } else {
       showModeNumber(3);
+      runMotor(ATRAS, &Motors[MOT_IZQ]);
+      runMotor(ADELANTE, &Motors[MOT_DER]);
+      analogWrite(9, 100);
+      analogWrite(11, 100);
+      delay(500);
       runMotor(OFF, &Motors[MOT_IZQ]);
-          runMotor(OFF, &Motors[MOT_DER]);
-          analogWrite(9, 0);
-          analogWrite(11, 0);
+      runMotor(OFF, &Motors[MOT_DER]);
+      analogWrite(9, 0);
+      analogWrite(11, 0);
+      delay(2000);
     }
   }
 }
