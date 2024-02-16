@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name "propios")(type "KiCad")(uri "${KIPRJMOD}/propios.kicad_sym")(options "")(descr ""))
+  (lib (name "mini360")(type "Legacy")(uri "${KIPRJMOD}/KiCad-master/Mini360_step_down_converter/Mini360_lib/mini360.lib")(options "")(descr ""))
+)

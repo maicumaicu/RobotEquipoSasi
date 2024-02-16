@@ -1,0 +1,3 @@
+../Core/Src/UsefulFunctions.c:13:10:MAP	24	static
+../Core/Src/UsefulFunctions.c:19:5:constrain	24	static
+../Core/Src/UsefulFunctions.c:29:6:btnMachine	16	static

@@ -1,0 +1,3 @@
+../Core/Src/movementControl.c:14:6:rotateAxis	24	static
+../Core/Src/movementControl.c:35:6:resetAxis	24	static
+../Core/Src/movementControl.c:41:6:movementMachine	40	static

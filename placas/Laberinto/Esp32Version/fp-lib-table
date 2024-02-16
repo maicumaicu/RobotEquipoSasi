@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "DOIT_ESP32")(type "KiCad")(uri "C:/Users/jore/Desktop/agus/kicad_esp32_doit/DOIT_ESP32.pretty")(options "")(descr ""))
+  (lib (name "propios")(type "KiCad")(uri "${KIPRJMOD}/propios.pretty")(options "")(descr ""))
+)
