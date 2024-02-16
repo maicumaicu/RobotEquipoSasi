@@ -1594,7 +1594,7 @@
     )
   )
 
-  (gr_rect (start 37.846 21.082) (end 135.89 91.186)
+  (gr_rect (start 46.228 21.082) (end 128.016 60.452)
     (stroke (width 0.2) (type default)) (fill none) (layer "Edge.Cuts") (tstamp 838ce53f-6f22-4a84-a2a0-d735bbfc6935))
 
   (segment (start 67.056 50.292) (end 62.778 50.292) (width 0.5) (layer "B.Cu") (net 1) (tstamp 32ac211e-1330-41dc-8d40-a070e48de906))

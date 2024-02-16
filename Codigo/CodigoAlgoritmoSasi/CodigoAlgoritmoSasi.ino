@@ -22,7 +22,7 @@
 #define CNY70 13
 
 #define encoderPinA1 23
-#define encoderPinB1 1
+#define encoderPinB1 5
 
 #define encoderPinA2 34
 #define encoderPinB2 35
@@ -124,7 +124,7 @@ void setup() {
 
 void loop() {
   Serial.println( counterD);
-  if ((millis() - timer) > 5) {
+  /*if ((millis() - timer) > 5) {
     runOff(0, 0);
     digitalWrite(STBY, LOW);
     mpu.update();
@@ -133,7 +133,7 @@ void loop() {
   SerialBT.println(lecturaCNY70(20, CNY70));
   //delay(1000);
   digitalWrite(STBY, HIGH);
-  mainMachine();
+  mainMachine();*/
 }
 
 void mainMachine() {
